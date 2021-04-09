@@ -11,14 +11,13 @@ import java.text.ParseException;
  *
  * @author Arijit Ghosh
  */
-public class RatiosDto implements Comparable<String > {
+public class RatiosDto implements Comparable<RatiosDto > {
     /*this is current industry standard PE ratio*/
 
     private static final Logger logger = LogManager.getLogger(RatiosDto.class);
 
 
     private String date;
-    private double industryPE;
 
     /**This is company PE Ratio.
      * This indicate if value of a stock is undervalued or overvalued.
@@ -50,6 +49,15 @@ public class RatiosDto implements Comparable<String > {
 
     /**
      * EV/EBITDA ratio for an FY: This information will be taken from Ratios page
+     *  <pre>
+     *      EV/EBITDA ranges signifies as below:
+     *            0 = Avoid [Future growth is unknown]
+     *            4 = Neutral [Need to look for other financial valuations]
+     *            6 to 10 = Perfect for investment
+     *            15 = Fair Value [If other analysis are not strong enough, price can drop]
+     *            >=20 = Overvalued [too costly]
+     *
+     *  </pre>
      */
     private double evEbitda;
 
@@ -59,11 +67,6 @@ public class RatiosDto implements Comparable<String > {
 
     public RatiosDto setDate(String date) {
         this.date = date;
-        return this;
-    }
-
-    public RatiosDto setIndustryPE(double industryPE) {
-        this.industryPE = industryPE;
         return this;
     }
 
@@ -96,10 +99,6 @@ public class RatiosDto implements Comparable<String > {
         return date;
     }
 
-    public double getIndustryPE() {
-        return industryPE;
-    }
-
     public double getPeRatio() {
         return peRatio;
     }
@@ -121,14 +120,14 @@ public class RatiosDto implements Comparable<String > {
     }
 
     @Override
-    public int compareTo(String date2) {
+    public int compareTo(RatiosDto ratiosDto) {
         //this method will sort balancesheet based on date
         try {
             long d1 = DateUtil.convertToEpochMilli(this.date);
-            long d2 = DateUtil.convertToEpochMilli(date2);
+            long d2 = DateUtil.convertToEpochMilli(ratiosDto.date);
             return Long.compare(d1,d2);
         } catch (ParseException e) {
-            logger.error("Unable to convert Dates to ecpochInMillis: "+date2+" , "+date,e);
+            logger.error("Unable to convert Dates to ecpochInMillis: "+ratiosDto.date+" , "+date,e);
         }
         return 0;
     }
@@ -145,5 +144,17 @@ public class RatiosDto implements Comparable<String > {
     private void validate() throws Exception {
         if(this.date==null)
             throw new Exception("Date is missing in balancesheet");
+    }
+
+    @Override
+    public String toString() {
+        return "RatiosDto{" +
+                "date='" + date + '\'' +
+                ", peRatio=" + peRatio +
+                ", pbRatio=" + pbRatio +
+                ", roe=" + roe +
+                ", ev=" + ev +
+                ", evEbitda=" + evEbitda +
+                '}';
     }
 }

@@ -39,6 +39,8 @@ public final class BalanceSheetDto implements Comparable<BalanceSheetDto> {
     This should be read as per old format as well as new format
      */
     private double totalShareCapital;
+
+    private double equityShareCapital;
     /*
     For a good company reserves should always increase. This is also called as Revenue
     Will be found in old format
@@ -86,6 +88,15 @@ public final class BalanceSheetDto implements Comparable<BalanceSheetDto> {
     public BalanceSheetDto setDebt(double debt) {
         this.debt = debt;
         return this;
+    }
+
+    public BalanceSheetDto setEquityShareCapital(double equityShareCapital) {
+        this.equityShareCapital = equityShareCapital;
+        return this;
+    }
+
+    public double getEquityShareCapital() {
+        return equityShareCapital;
     }
 
     @Override

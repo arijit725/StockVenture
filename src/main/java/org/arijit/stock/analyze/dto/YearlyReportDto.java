@@ -13,7 +13,7 @@ import java.util.Date;
  *
  * @author Arijit Ghosh
  */
-public class YearlyReportDto implements Comparable<String>{
+public class YearlyReportDto implements Comparable<YearlyReportDto>{
     private static final Logger logger = LogManager.getLogger(YearlyReportDto.class);
     private String date;
 
@@ -26,6 +26,15 @@ public class YearlyReportDto implements Comparable<String>{
 
     }
 
+    public YearlyReportDto setDate(String date) {
+        this.date = date;
+        return this;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
     public double getBasicEPS() {
         return basicEPS;
     }
@@ -36,14 +45,14 @@ public class YearlyReportDto implements Comparable<String>{
     }
 
     @Override
-    public int compareTo(String date2) {
+    public int compareTo(YearlyReportDto yearlyReportDto) {
         //this method will sort balancesheet based on date
         try {
             long d1 = DateUtil.convertToEpochMilli(this.date);
-            long d2 = DateUtil.convertToEpochMilli(date2);
+            long d2 = DateUtil.convertToEpochMilli(yearlyReportDto.date);
             return Long.compare(d1,d2);
         } catch (ParseException e) {
-            logger.error("Unable to convert Dates to ecpochInMillis: "+date2+" , "+date,e);
+            logger.error("Unable to convert Dates to ecpochInMillis: "+yearlyReportDto.date+" , "+date,e);
         }
         return 0;
     }
@@ -52,8 +61,9 @@ public class YearlyReportDto implements Comparable<String>{
         return new YearlyReportDto();
     }
 
-    public void build() throws Exception {
+    public YearlyReportDto build() throws Exception {
         validate();
+        return this;
     }
 
     private void validate() throws Exception {
@@ -61,5 +71,11 @@ public class YearlyReportDto implements Comparable<String>{
             throw new Exception("Date is missing in balancesheet");
     }
 
-
+    @Override
+    public String toString() {
+        return "YearlyReportDto{" +
+                "date='" + date + '\'' +
+                ", basicEPS=" + basicEPS +
+                '}';
+    }
 }

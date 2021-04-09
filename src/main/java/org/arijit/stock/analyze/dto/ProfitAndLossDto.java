@@ -13,7 +13,7 @@ import java.text.ParseException;
  *
  * @author Arijit Ghosh
  */
-public final class ProfitAndLossDto implements Comparable<String> {
+public final class ProfitAndLossDto implements Comparable<ProfitAndLossDto> {
     private static final Logger logger = LogManager.getLogger(ProfitAndLossDto.class);
 
     /**
@@ -139,14 +139,14 @@ public final class ProfitAndLossDto implements Comparable<String> {
     }
 
     @Override
-    public int compareTo(String date2) {
+    public int compareTo(ProfitAndLossDto profitAndLossDto) {
         //this method will sort balancesheet based on date
         try {
             long d1 = DateUtil.convertToEpochMilli(this.date);
-            long d2 = DateUtil.convertToEpochMilli(date2);
+            long d2 = DateUtil.convertToEpochMilli(profitAndLossDto.date);
             return Long.compare(d1,d2);
         } catch (ParseException e) {
-            logger.error("Unable to convert Dates to ecpochInMillis: "+date2+" , "+date,e);
+            logger.error("Unable to convert Dates to ecpochInMillis: "+profitAndLossDto.date+" , "+date,e);
         }
         return 0;
     }

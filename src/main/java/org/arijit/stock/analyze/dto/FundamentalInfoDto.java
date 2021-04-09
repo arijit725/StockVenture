@@ -15,6 +15,9 @@ public final class FundamentalInfoDto {
 
     private String industry;
     private long marketCap;
+    private double faceValue;
+    private double currentSharePrice;
+    private double industryPE;
 
     private List<BalanceSheetDto> balanceSheetDtoList;
     private List<ProfitAndLossDto> profitAndLossDtoList;
@@ -43,6 +46,21 @@ public final class FundamentalInfoDto {
 
     public FundamentalInfoDto setMarketCap(long marketCap) {
         this.marketCap = marketCap;
+        return this;
+    }
+
+    public FundamentalInfoDto setFaceValue(double faceValue) {
+        this.faceValue = faceValue;
+        return this;
+    }
+
+    public FundamentalInfoDto setCurrentSharePrice(double currentSharePrice) {
+        this.currentSharePrice = currentSharePrice;
+        return this;
+    }
+
+    public FundamentalInfoDto setIndustryPE(double industryPE) {
+        this.industryPE = industryPE;
         return this;
     }
 
@@ -98,8 +116,23 @@ public final class FundamentalInfoDto {
         return yearlyReportDtoList;
     }
 
+    public double getFaceValue() {
+        return faceValue;
+    }
+
+    public double getCurrentSharePrice() {
+        return currentSharePrice;
+    }
+
+    public double getIndustryPE() {
+        return industryPE;
+    }
+
     public FundamentalInfoDto build(){
-        Collections.sort(this.balanceSheetDtoList);
+        Collections.sort(this.balanceSheetDtoList,Collections.reverseOrder());
+        Collections.sort(this.ratiosDtoList,Collections.reverseOrder());
+        Collections.sort(this.yearlyReportDtoList,Collections.reverseOrder());
+        Collections.sort(this.profitAndLossDtoList,Collections.reverseOrder());
         return this;
     }
 
@@ -110,6 +143,9 @@ public final class FundamentalInfoDto {
                 ", years=" + years +
                 ", industry='" + industry + '\'' +
                 ", marketCap=" + marketCap +
+                ", faceValue=" + faceValue +
+                ", currentSharePrice=" + currentSharePrice +
+                ", industryPE=" + industryPE +
                 ", balanceSheetDtoList=" + balanceSheetDtoList +
                 ", profitAndLossDtoList=" + profitAndLossDtoList +
                 ", ratiosDtoList=" + ratiosDtoList +
