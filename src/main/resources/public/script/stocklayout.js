@@ -1,4 +1,5 @@
 
+var companyDeatilsUrl ='http://localhost:8080/fundamental/companyDetails';
 function startTab(){
     document.getElementById("defaultOpen").click();
 }
@@ -31,8 +32,20 @@ function submitCompanyDetails(){
     var faceValue = document.getElementById("faceValue").value;
     var years = document.getElementById("years").value;
     console.log("CompanyName: "+companyName+" marketCap: "+marketCap+" industry: "+industry+" currentSharePrice: "+currentSharePrice+" industryPE: "+industryPE+" faceValue: "+faceValue+" years: "+years)
-    localStorage.setItem("companyName", companyName);
-    console.log("Company Details saved in localstorage")
+//    localStorage.setItem("companyName", companyName);
+    var companyDetails={
+        "companyName":companyName,
+        "marketCap":marketCap,
+        "industry":industry,
+        "currentSharePrice":currentSharePrice,
+        "industryPE":industryPE,
+        "faceValue":faceValue,
+        "years":years
+    };
+    var companyDetailsJson = generateJsonString(companyDetails);
+    console.log("Company Details: "+companyDetailsJson)
+    var responseText = postRequest(companyDeatilsUrl,companyDetailsJson)
+    console.log(responseText);
 }
 
 function createHeaders(){
@@ -95,12 +108,31 @@ function submitBalancesheetDetails(){
     }
     console.log("Stored records: "+balanceSheetDtoList.length)
     console.log(balanceSheetDtoList)
+    var balanceSheetJson = generateJsonString(balanceSheetDtoList);
+    console.log(balanceSheetJson);
 }
 
 
 
+/*============================  Http Request Functions ===================================*/
+function postRequest(url, requestBody){
+        var Httpreq = new XMLHttpRequest(); // a new request
+        Httpreq.open("POST",url,false);
+        var md5Sum = md5(requestBody);
+        Httpreq.setRequestHeader('x-md5sum',md5Sum);
+        Httpreq.setRequestHeader('Content-type','application/json; charset=utf-8');
+        console.log("requestBody: "+requestBody);
+        Httpreq.send(requestBody);
+        return Httpreq.responseText;
+}
+
 /*============================  Utility Functions ===================================*/
 
+
+function generateJsonString(obj){
+    var jsonStr = JSON.stringify(obj);
+    return jsonStr
+}
 
 function getCellID(datapoint , fy){
     return datapoint+'-'+fy;
