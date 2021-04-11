@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>proofassistance</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="css/stockinputstyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script  src="script/stocklayout.js"></script>
+<!--    <script type="module" src="script/balancesheet.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://www.myersdaily.org/joseph/javascript/md5.js"></script>
+
+    <!--    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>-->
+</head>
+
+<body>
+<div class="header">
+    <p>Company Financial Details:</p>
+</div>
+<div class="company-details">
+    <table>
+        <tr>
+            <td><table>
+                <tr><td>Company Name:</td> <td><input type="text" id="companyName"></td></tr>
+                <tr><td>Market Cap:</td><td><input type="text" id="marketCap"></td></tr>
+            </table></td>
+            <td><table>
+                <tr><td>Industry:</td><td><input type="text" id="industry"></td></tr>
+                <tr><td>current Share Price:</td><td><input type="text" id="currentSharePrice"></td></tr>
+            </table></td>
+            <td><table>
+                <tr><td>Industry PE:</td><td><input type="text" id="industryPE"></td></tr>
+                <tr><td>Face Value:</td><td><input type="text" id="faceValue"></td></tr>
+            </table></td>
+        </tr>
+        <tr><td><label for="years" >Years of Entry:</label>
+            <select name="years" id="years" class="year-selection">
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+            </select>
+        </td>
+        </tr>
+        <tr><td colspan="3" align="right"><input type="button" value="submit" class="submit-button" onclick="submitCompanyDetails()"></td></tr>
+    </table>
+</div>
+
+<div class="financial-details">
+    <div class="tab">
+        <button class="tablinks" id="defaultOpen" onclick="openCity(event, 'Balance-Sheet')">Balance-Sheet</button>
+        <button class="tablinks" onclick="openCity(event, 'Profit-And-Loss')">Profit-And-Loss</button>
+        <button class="tablinks" onclick="openCity(event, 'Yearly-Report')">Yearly-Report</button>
+        <button class="tablinks" onclick="openCity(event, 'Quarterly-Report')">Quarterly-Report</button>
+        <button class="tablinks" onclick="openCity(event, 'Ratios')">Ratios</button>
+    </div>
+
+    <div id="Balance-Sheet"  class="tabcontent balancesheet" >
+
+<!--        <table>-->
+<!--            <tr>-->
+<!--                <th>Datapoints</th>-->
+<!--                <th>Mar-2020</th>-->
+<!--                <th>Mar-2019</th>-->
+<!--                <th>Mar-2018</th>-->
+<!--                <th>Mar-2017</th>-->
+<!--                <th>Mar-2016</th>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>Total Share Capital</td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>Equity Share Capital</td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>Reserves</td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>Debt</td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--                <td><input type="text"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+
+<!--                <td colspan="6" align="right"><input type="button" value="submit" class="submit-button"></td>-->
+
+<!--            </tr>-->
+
+<!--        </table>-->
+
+    </div>
+
+    <div id="Profit-And-Loss" class="tabcontent profitandloss">
+        <table>
+            <tr>
+                <th>Datapoints</th>
+                <th>Mar-2020</th>
+                <th>Mar-2019</th>
+                <th>Mar-2018</th>
+                <th>Mar-2017</th>
+                <th>Mar-2016</th>
+            </tr>
+            <tr>
+                <td>Net Sales</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td>Consumption Of Raw Material</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td>Employee Cost</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td>PBDIT</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td>Interest</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td>Net Profit</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+
+                <td colspan="6" align="right"><input type="button" value="submit" class="submit-button"></td>
+
+            </tr>
+
+        </table>
+    </div>
+
+    <div id="Yearly-Report" class="tabcontent yearlyreport">
+        <table>
+            <tr>
+                <th>Datapoints</th>
+                <th>Mar-2020</th>
+                <th>Mar-2019</th>
+                <th>Mar-2018</th>
+                <th>Mar-2017</th>
+                <th>Mar-2016</th>
+            </tr>
+            <tr>
+                <td>Basic EPS</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+
+                <td colspan="6" align="right"><input type="button" value="submit" class="submit-button"></td>
+
+            </tr>
+
+        </table>
+    </div>
+    <div id="Quarterly-Report" class="tabcontent yearlyreport">
+        not yet implemented!!
+    </div>
+    <div id="Ratios" class="tabcontent ratios">
+        <table>
+            <tr>
+                <th>Datapoints</th>
+                <th>Mar-2020</th>
+                <th>Mar-2019</th>
+                <th>Mar-2018</th>
+                <th>Mar-2017</th>
+                <th>Mar-2016</th>
+            </tr>
+            <tr>
+                <td>PE Ratio</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td>PB Ratio</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td>ROE Ratio</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td>Enterprise Value</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <td>EV/EBITDA</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+
+                <td colspan="6" align="right"><input type="button" value="submit" class="submit-button"></td>
+
+            </tr>
+
+        </table>
+    </div>
+</div>
+<div class="instant-review">
+    <div class="reivew-header">Instant Review</div>
+    <table>
+        <tr></tr>
+    </table>
+    This section is for instant report
+</div>
+<div class="footer">
+    <table><tr><td align="center"><input type="button" value="Generate-Report" class="report-generate"></td></tr></table>
+
+</div>
+</body>
+</html>

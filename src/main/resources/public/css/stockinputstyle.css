@@ -1,0 +1,215 @@
+{
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+}
+.header{
+    height: 40px;
+    background-color: #1e1e1e;
+    border-bottom: #9a1b23 solid 3px;
+    font-size: 24px;
+    color: white;
+}
+
+.company-details{
+   background-color: #FFFFFF;
+   border-style: solid;
+   /*height: 400px;*/
+   border-color: #606060;
+   border-width: thin;
+   border-radius: 5px;
+   padding: 5px;
+}
+
+.year-selection{
+    background-color: #1e1e1e;
+    color:white;
+    font-size:17px;
+}
+.year-selection:hover{
+    color: lightgray;
+}
+.financial-details{
+    margin-top: 5px;
+   background-color: #FFFFFF;
+   border-style: solid;
+   /*height: 400px;*/
+   border-color: #606060;
+   border-width: thin;
+   border-radius: 5px;
+   padding: 5px;
+}
+
+
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #1e1e1e;
+
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+   color: lightgray;
+   font-size: 19px;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #1e1e1e; /* Blue background */
+  color: lightgray;
+  font-size: 19px;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.tabcontent table th{
+    background-color: lightgray;
+    color: #1e1e1e;
+}
+
+.submit-button{
+     background-color: #1e1e1e;
+     border-radius: 4px;
+     border: none;
+     color: white;
+     text-align: center;
+     font-size: 16px;
+     padding: 7px 15px;
+     width: 200px;
+     transition: all 0.5s;
+     cursor: pointer;
+     margin: 5px;
+
+ }
+
+ .submit-button span {
+   cursor: pointer;
+   display: inline-block;
+   position: relative;
+   transition: 0.5s;
+ }
+
+ .submit-button span:after {
+   content: '\00bb';
+   position: absolute;
+   opacity: 0;
+   top: 0;
+   right: -20px;
+   transition: 0.5s;
+ }
+
+ .submit-button:hover span {
+   padding-right: 25px;
+ }
+
+ .submit-button:hover span:after {
+   opacity: 1;
+   right: 0;
+   color: lightgray;
+ }
+
+.balancesheet{
+
+}
+
+.profitandloss{
+}
+
+.yearlyreport{
+}
+
+.ratios{
+}
+
+.financial-items{
+    background-color: lightgray; /* Blue background */
+    color: #1e1e1e;
+}
+
+.instant-review{
+   margin-top: 5px;
+   background-color: #FFFFFF;
+   border-style: solid;
+   /*height: 400px;*/
+   border-color: #606060;
+   border-width: thin;
+   border-radius: 5px;
+   padding: 5px;
+}
+.reivew-header{
+background-color: #1e1e1e;
+font-size: 22px; /* Set a font size */
+   border: none; /* Remove borders */
+   color: white; /* White text */
+   display: block;
+   padding: 14px 20px;
+
+   font-width: bold;
+}
+
+.footer{
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.report-generate{
+   background-color: #1e1e1e;
+  border-radius: 4px;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 20px;
+  padding: 20px;
+  width: 200px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+
+ .report-generate span {
+   cursor: pointer;
+   display: inline-block;
+   position: relative;
+   transition: 0.5s;
+ }
+
+ .report-generate span:after {
+   content: '\00bb';
+   position: absolute;
+   opacity: 0;
+   top: 0;
+   right: -20px;
+   transition: 0.5s;
+ }
+
+ .report-generate:hover span {
+   padding-right: 25px;
+ }
+
+ .report-generate:hover span:after {
+   opacity: 1;
+   right: 0;
+   color: lightgray;
+ }
