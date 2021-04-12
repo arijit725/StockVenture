@@ -2,8 +2,10 @@ package org.arijit.stock.analyze.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.arijit.stock.analyze.cache.MemCache;
 import org.arijit.stock.analyze.service.FundamentalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -92,6 +94,36 @@ public class FundamentalController {
         } catch (Exception e) {
             e.printStackTrace();
             res = ResponseEntity.notFound().build();
+        }
+
+        return Mono.just(res);
+    }
+
+    /**
+     * On stock-report pageload, this url would be triggered.
+     * Purpose of this url is to perform all sort of analysis.
+     * If this reuturns OK, subsequent calls would get needful values.
+     *
+     * @param stockID
+     * @param webExchange
+     * @return
+     * @throws IOException
+     */
+    @GetMapping(value = "/generateReport/{stockID}")
+    public Mono<ResponseEntity> generateReport(@PathVariable("stockID") String stockID, ServerWebExchange webExchange)throws IOException {
+        logger.info("Accpeted generateReport Request: stockID: "+stockID);
+        ResponseEntity<String> res = null;
+        try {
+            fundamentalService.analyzeStock(stockID,3);
+            res = ResponseEntity.ok().build();
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
         return Mono.just(res);

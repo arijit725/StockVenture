@@ -25,7 +25,7 @@ public class EVEBITDAValuation implements IFundamentalEvaluation{
     public void evaluate(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year) throws Exception {
         double debtForCurrentFY = fundamentalInfoDto.getBalanceSheetDtoList().get(0).getDebt();
         double equityShareCapital = fundamentalInfoDto.getBalanceSheetDtoList().get(0).getEquityShareCapital();
-        calculateEVEBITDAValuation(fundamentalInfoDto.getRatiosDtoList(),debtForCurrentFY,equityShareCapital, fundamentalInfoDto.getFaceValue(),analyzedInfoDto,year);
+        calculateEVEBITDAValuation(fundamentalInfoDto.getRatiosDtoList(),debtForCurrentFY,equityShareCapital, fundamentalInfoDto.getCompanyDto().getFaceValue(),analyzedInfoDto,year);
     }
 
     private void calculateEVEBITDAValuation(List<RatiosDto> ratiosDtoList, double debtForCurrentFY, double equityShareCapital, double faceValue, AnalyzedInfoDto analyzedInfoDto,int year) throws Exception {

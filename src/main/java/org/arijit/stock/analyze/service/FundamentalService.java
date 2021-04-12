@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.cache.MemCache;
 import org.arijit.stock.analyze.dto.*;
+import org.arijit.stock.analyze.fundamental.FundamentalAnalysisEvaluation;
 import org.arijit.stock.analyze.util.StockUtil;
 import org.springframework.stereotype.Component;
 
@@ -75,5 +76,19 @@ public class FundamentalService {
             fundamentalInfoDto.addRatiosDto(ratiosDto);
         }
         fundamentalInfoDto.build();
+    }
+
+    /**
+     * This method will analyze stock with last  number of "years" data
+     *
+     * @param stockID
+     * @param years
+     * @throws Exception
+     */
+    public void analyzeStock(String stockID, int years) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(userID,stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        FundamentalAnalysisEvaluation.getInstance().evaluate(fundamentalInfoDto,years);
     }
 }

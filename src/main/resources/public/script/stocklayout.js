@@ -118,6 +118,7 @@ function submitBalancesheetDetails(){
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
             var value = document.getElementById(id).value;
+            value = value.replace(',','');
 //            console.log("Balancesheet details"+ id+" : "+value);
             balanceSheetDto[datapoints[i][1]] = value;
             }
@@ -174,6 +175,7 @@ function submitPofitAndLossDetails(){
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
             var value = document.getElementById(id).value;
+            value = value.replace(',','');
 //            console.log("ProfitAndLoss details"+ id+" : "+value);
             balanceSheetDto[datapoints[i][1]] = value;
             }
@@ -222,6 +224,7 @@ function submitYearlyReportDetails(){
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
             var value = document.getElementById(id).value;
+            value = value.replace(',','');
 //            console.log("ProfitAndLoss details"+ id+" : "+value);
             yearlyReportDto[datapoints[i][1]] = value;
             }
@@ -274,6 +277,7 @@ function submitRatiosDetails(){
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
             var value = document.getElementById(id).value;
+            value = value.replace(',','');
             yearlyReportDto[datapoints[i][1]] = value;
             }
         ratioDtoList.push(yearlyReportDto);
@@ -296,6 +300,16 @@ function postRequest(url, requestBody){
         console.log("requestBody: "+requestBody);
         Httpreq.send(requestBody);
         return Httpreq.responseText;
+}
+
+
+
+
+/*============================  Function for report generation ===================================*/
+function generateReport(){
+    console.log("generateReport action is triggered");
+    window.open("stock-report.html?stockID="+stockID);
+    window.focus();
 }
 
 /*============================  Utility Functions ===================================*/

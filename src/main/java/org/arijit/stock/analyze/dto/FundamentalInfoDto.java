@@ -10,26 +10,20 @@ import java.util.List;
  */
 public final class FundamentalInfoDto {
 
-    private  String companyName;
-    private  int years;
-
-    private String industry;
-    private long marketCap;
-    private double faceValue;
-    private double currentSharePrice;
-    private double industryPE;
+//    private  String companyName;
+//    private  int years;
+//
+//    private String industry;
+//    private long marketCap;
+//    private double faceValue;
+//    private double currentSharePrice;
+//    private double industryPE;
 
     private CompanyDto companyDto;
     private List<BalanceSheetDto> balanceSheetDtoList;
     private List<ProfitAndLossDto> profitAndLossDtoList;
     private List<RatiosDto> ratiosDtoList;
     private List<YearlyReportDto> yearlyReportDtoList;
-
-
-//    private FundamentalInfoDto(String companyName,int years){
-//        this.companyName = companyName;
-//        this.years = years;
-//    }
 
     private FundamentalInfoDto(){
 
@@ -44,44 +38,35 @@ public final class FundamentalInfoDto {
         return fundamentalInfoDto;
     }
 
-//    public static FundamentalInfoDto builder(String companyName, int years){
-//        FundamentalInfoDto fundamentalInfoDto = new FundamentalInfoDto(companyName,years);
-//        fundamentalInfoDto.balanceSheetDtoList = new ArrayList<>(years);
-//        fundamentalInfoDto.profitAndLossDtoList = new ArrayList<>(years);
-//        fundamentalInfoDto.ratiosDtoList = new ArrayList<>(years);
-//        fundamentalInfoDto.yearlyReportDtoList = new ArrayList<>(years);
-//        return fundamentalInfoDto;
-//    }
-
     public FundamentalInfoDto setCompanyDto(CompanyDto companyDto){
         this.companyDto = companyDto;
         return this;
     }
 
-    public FundamentalInfoDto setIndustry(String industry) {
-        this.industry = industry;
-        return this;
-    }
+//    public FundamentalInfoDto setIndustry(String industry) {
+//        this.industry = industry;
+//        return this;
+//    }
 
-    public FundamentalInfoDto setMarketCap(long marketCap) {
-        this.marketCap = marketCap;
-        return this;
-    }
+//    public FundamentalInfoDto setMarketCap(long marketCap) {
+//        this.marketCap = marketCap;
+//        return this;
+//    }
 
-    public FundamentalInfoDto setFaceValue(double faceValue) {
-        this.faceValue = faceValue;
-        return this;
-    }
+//    public FundamentalInfoDto setFaceValue(double faceValue) {
+//        this.faceValue = faceValue;
+//        return this;
+//    }
 
-    public FundamentalInfoDto setCurrentSharePrice(double currentSharePrice) {
-        this.currentSharePrice = currentSharePrice;
-        return this;
-    }
+//    public FundamentalInfoDto setCurrentSharePrice(double currentSharePrice) {
+//        this.currentSharePrice = currentSharePrice;
+//        return this;
+//    }
 
-    public FundamentalInfoDto setIndustryPE(double industryPE) {
-        this.industryPE = industryPE;
-        return this;
-    }
+//    public FundamentalInfoDto setIndustryPE(double industryPE) {
+//        this.industryPE = industryPE;
+//        return this;
+//    }
 
     public FundamentalInfoDto addBalanceSheetDto(BalanceSheetDto balanceSheetDto) {
         this.balanceSheetDtoList.add(balanceSheetDto);
@@ -107,21 +92,21 @@ public final class FundamentalInfoDto {
         return companyDto;
     }
 
-    public String getCompanyName() {
-        return companyName;
-    }
+//    public String getCompanyName() {
+//        return companyName;
+//    }
 
-    public int getYears() {
-        return years;
-    }
+//    public int getYears() {
+//        return years;
+//    }
 
-    public String getIndustry() {
-        return industry;
-    }
+//    public String getIndustry() {
+//        return industry;
+//    }
 
-    public long getMarketCap() {
-        return marketCap;
-    }
+//    public long getMarketCap() {
+//        return marketCap;
+//    }
 
     public List<BalanceSheetDto> getBalanceSheetDtoList() {
         return balanceSheetDtoList;
@@ -139,17 +124,17 @@ public final class FundamentalInfoDto {
         return yearlyReportDtoList;
     }
 
-    public double getFaceValue() {
-        return faceValue;
-    }
+//    public double getFaceValue() {
+//        return faceValue;
+//    }
 
-    public double getCurrentSharePrice() {
-        return currentSharePrice;
-    }
-
-    public double getIndustryPE() {
-        return industryPE;
-    }
+//    public double getCurrentSharePrice() {
+//        return currentSharePrice;
+//    }
+//
+//    public double getIndustryPE() {
+//        return industryPE;
+//    }
 
     public FundamentalInfoDto build(){
         Collections.sort(this.balanceSheetDtoList,Collections.reverseOrder());
@@ -162,13 +147,7 @@ public final class FundamentalInfoDto {
     @Override
     public String toString() {
         return "FundamentalInfoDto{" +
-                "companyName='" + companyName + '\'' +
-                ", years=" + years +
-                ", industry='" + industry + '\'' +
-                ", marketCap=" + marketCap +
-                ", faceValue=" + faceValue +
-                ", currentSharePrice=" + currentSharePrice +
-                ", industryPE=" + industryPE +
+                "companyDto=" + companyDto +
                 ", balanceSheetDtoList=" + balanceSheetDtoList +
                 ", profitAndLossDtoList=" + profitAndLossDtoList +
                 ", ratiosDtoList=" + ratiosDtoList +

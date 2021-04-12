@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="css/stockinputstyle.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <script  src="script/stocklayout.js"></script>
+    <script  src="script/stockreport.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="http://www.myersdaily.org/joseph/javascript/md5.js"></script>
 
     <!--    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>-->
 </head>
 
-<body>
+<body onload="onReportLoad()">
 <div class="header">
     <p>Company Financial Details:</p>
 </div>
@@ -47,13 +47,13 @@
 </div>
 
 <div class="financial-details">
-    <div class="tab">
-        <button class="tablinks" id="defaultOpen" onclick="openCity(event, 'Balance-Sheet')">Balance-Sheet</button>
-        <button class="tablinks" onclick="openCity(event, 'Profit-And-Loss')">Profit-And-Loss</button>
-        <button class="tablinks" onclick="openCity(event, 'Yearly-Report')">Yearly-Report</button>
-        <button class="tablinks" onclick="openCity(event, 'Quarterly-Report')">Quarterly-Report</button>
-        <button class="tablinks" onclick="openCity(event, 'Ratios')">Ratios</button>
-    </div>
+<!--    <div class="tab">-->
+<!--        <button class="tablinks" id="defaultOpen" onclick="openCity(event, 'Balance-Sheet')">Balance-Sheet</button>-->
+<!--        <button class="tablinks" onclick="openCity(event, 'Profit-And-Loss')">Profit-And-Loss</button>-->
+<!--        <button class="tablinks" onclick="openCity(event, 'Yearly-Report')">Yearly-Report</button>-->
+<!--        <button class="tablinks" onclick="openCity(event, 'Quarterly-Report')">Quarterly-Report</button>-->
+<!--        <button class="tablinks" onclick="openCity(event, 'Ratios')">Ratios</button>-->
+<!--    </div>-->
 
     <div id="Balance-Sheet"  class="tabcontent balancesheet" >
     <!-- this part of code is generated from javascript-->
@@ -78,10 +78,6 @@
         <tr></tr>
     </table>
     This section is for instant report
-</div>
-<div class="footer">
-    <table><tr><td align="center"><input type="button" value="Generate-Report" class="report-generate" onclick="generateReport()"></td></tr></table>
-
 </div>
 </body>
 </html>

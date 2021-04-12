@@ -1,9 +1,6 @@
 package org.arijit.test.fundamental.analysis;
 
-import org.arijit.stock.analyze.dto.BalanceSheetDto;
-import org.arijit.stock.analyze.dto.FundamentalInfoDto;
-import org.arijit.stock.analyze.dto.RatiosDto;
-import org.arijit.stock.analyze.dto.YearlyReportDto;
+import org.arijit.stock.analyze.dto.*;
 import org.arijit.stock.analyze.fundamental.EVEBITDAValuation;
 import org.arijit.stock.analyze.fundamental.FundamentalAnalysisEvaluation;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,13 +20,16 @@ public class TestFundamentalAnalysis {
 
 
     private static FundamentalInfoDto tcsDataSet1() throws Exception {
-        FundamentalInfoDto tcsFundamental = FundamentalInfoDto.builder("TCS",5);
-        tcsFundamental
-                .setCurrentSharePrice(3460.00)
-                .setFaceValue(1)
-                .setIndustry("Computers - Software")
-                .setIndustryPE(35.04)
-                .setMarketCap(1250500);
+        CompanyDto companyDto = new CompanyDto();
+        companyDto.setCompanyName("TCS");
+        companyDto.setCurrentSharePrice(3460.00);
+        companyDto.setFaceValue(1);
+        companyDto.setIndustry("Computers- software");
+        companyDto.setIndustryPE(35.04);
+        companyDto.setMarketCap(1250500);
+        FundamentalInfoDto tcsFundamental = FundamentalInfoDto.builder(companyDto.getYears());
+        tcsFundamental.setCompanyDto(companyDto);
+
 
         tcsFundamental
                 .addBalanceSheetDto(BalanceSheetDto
@@ -148,13 +148,15 @@ public class TestFundamentalAnalysis {
 
 
     private static FundamentalInfoDto tcsDataSet() throws Exception {
-        FundamentalInfoDto tcsFundamental = FundamentalInfoDto.builder("TCS",5);
-        tcsFundamental
-                .setCurrentSharePrice(3330.60)
-                .setFaceValue(1)
-                .setIndustry("Computers - Software")
-                .setIndustryPE(35.04)
-                .setMarketCap(1250500);
+        CompanyDto companyDto = new CompanyDto();
+        companyDto.setCompanyName("TCS");
+        companyDto.setCurrentSharePrice(3460.00);
+        companyDto.setFaceValue(1);
+        companyDto.setIndustry("Computers- software");
+        companyDto.setIndustryPE(35.04);
+        companyDto.setMarketCap(1250500);
+        FundamentalInfoDto tcsFundamental = FundamentalInfoDto.builder(companyDto.getYears());
+
 
         tcsFundamental
                 .addBalanceSheetDto(BalanceSheetDto
