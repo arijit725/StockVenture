@@ -1,5 +1,11 @@
 
 var companyDeatilsUrl ='http://localhost:8080/fundamental/companyDetails';
+var balancesheetDeatilsUrl ='http://localhost:8080/fundamental/balancesheetDetails';
+var profitAndLossDetailUrl = 'http://localhost:8080/fundamental/profitAndLossDetails';
+var yearlyReportDetailUrl = 'http://localhost:8080/fundamental/yearlyReportDetails';
+var ratioDetailUrl = 'http://localhost:8080/fundamental/ratioDetails';
+
+var stockID=null;
 function startTab(){
     document.getElementById("defaultOpen").click();
 }
@@ -9,6 +15,17 @@ function openCity(evt, cityName) {
   if(cityName == "Balance-Sheet"){
     balancesheetTable();
   }
+  else if(cityName == "Profit-And-Loss"){
+    porfitAndLossTable();
+  }
+  else if(cityName == "Yearly-Report"){
+    yearlyReportsTable();
+  }
+   else if(cityName == "Ratios"){
+      ratiosTable();
+    }
+
+
 
   tabcontent = document.getElementsByClassName("tabcontent");
   for (i = 0; i < tabcontent.length; i++) {
@@ -22,6 +39,8 @@ function openCity(evt, cityName) {
   evt.currentTarget.className += " active";
 }
 
+
+/*======================================Functions for Company Details Handle================================*/
 function submitCompanyDetails(){
     startTab();
     var companyName = document.getElementById("companyName").value;
@@ -46,21 +65,21 @@ function submitCompanyDetails(){
     console.log("Company Details: "+companyDetailsJson)
     var responseText = postRequest(companyDeatilsUrl,companyDetailsJson)
     console.log(responseText);
+    stockID = responseText;
+    disableCompaneSection();
+
 }
 
-function createHeaders(){
-    var header = new Array();
-    header.push("DataPoints");
-    var today = new Date();
-    var currentYear = today.getFullYear();
-    var years = document.getElementById("years").value;
-
-    for(var i=0;i<years;i++){
-        currentYear = currentYear-1;
-        header.push("Mar-"+currentYear)
-    }
-    return header;
-
+function disableCompaneSection(){
+    document.getElementById("companyName").disabled=true;
+    document.getElementById("marketCap").disabled=true;
+    document.getElementById("industry").disabled=true;
+    document.getElementById("currentSharePrice").disabled=true;
+    document.getElementById("industryPE").disabled=true;
+    document.getElementById("faceValue").disabled=true;
+    document.getElementById("faceValue").disabled=true;
+    document.getElementById("years").disabled=true;
+    document.getElementById("submitCompany").style.backgroundColor="lightgray";
 }
 
 /*======================================Functions for BalanceSheet Handle================================*/
@@ -82,7 +101,7 @@ function balancesheetTable(){
     }
     var headerList =createHeaders();
     console.log("Generated Headers: "+headerList);
-    createTable("Balance-Sheet","bltbl",headerList,datapoints);
+    createTable("Balance-Sheet","bltbl",headerList,datapoints,submitBalancesheetDetails);
 }
 
 
@@ -95,30 +114,183 @@ function submitBalancesheetDetails(){
     for(var y=0;y<headers.length;y++){
         var year = headers[y];
         var balanceSheetDto =  new Map();
-        balanceSheetDto['Date']=headers[y];
+        balanceSheetDto['date']=headers[y];
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
             var value = document.getElementById(id).value;
-            console.log("Balancesheet details"+ id+" : "+value);
+//            console.log("Balancesheet details"+ id+" : "+value);
             balanceSheetDto[datapoints[i][1]] = value;
             }
-        console.log("Balance sheet for year:");
-        console.log(balanceSheetDto);
+//        console.log("Balance sheet for year:");
+//        console.log(balanceSheetDto);
         balanceSheetDtoList.push(balanceSheetDto);
     }
     console.log("Stored records: "+balanceSheetDtoList.length)
     console.log(balanceSheetDtoList)
     var balanceSheetJson = generateJsonString(balanceSheetDtoList);
     console.log(balanceSheetJson);
+    var responseText = postRequest(balancesheetDeatilsUrl,balanceSheetJson)
 }
 
 
+
+
+
+/*======================================Functions for Profit And Loss Handle================================*/
+function porfiAndLossDataPoints(){
+    var datapoints = new Array();
+    datapoints.push(["Net Sales","netSales"]);
+    datapoints.push(["Consumption Of Raw Material","consumptionRawMaterial"]);
+    datapoints.push(["Employee Cost","employeeCost"]);
+    datapoints.push(["PBDIT","pbit"]);
+    datapoints.push(["Interest","interest"]);
+    datapoints.push(["Net Profit","netProfit"]);
+    return datapoints;
+}
+
+function porfitAndLossTable(){
+    console.log("creaing ProfitAndLoss table");
+    var datapoints = porfiAndLossDataPoints();
+    var tableID = document.getElementById("pftbl");
+    if(tableID!=null){
+        tableID.remove();
+    }
+    var headerList =createHeaders();
+    console.log("Generated Headers: "+headerList);
+    createTable("Profit-And-Loss","pftbl",headerList,datapoints,submitPofitAndLossDetails);
+}
+
+
+function submitPofitAndLossDetails(){
+    console.log("Submit ProfitAndLoss action is triggered");
+    var tableID = "pftbl";
+    var datapoints = porfiAndLossDataPoints();
+    var headers = getTableHeader(tableID)
+    var profitAndLossDtoList = new Array();
+    for(var y=0;y<headers.length;y++){
+        var year = headers[y];
+        var balanceSheetDto =  new Map();
+        balanceSheetDto['date']=headers[y];
+        for(var i=0;i<datapoints.length;i++){
+            id  = getCellID(datapoints[i][1],headers[y]);
+            var value = document.getElementById(id).value;
+//            console.log("ProfitAndLoss details"+ id+" : "+value);
+            balanceSheetDto[datapoints[i][1]] = value;
+            }
+//        console.log("PorfitAndLossDetails for year:");
+//        console.log(balanceSheetDto);
+        profitAndLossDtoList.push(balanceSheetDto);
+    }
+    console.log("Stored profitAndLoss records: "+profitAndLossDtoList.length)
+    console.log(profitAndLossDtoList)
+    var profitAndLossJson = generateJsonString(profitAndLossDtoList);
+    console.log(profitAndLossJson);
+    var responseText = postRequest(profitAndLossDetailUrl,profitAndLossJson)
+}
+
+
+/*======================================Functions for Yearly Report Handle================================*/
+function yearlyReportsDataPoints(){
+    var datapoints = new Array();
+    datapoints.push(["Basic EPS","basicEPS"]);
+    return datapoints;
+}
+
+function yearlyReportsTable(){
+    console.log("creaing Yearly-Report table");
+    var datapoints = yearlyReportsDataPoints();
+    var tableID = document.getElementById("yrtbl");
+    if(tableID!=null){
+        tableID.remove();
+    }
+    var headerList =createHeaders();
+    console.log("Generated Headers: "+headerList);
+    createTable("Yearly-Report","yrtbl",headerList,datapoints,submitYearlyReportDetails);
+}
+
+
+function submitYearlyReportDetails(){
+    console.log("submitYearlyReportDetails action is triggered");
+    var tableID = "yrtbl";
+    var datapoints = yearlyReportsDataPoints();
+    var headers = getTableHeader(tableID)
+    var yearlyReportDtoList = new Array();
+    for(var y=0;y<headers.length;y++){
+        var year = headers[y];
+        var yearlyReportDto =  new Map();
+        yearlyReportDto['date']=headers[y];
+        for(var i=0;i<datapoints.length;i++){
+            id  = getCellID(datapoints[i][1],headers[y]);
+            var value = document.getElementById(id).value;
+//            console.log("ProfitAndLoss details"+ id+" : "+value);
+            yearlyReportDto[datapoints[i][1]] = value;
+            }
+//        console.log("PorfitAndLossDetails for year:");
+//        console.log(balanceSheetDto);
+        yearlyReportDtoList.push(yearlyReportDto);
+    }
+    console.log("Stored yearlyReportDto records: "+yearlyReportDtoList.length)
+    console.log(yearlyReportDtoList)
+    var yearlyReportJson = generateJsonString(yearlyReportDtoList);
+    console.log(yearlyReportJson);
+    var responseText = postRequest(yearlyReportDetailUrl,yearlyReportJson);
+}
+
+
+/*======================================Functions for Ratios Handle================================*/
+function ratiosDataPoints(){
+    var datapoints = new Array();
+    datapoints.push(["PE Ratio","peRatio"]);
+    datapoints.push(["PB Ratio","pbRatio"]);
+    datapoints.push(["ROE Ratio","roe"]);
+    datapoints.push(["Enterprise Value","ev"]);
+    datapoints.push(["EV/EBITDA","evEbitda"]);
+    return datapoints;
+}
+
+function ratiosTable(){
+    console.log("creaing ratios table");
+    var datapoints = ratiosDataPoints();
+    var tableID = document.getElementById("ratbl");
+    if(tableID!=null){
+        tableID.remove();
+    }
+    var headerList =createHeaders();
+    console.log("Generated Headers: "+headerList);
+    createTable("Ratios","ratbl",headerList,datapoints,submitRatiosDetails);
+}
+
+
+function submitRatiosDetails(){
+    console.log("submitRatiosDetails action is triggered");
+    var tableID = "ratbl";
+    var datapoints = ratiosDataPoints();
+    var headers = getTableHeader(tableID)
+    var ratioDtoList = new Array();
+    for(var y=0;y<headers.length;y++){
+        var year = headers[y];
+        var yearlyReportDto =  new Map();
+        yearlyReportDto['date']=headers[y];
+        for(var i=0;i<datapoints.length;i++){
+            id  = getCellID(datapoints[i][1],headers[y]);
+            var value = document.getElementById(id).value;
+            yearlyReportDto[datapoints[i][1]] = value;
+            }
+        ratioDtoList.push(yearlyReportDto);
+    }
+    console.log("Stored Ratio Details records: "+ratioDtoList.length)
+    console.log(ratioDtoList)
+    var ratioDtoJson = generateJsonString(ratioDtoList);
+    console.log(ratioDtoJson);
+    var responseText = postRequest(ratioDetailUrl,ratioDtoJson);
+}
 
 /*============================  Http Request Functions ===================================*/
 function postRequest(url, requestBody){
         var Httpreq = new XMLHttpRequest(); // a new request
         Httpreq.open("POST",url,false);
         var md5Sum = md5(requestBody);
+        Httpreq.setRequestHeader('x-stockid',stockID);
         Httpreq.setRequestHeader('x-md5sum',md5Sum);
         Httpreq.setRequestHeader('Content-type','application/json; charset=utf-8');
         console.log("requestBody: "+requestBody);
@@ -128,6 +300,20 @@ function postRequest(url, requestBody){
 
 /*============================  Utility Functions ===================================*/
 
+function createHeaders(){
+    var header = new Array();
+    header.push("DataPoints");
+    var today = new Date();
+    var currentYear = today.getFullYear();
+    var years = document.getElementById("years").value;
+
+    for(var i=0;i<years;i++){
+        currentYear = currentYear-1;
+        header.push("Mar-"+currentYear)
+    }
+    return header;
+
+}
 
 function generateJsonString(obj){
     var jsonStr = JSON.stringify(obj);
@@ -149,7 +335,7 @@ function getTableHeader(tableID){
     return headerList;
 }
 
-function createTable(divID,tableID,headerList,datapoints){
+function createTable(divID,tableID,headerList,datapoints, submitAction){
 
     var table = document.createElement("TABLE");
     table.setAttribute('id', tableID);
@@ -189,7 +375,7 @@ function createTable(divID,tableID,headerList,datapoints){
     var btncell = document.createElement("TD");
     btncell.setAttribute("colspan",headerList.length);
     btncell.setAttribute("align","right");
-    var btn = createSubmitButton("blSubmit","submit","submit-button",submitBalancesheetDetails);
+    var btn = createSubmitButton("blSubmit","submit","submit-button",submitAction);
     btncell.appendChild(btn);
     btnRow.appendChild(btncell);
 

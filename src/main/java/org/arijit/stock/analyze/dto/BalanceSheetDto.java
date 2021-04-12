@@ -1,5 +1,6 @@
 package org.arijit.stock.analyze.dto;
 
+import com.google.gson.annotations.SerializedName;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.util.DateUtil;
@@ -38,8 +39,10 @@ public final class BalanceSheetDto implements Comparable<BalanceSheetDto> {
     for a good balancesheet, share capital should be constant,and not suppose to dilutes/increase.
     This should be read as per old format as well as new format
      */
+    @SerializedName(value = "total_share_capital")
     private double totalShareCapital;
 
+    @SerializedName(value = "equity_share_capital")
     private double equityShareCapital;
     /*
     For a good company reserves should always increase. This is also called as Revenue

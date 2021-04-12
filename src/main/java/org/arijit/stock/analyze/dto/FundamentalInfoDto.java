@@ -10,8 +10,8 @@ import java.util.List;
  */
 public final class FundamentalInfoDto {
 
-    private final String companyName;
-    private final int years;
+    private  String companyName;
+    private  int years;
 
     private String industry;
     private long marketCap;
@@ -19,24 +19,43 @@ public final class FundamentalInfoDto {
     private double currentSharePrice;
     private double industryPE;
 
+    private CompanyDto companyDto;
     private List<BalanceSheetDto> balanceSheetDtoList;
     private List<ProfitAndLossDto> profitAndLossDtoList;
     private List<RatiosDto> ratiosDtoList;
     private List<YearlyReportDto> yearlyReportDtoList;
 
 
-    private FundamentalInfoDto(String companyName,int years){
-        this.companyName = companyName;
-        this.years = years;
+//    private FundamentalInfoDto(String companyName,int years){
+//        this.companyName = companyName;
+//        this.years = years;
+//    }
+
+    private FundamentalInfoDto(){
+
     }
 
-    public static FundamentalInfoDto builder(String companyName, int years){
-        FundamentalInfoDto fundamentalInfoDto = new FundamentalInfoDto(companyName,years);
+    public static FundamentalInfoDto builder(int years){
+        FundamentalInfoDto fundamentalInfoDto = new FundamentalInfoDto();
         fundamentalInfoDto.balanceSheetDtoList = new ArrayList<>(years);
         fundamentalInfoDto.profitAndLossDtoList = new ArrayList<>(years);
         fundamentalInfoDto.ratiosDtoList = new ArrayList<>(years);
         fundamentalInfoDto.yearlyReportDtoList = new ArrayList<>(years);
         return fundamentalInfoDto;
+    }
+
+//    public static FundamentalInfoDto builder(String companyName, int years){
+//        FundamentalInfoDto fundamentalInfoDto = new FundamentalInfoDto(companyName,years);
+//        fundamentalInfoDto.balanceSheetDtoList = new ArrayList<>(years);
+//        fundamentalInfoDto.profitAndLossDtoList = new ArrayList<>(years);
+//        fundamentalInfoDto.ratiosDtoList = new ArrayList<>(years);
+//        fundamentalInfoDto.yearlyReportDtoList = new ArrayList<>(years);
+//        return fundamentalInfoDto;
+//    }
+
+    public FundamentalInfoDto setCompanyDto(CompanyDto companyDto){
+        this.companyDto = companyDto;
+        return this;
     }
 
     public FundamentalInfoDto setIndustry(String industry) {
@@ -82,6 +101,10 @@ public final class FundamentalInfoDto {
     public FundamentalInfoDto addYearlyReportDto(YearlyReportDto yearlyReportDto) {
         this.yearlyReportDtoList.add(yearlyReportDto);
         return this;
+    }
+
+    public CompanyDto getCompanyDto() {
+        return companyDto;
     }
 
     public String getCompanyName() {
