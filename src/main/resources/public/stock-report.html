@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>proofassistance</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="stylesheet" href="css/stockinputstyle.css">
+    <link rel="stylesheet" href="css/stockreport.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <script  src="script/stockreport.js"></script>
@@ -16,64 +16,86 @@
 
 <body onload="onReportLoad()">
 <div class="header">
-    <p>Company Financial Details:</p>
+    <label id="companyName"></label> | <label id="industry"></label>
 </div>
-<div class="company-details">
-    <table>
-        <tr>
-            <td><table>
-                <tr><td>Company Name:</td> <td><input type="text" id="companyName"></td></tr>
-                <tr><td>Market Cap:</td><td><input type="text" id="marketCap"></td></tr>
-            </table></td>
-            <td><table>
-                <tr><td>Industry:</td><td><input type="text" id="industry"></td></tr>
-                <tr><td>current Share Price:</td><td><input type="text" id="currentSharePrice"></td></tr>
-            </table></td>
-            <td><table>
-                <tr><td>Industry PE:</td><td><input type="text" id="industryPE"></td></tr>
-                <tr><td>Face Value:</td><td><input type="text" id="faceValue"></td></tr>
-            </table></td>
-        </tr>
-        <tr><td><label for="years" >Years of Entry:</label>
-            <select name="years" id="years" class="year-selection">
-                <option value="3">3</option>
-                <option value="5">5</option>
-                <option value="7">7</option>
-            </select>
-        </td>
-        </tr>
-        <tr><td colspan="3" align="right"><input id="submitCompany" type="button" value="submit" class="submit-button" onclick="submitCompanyDetails()"></td></tr>
-    </table>
+<div id="Company-Details" class="company-details">
 </div>
 
 <div class="financial-details">
-<!--    <div class="tab">-->
-<!--        <button class="tablinks" id="defaultOpen" onclick="openCity(event, 'Balance-Sheet')">Balance-Sheet</button>-->
-<!--        <button class="tablinks" onclick="openCity(event, 'Profit-And-Loss')">Profit-And-Loss</button>-->
-<!--        <button class="tablinks" onclick="openCity(event, 'Yearly-Report')">Yearly-Report</button>-->
-<!--        <button class="tablinks" onclick="openCity(event, 'Quarterly-Report')">Quarterly-Report</button>-->
-<!--        <button class="tablinks" onclick="openCity(event, 'Ratios')">Ratios</button>-->
-<!--    </div>-->
 
-    <div id="Balance-Sheet"  class="tabcontent balancesheet" >
-    <!-- this part of code is generated from javascript-->
+    <div id="Balance-Sheet"  class="balancesheet" >
+        <p class="subject-line">Balance Sheet Analysis
+            <label for="blyears" > For Years:</label>
+            <select name="years" id="blyears" class="year-selection" onclick="onBLYearSelection()">
+                <option value="3">3</option>
+                <option value="5" selected>5</option>
+                <option value="7">7</option>
+            </select>
+
+        </p>
+        <table>
+            <tr><td>
+        <div id="balancesheet-tbl" class="tableholder">
+            <!-- this part of code is generated from javascript-->
+        </div>
+            </td>
+                <td>
+                    <div id="balancesheet_analysis_div" class="analysisholder">
+                    </div>
+                    <label class="tooltip">
+                        <span id="balTips" class="tooltiptext">BalanceSheet Analysis Fundamental</span>
+                    </label>
+                </td>
+            </tr>
+        </table>
     </div>
 
-    <div id="Profit-And-Loss" class="tabcontent profitandloss">
+    <div id="Profit-And-Loss" class="profitandloss">
         <!-- this part of code is generated from javascript-->
+        <p class="subject-line">Profit And Loss Analysis
+            <label for="plyears" > For Years:</label>
+            <select name="plyears" id="plyears" class="year-selection" onclick="onPLYearSelection()">
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+            </select></p>
+        <div id="pl-tbl" class="tableholder">
+            <!-- this part of code is generated from javascript-->
+        </div>
     </div>
 
-    <div id="Yearly-Report" class="tabcontent yearlyreport">
+    <div id="Yearly-Report" class="yearlyreport">
+        <p class="subject-line">Yearly Report Analysis
+            <label for="ylyears" > For Years:</label>
+            <select name="ylyears" id="ylyears" class="year-selection" onclick="onYearSelection()">
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+            </select></p>
     </div>
 
-    <div id="Quarterly-Report" class="tabcontent yearlyreport">
+    <div id="Quarterly-Report" class="yearlyreport">
         not yet implemented!!
     </div>
-    <div id="Ratios" class="tabcontent ratios">
+    <div id="Ratios" class="ratios">
+        <p class="subject-line">Ratios Analysis
+            <label for="ryears" > For Years:</label>
+            <select name="ryears" id="ryears" class="year-selection" onclick="onBLYearSelection()">
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+            </select></p>
     </div>
 </div>
 <div class="instant-review">
-    <div class="reivew-header">Instant Review</div>
+    <div class="reivew-header">Valuations</div>
+    <table>
+        <tr></tr>
+    </table>
+    This section is for instant report
+</div>
+<div class="instant-review">
+    <div class="reivew-header">Target Price (1yr froward)</div>
     <table>
         <tr></tr>
     </table>

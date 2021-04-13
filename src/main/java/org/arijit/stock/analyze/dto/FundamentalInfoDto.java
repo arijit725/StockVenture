@@ -89,7 +89,7 @@ public final class FundamentalInfoDto {
     }
 
     public CompanyDto getCompanyDto() {
-        return companyDto;
+        return this.companyDto;
     }
 
 //    public String getCompanyName() {

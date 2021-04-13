@@ -23,6 +23,14 @@ public class FundamentalAnalysisEvaluation{
          * 6. Do Target Price Calculation
          */
 
+
+        try{
+            logger.info("==========================BalanceSheetEvaluation==================================");
+            BalanceSheetEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,year);
+        }catch(Exception e){
+            logger.error("Unable to evaluate ",e);
+        }
+
         try{
             logger.info("==========================YearlyReportEvaluation==================================");
             YearlyReportEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,year);
