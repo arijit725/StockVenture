@@ -6,6 +6,7 @@ import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.analysisdto.BalanceSheetAnalysisInfo;
 import org.arijit.stock.analyze.dto.BalanceSheetDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
+import org.arijit.stock.analyze.util.StockUtil;
 
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +55,22 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
 
         logger.info("Percentage Change in Debt: "+debtChangeRatio);
         analyzedInfoDto.getBalanceSheetAnalysisInfo().setDebtChangePercentage(debtChangeRatio);
+
+        debtToReserveRatio(analyzedInfoDto.getBalanceSheetAnalysisInfo(),balanceSheetDtoList);
+    }
+
+    private void debtToReserveRatio(BalanceSheetAnalysisInfo balanceSheetAnalysisInfo, List<BalanceSheetDto> balanceSheetDtos){
+        BalanceSheetDto lastBalanceSheetDto = null;
+        Iterator<BalanceSheetDto> iterator = balanceSheetDtos.iterator();
+        while(iterator.hasNext()){
+            if(lastBalanceSheetDto==null){
+                BalanceSheetDto tmpBalancesheetDto = iterator.next();
+                String date = tmpBalancesheetDto.getDate();
+                double changeRatio = (tmpBalancesheetDto.getDebt()/tmpBalancesheetDto.getReserves());
+                String changeRatioStr = StockUtil.convertDoubleToPrecision(changeRatio,4);
+                balanceSheetAnalysisInfo.getDebtToReserveRatioMap().put(date,changeRatioStr);
+            }
+        }
     }
 
     private void scoreBalanceSheet(BalanceSheetAnalysisInfo balanceSheetAnalysisInfo){

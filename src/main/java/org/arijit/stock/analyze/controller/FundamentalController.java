@@ -3,10 +3,13 @@ package org.arijit.stock.analyze.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.BalanceSheetAnalysisInfo;
+import org.arijit.stock.analyze.analysisdto.ProfitAndLossAnalysisInfo;
+import org.arijit.stock.analyze.analysisdto.RatioAnalysisInfo;
 import org.arijit.stock.analyze.cache.MemCache;
 import org.arijit.stock.analyze.dto.BalanceSheetDto;
 import org.arijit.stock.analyze.dto.CompanyDto;
 import org.arijit.stock.analyze.dto.ProfitAndLossDto;
+import org.arijit.stock.analyze.dto.RatiosDto;
 import org.arijit.stock.analyze.service.FundamentalService;
 import org.arijit.stock.analyze.util.StockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,7 +221,7 @@ public class FundamentalController {
 
     @GetMapping(value = "/profitAndLoss/{stockID}/{years}")
     public Mono<ResponseEntity> getProfitAndLoss(@PathVariable("stockID") String stockID, @PathVariable("years") int years, ServerWebExchange webExchange)throws IOException {
-        logger.info("Balancesheet Request for: stockID: "+stockID+" years: "+years);
+        logger.info("ProfitAndLoss Request for: stockID: "+stockID+" years: "+years);
 
         ResponseEntity<String> res = null;
         try {
@@ -242,4 +245,87 @@ public class FundamentalController {
 
         return Mono.just(res);
     }
+
+    @GetMapping(value = "/profitAndLossAnalysis/{stockID}/{years}")
+    public Mono<ResponseEntity> getProfitAndLossAnalysis(@PathVariable("stockID") String stockID, @PathVariable("years") int years, ServerWebExchange webExchange)throws IOException {
+        logger.info("ProfitAndLoss analysis Request for: stockID: "+stockID+" years: "+years);
+
+        ResponseEntity<String> res = null;
+        try {
+            ProfitAndLossAnalysisInfo profitAndLossAnalysisInfo = fundamentalService.getAnalyzedProfitAndLoss(stockID,years);
+            if(profitAndLossAnalysisInfo == null)
+                res = ResponseEntity.noContent().build();
+            else{
+                String jsonString = StockUtil.generateJsonString(profitAndLossAnalysisInfo);
+                logger.info("Response: balanceSheetAnalysisInfo : "+jsonString);
+                res = ResponseEntity.ok().body(jsonString);
+            }
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
+
+    @GetMapping(value = "/ratios/{stockID}/{years}")
+    public Mono<ResponseEntity> getRatios(@PathVariable("stockID") String stockID, @PathVariable("years") int years, ServerWebExchange webExchange)throws IOException {
+        logger.info("Ratios Request for: stockID: "+stockID+" years: "+years);
+
+        ResponseEntity<String> res = null;
+        try {
+            List<RatiosDto> balanceSheetDtoList = fundamentalService.getRatios(stockID,years);
+            if(balanceSheetDtoList == null || balanceSheetDtoList.isEmpty())
+                res = ResponseEntity.noContent().build();
+            else{
+                String jsonString = StockUtil.generateJsonString(balanceSheetDtoList);
+                logger.info("Response: getRatios list: size: "+balanceSheetDtoList.size()+" jsonString: "+jsonString);
+                res = ResponseEntity.ok().body(jsonString);
+            }
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
+    @GetMapping(value = "/ratioAnalysis/{stockID}/{years}")
+    public Mono<ResponseEntity> getRatioAnalysis(@PathVariable("stockID") String stockID, @PathVariable("years") int years, ServerWebExchange webExchange)throws IOException {
+        logger.info("Ratio analysis Request for: stockID: "+stockID+" years: "+years);
+
+        ResponseEntity<String> res = null;
+        try {
+            RatioAnalysisInfo ratioAnalysisInfo = fundamentalService.getAnalyzedRatios(stockID,years);
+            if(ratioAnalysisInfo == null)
+                res = ResponseEntity.noContent().build();
+            else{
+                String jsonString = StockUtil.generateJsonString(ratioAnalysisInfo);
+                logger.info("Response: ratioAnalysisInfo : "+jsonString);
+                res = ResponseEntity.ok().body(jsonString);
+            }
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
 }

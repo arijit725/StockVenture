@@ -46,6 +46,11 @@
                         <span id="balTips" class="tooltiptext">BalanceSheet Analysis Fundamental</span>
                     </label>
                 </td>
+                <td>
+                    <div id="balanceshee_calc_div" class="tableholder">
+
+                    </div>
+                </td>
             </tr>
         </table>
     </div>
@@ -56,12 +61,29 @@
             <label for="plyears" > For Years:</label>
             <select name="plyears" id="plyears" class="year-selection" onclick="onPLYearSelection()">
                 <option value="3">3</option>
-                <option value="5">5</option>
+                <option value="5" selected>5</option>
                 <option value="7">7</option>
             </select></p>
+        <table>
+            <tr><td>
         <div id="pl-tbl" class="tableholder">
             <!-- this part of code is generated from javascript-->
         </div>
+            </td>
+                <td>
+                    <div id="profitAndLoss_analysis_div" class="analysisholder">
+                    </div>
+                    <label class="tooltip">
+                        <span id="plTips" class="tooltiptext">BalanceSheet Analysis Fundamental</span>
+                    </label>
+                </td>
+                <td>
+                    <div id="pl_calc_div" class="tableholder">
+
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div id="Yearly-Report" class="yearlyreport">
@@ -69,7 +91,7 @@
             <label for="ylyears" > For Years:</label>
             <select name="ylyears" id="ylyears" class="year-selection" onclick="onYearSelection()">
                 <option value="3">3</option>
-                <option value="5">5</option>
+                <option value="5" selected>5</option>
                 <option value="7">7</option>
             </select></p>
     </div>
@@ -80,11 +102,31 @@
     <div id="Ratios" class="ratios">
         <p class="subject-line">Ratios Analysis
             <label for="ryears" > For Years:</label>
-            <select name="ryears" id="ryears" class="year-selection" onclick="onBLYearSelection()">
+            <select name="ryears" id="ryears" class="year-selection" onclick="onRYearSelection()">
                 <option value="3">3</option>
-                <option value="5">5</option>
+                <option value="5" selected>5</option>
                 <option value="7">7</option>
             </select></p>
+        <table>
+            <tr><td>
+                <div id="ratio-tbl-div" class="tableholder">
+                    <!-- this part of code is generated from javascript-->
+                </div>
+            </td>
+                <td>
+                    <div id="ratio_analysis_div" class="analysisholder">
+                    </div>
+                    <label class="tooltip">
+                        <span id="rTips" class="tooltiptext">BalanceSheet Analysis Fundamental</span>
+                    </label>
+                </td>
+                <td>
+                    <div id="ratio_calc_div" class="tableholder">
+
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 <div class="instant-review">

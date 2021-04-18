@@ -1,6 +1,9 @@
 package org.arijit.stock.analyze.analysisdto;
 
-import java.util.List;
+import org.arijit.stock.analyze.util.DateUtil;
+
+import java.text.ParseException;
+import java.util.*;
 
 public class BalanceSheetAnalysisInfo {
 
@@ -9,7 +12,25 @@ public class BalanceSheetAnalysisInfo {
     private double reservesChangePercentage;
     private double debtChangePercentage;
 
+    private Map<String,String> debtToReserveRatioMap;
+
     private List<String> analysisStatement;
+
+    public BalanceSheetAnalysisInfo(){
+        debtToReserveRatioMap = new TreeMap<>(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                try {
+                    long date1 = DateUtil.convertToEpochMilli(o1);
+                    long date2 = DateUtil.convertToEpochMilli(o2);
+                    return Long.compare(date2,date1);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        });
+    }
 
     public double getTotalShareChangePercentage() {
         return totalShareChangePercentage;
@@ -50,4 +71,9 @@ public class BalanceSheetAnalysisInfo {
     public void setDebtChangePercentage(double debtChangePercentage) {
         this.debtChangePercentage = debtChangePercentage;
     }
+
+    public Map<String, String> getDebtToReserveRatioMap() {
+        return debtToReserveRatioMap;
+    }
+
 }

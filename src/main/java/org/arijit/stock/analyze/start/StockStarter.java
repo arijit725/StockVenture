@@ -154,70 +154,70 @@ public class StockStarter implements ApplicationRunner {
         tcsFundamental
                 .addYearlyReportDto(YearlyReportDto
                         .builder()
-                        .setDate("Mar-2019")
+                        .setDate("Mar-2020")
                         .setBasicEPS(79.34)
                         .build())
                 .addYearlyReportDto(YearlyReportDto
                         .builder()
-                        .setDate("Mar-2018")
+                        .setDate("Mar-2019")
                         .setBasicEPS(131.15)
                         .build())
                 .addYearlyReportDto(YearlyReportDto
                         .builder()
-                        .setDate("Mar-2017")
+                        .setDate("Mar-2018")
                         .setBasicEPS(120.04)
                         .build())
                 .addYearlyReportDto(YearlyReportDto
                         .builder()
-                        .setDate("Mar-2016")
+                        .setDate("Mar-2017")
                         .setBasicEPS(117.11)
                         .build())
                 .addYearlyReportDto(YearlyReportDto
                         .builder()
-                        .setDate("Mar-2015")
+                        .setDate("Mar-2016")
                         .setBasicEPS(98.31)
                         .build());
 
         tcsFundamental
                 .addRatiosDto(RatiosDto
                         .builder()
-                        .setDate("Mar-2019")
+                        .setDate("Mar-2020")
                         .setEv(741250.00)
                         .setEvEbitda(17.40)
                         .setPeRatio(24.10)
-//                        .setRoe()
+                        .setRoe(41.39)
                         .setPbRatio(9.51))
                 .addRatiosDto(RatiosDto
                         .builder()
-                        .setDate("Mar-2018")
+                        .setDate("Mar-2019")
                         .setEv(540949.30)
                         .setEvEbitda(16.10)
                         .setPeRatio(10.62)
-//                        .setRoe()
+                        .setRoe(44.72)
                         .setPbRatio(7.17))
                 .addRatiosDto(RatiosDto
                         .builder()
-                        .setDate("Mar-2017")
+                        .setDate("Mar-2018")
                         .setEv(477854.70)
                         .setEvEbitda(15.09)
                         .setPeRatio(9.11)
-//                        .setRoe()
+                        .setRoe(38.10)
                         .setPbRatio(6.14))
                 .addRatiosDto(RatiosDto
                         .builder()
-                        .setDate("Mar-2016")
+                        .setDate("Mar-2017")
                         .setEv(491018.85)
                         .setEvEbitda(15.94)
                         .setPeRatio(10.23)
-//                        .setRoe()
+                        .setRoe(33.27)
                         .setPbRatio(7.62))
                 .addRatiosDto(RatiosDto
                         .builder()
-                        .setDate("Mar-2015")
+                        .setDate("Mar-2016")
                         .setEv(482638.45)
                         .setEvEbitda(18.93)
                         .setPeRatio(10.98)
-//                        .setRoe()
+                        .setRoe(30.31)
                         .setPbRatio(10.98));
 
         return tcsFundamental.build();

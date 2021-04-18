@@ -9,6 +9,7 @@
   display: inline-block;
   border-bottom: 1px solid black; /* If you want dots under the hoverable text */
 }
+
 /* Tooltip text */
 .tooltip .tooltiptext {
   border: 1px solid black;
@@ -28,6 +29,33 @@
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
+.itemtooltip {
+  position: relative;
+  display: inline-block;
+   /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.itemtooltip .tooltiptext {
+  border: 1px solid black;
+  visibility: hidden;
+  width: 400px;
+  background-color: white;
+  color: black;
+  text-align: center;
+  border-color: black;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+.itemtooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
 .header{
     height: 40px;
     background-color: white;

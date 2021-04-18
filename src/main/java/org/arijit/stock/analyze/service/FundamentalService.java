@@ -5,11 +5,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.analysisdto.BalanceSheetAnalysisInfo;
+import org.arijit.stock.analyze.analysisdto.ProfitAndLossAnalysisInfo;
+import org.arijit.stock.analyze.analysisdto.RatioAnalysisInfo;
 import org.arijit.stock.analyze.cache.MemCache;
 import org.arijit.stock.analyze.dto.*;
-import org.arijit.stock.analyze.fundamental.BalanceSheetEvaluation;
-import org.arijit.stock.analyze.fundamental.FundamentalAnalysisEvaluation;
-import org.arijit.stock.analyze.fundamental.YearlyReportEvaluation;
+import org.arijit.stock.analyze.fundamental.*;
 import org.arijit.stock.analyze.util.StockUtil;
 import org.springframework.stereotype.Component;
 
@@ -136,5 +136,46 @@ public class FundamentalService {
             logger.error("Unable to evaluate ",e);
         }
         return analyzedInfoDto.getBalanceSheetAnalysisInfo();
+    }
+
+    public ProfitAndLossAnalysisInfo getAnalyzedProfitAndLoss(String stockID, int years) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+        try{
+            logger.info("==========================ProfitAndLossEvaluation==================================");
+            ProfitAndLossEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
+        }catch(Exception e){
+            logger.error("Unable to evaluate ",e);
+        }
+        return analyzedInfoDto.getProfitAndLossAnalysisInfo();
+    }
+
+    public List<RatiosDto> getRatios(String stockID, int years) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        if(fundamentalInfoDto.getRatiosDtoList().size()<years)
+            throw new Exception("Years excced RatiosDto list size");
+        return fundamentalInfoDto.getRatiosDtoList().stream().limit(years).collect(Collectors.toList());
+    }
+
+    public RatioAnalysisInfo getAnalyzedRatios(String stockID, int years) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        if(fundamentalInfoDto.getRatiosDtoList().size()<years)
+            throw new Exception("Years excced RatiosDto list size");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        try{
+            logger.info("==========================RatioEvaluation==================================");
+            RatiosEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
+        }catch(Exception e){
+            logger.error("Unable to evaluate ",e);
+        }
+        return analyzedInfoDto.getRatioAnalysisInfo();
     }
 }

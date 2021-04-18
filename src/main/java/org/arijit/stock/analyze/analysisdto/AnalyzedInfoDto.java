@@ -9,12 +9,14 @@ public class AnalyzedInfoDto {
     private final YearlyReportAnalysisInfo yearlyReportAnalysisInfo;
     private final EVEBITDAValuationModelDto evebitdaValuationModelDto;
     private final RatioAnalysisInfo ratioAnalysisInfo;
+    private final ProfitAndLossAnalysisInfo profitAndLossAnalysisInfo;
 
     private AnalyzedInfoDto(){
         balanceSheetAnalysisInfo = new BalanceSheetAnalysisInfo();
         yearlyReportAnalysisInfo = new YearlyReportAnalysisInfo();
         evebitdaValuationModelDto = new EVEBITDAValuationModelDto();
         ratioAnalysisInfo = new RatioAnalysisInfo();
+        profitAndLossAnalysisInfo = new ProfitAndLossAnalysisInfo();
     }
 
     public static AnalyzedInfoDto create(){
@@ -33,6 +35,10 @@ public class AnalyzedInfoDto {
         return yearlyReportAnalysisInfo;
     }
 
+    public ProfitAndLossAnalysisInfo getProfitAndLossAnalysisInfo() {
+        return profitAndLossAnalysisInfo;
+    }
+
     public RatioAnalysisInfo getRatioAnalysisInfo() {
         return ratioAnalysisInfo;
     }
@@ -44,6 +50,7 @@ public class AnalyzedInfoDto {
                 ", yearlyReportAnalysisInfo=" + yearlyReportAnalysisInfo +
                 ", evebitdaValuationModelDto=" + evebitdaValuationModelDto +
                 ", ratioAnalysisInfo=" + ratioAnalysisInfo +
+                ", profitAndLossAnalysisInfo="+profitAndLossAnalysisInfo+
                 '}';
     }
 }

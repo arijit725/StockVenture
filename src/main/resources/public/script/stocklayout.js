@@ -45,6 +45,7 @@ function submitCompanyDetails(){
     startTab();
     var companyName = document.getElementById("companyName").value;
     var marketCap = document.getElementById("marketCap").value;
+    marketCap = marketCap.replace(',','');
     var industry = document.getElementById("industry").value;
     var currentSharePrice = document.getElementById("currentSharePrice").value;
     var industryPE = document.getElementById("industryPE").value;
@@ -117,7 +118,7 @@ function submitBalancesheetDetails(){
         balanceSheetDto['date']=headers[y];
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
-            var value = document.getElementById(id).value;
+            var value = document.getElementById(id).value.trim();
             value = value.replace(',','');
 //            console.log("Balancesheet details"+ id+" : "+value);
             balanceSheetDto[datapoints[i][1]] = value;
@@ -174,7 +175,7 @@ function submitPofitAndLossDetails(){
         balanceSheetDto['date']=headers[y];
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
-            var value = document.getElementById(id).value;
+            var value = document.getElementById(id).value.trim();
             value = value.replace(',','');
 //            console.log("ProfitAndLoss details"+ id+" : "+value);
             balanceSheetDto[datapoints[i][1]] = value;
@@ -223,7 +224,7 @@ function submitYearlyReportDetails(){
         yearlyReportDto['date']=headers[y];
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
-            var value = document.getElementById(id).value;
+            var value = document.getElementById(id).value.trim();
             value = value.replace(',','');
 //            console.log("ProfitAndLoss details"+ id+" : "+value);
             yearlyReportDto[datapoints[i][1]] = value;
@@ -276,7 +277,7 @@ function submitRatiosDetails(){
         yearlyReportDto['date']=headers[y];
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
-            var value = document.getElementById(id).value;
+            var value = document.getElementById(id).value.trim();
             value = value.replace(',','');
             yearlyReportDto[datapoints[i][1]] = value;
             }
