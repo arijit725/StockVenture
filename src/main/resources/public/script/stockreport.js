@@ -8,6 +8,8 @@ var companyDetailsURL = 'http://localhost:8080/fundamental/companydetails/'+stoc
 
 var generateReportUrl = 'http://localhost:8080/fundamental/generateReport/'+stockID;
 
+
+
 var getBalancesheetUrl ='http://localhost:8080/fundamental/balancesheet/'+stockID;
 var getBalancesheetAnalysisUrl ='http://localhost:8080/fundamental/balancesheetAnalysis/'+stockID;
 
@@ -17,6 +19,7 @@ var getProfitAndLossAnalysisUrl='http://localhost:8080/fundamental/profitAndLoss
 var getRatiosUrl = 'http://localhost:8080/fundamental/ratios/'+stockID;
 var getRatiosAnalysusUrl='http://localhost:8080/fundamental/ratioAnalysis/'+stockID;
 
+var targetPriceUrl = 'http://localhost:8080/fundamental/targetPrice/'+stockID;
 
 function onReportLoad(){
 
@@ -32,8 +35,10 @@ function onReportLoad(){
     ratiosAnalysis(5);
 //    console.log("onReportLoad triggered: url: "+generateReportUrl);
 //    GetRawBookContent(generateReportUrl);
+    targetPriceValuation(5);
 
 }
+
 
 
 
@@ -73,6 +78,14 @@ function createCompanyTable(){
     faceValueEle.innerHTML="Facevalue";
     row.appendChild(faceValueEle);
 
+      var ttmpeEle = document.createElement("TH");
+      ttmpeEle.innerHTML="TTM PE";
+      row.appendChild(ttmpeEle);
+
+      var ttmepsEle = document.createElement("TH");
+      ttmepsEle.innerHTML="TTM EPS";
+      row.appendChild(ttmepsEle);
+
     var row2 = table.insertRow();
     var sharepriceVal = document.createElement("TD");
         sharepriceVal.innerHTML=companyDetails.currentSharePrice;
@@ -89,6 +102,14 @@ function createCompanyTable(){
         var faceValueVal = document.createElement("TD");
         faceValueVal.innerHTML=companyDetails.faceValue;
         row2.appendChild(faceValueVal);
+
+         var ttmpeVal = document.createElement("TD");
+         ttmpeVal.innerHTML=companyDetails.ttmpe;
+         row2.appendChild(ttmpeVal);
+
+         var ttmepsVal = document.createElement("TD");
+         ttmepsVal.innerHTML=companyDetails.ttmeps;
+          row2.appendChild(ttmepsVal);
 
      var dvTable = document.getElementById(divID);
      dvTable.appendChild(table);
@@ -471,7 +492,7 @@ function profitAndLossAnalysis(years){
     var cell4 = document.createElement("TD");
     cell4.innerHTML = "Growth in PBIt: "+ plAnal.PBITGrowthPercentage;
     if(plAnal.PBITGrowthPercentage>grossPBITChangeMargin){
-        console.log("Setting className: analyzedbad");
+        console.log("Setting className: analyzedgood");
         cell4.setAttribute("class", "analyzedbad");
     }
     row4.appendChild(cell4);
@@ -700,6 +721,18 @@ function highlightedPoints(ratioAnalysis,years){
     }
     row1.appendChild(cell1);
 
+     var row2 = table.insertRow();
+        var grossSellChangeMargin = 5;
+        var cell2 = document.createElement("TD");
+        cell2.innerHTML = ratioAnalysis.ttmPEAnalysis;
+        if(ratioAnalysis.ttmPEAnalysis.includes("Fair")){
+            cell2.setAttribute("class", "analyzedgood");
+        }
+        else{
+            cell2.setAttribute("class", "analyzedbad");
+        }
+        row2.appendChild(cell2);
+
     var dvTable = document.getElementById(divID);
     dvTable.appendChild(table);
 
@@ -710,6 +743,93 @@ function onRYearSelection(){
    ratiosTable(years);
    ratiosAnalysis(years);
 }
+
+
+
+/*====================== Target Price Estimation =========================*/
+
+
+function targetPriceHeaders(){
+    headers = new Array();
+    headers.push(["Model","model"])
+    headers.push(["Target Price","targetPrice"]);
+    headers.push(["Entry Price","entryPrice"]);
+    return headers;
+}
+function targetPriceDataPoints(){
+    var datapoints = new Array();
+     datapoints.push(["EV/EBITDA","evebitda"," PE Ratio ToolTips PlaceHolder"]);
+//    datapoints.push(["Price TO Sales","priceTOSell",PBRatioToolTips()]);
+//    datapoints.push(["F-Score","fscore"," PE Ratio ToolTips PlaceHolder"]);
+
+    return datapoints;
+}
+
+
+function targetPriceValuation(years){
+    var url = targetPriceUrl+'/'+years;
+    console.log("Getting data from url: "+url);
+    var jsonResonse = GetRawBookContent(url);
+    console.log("TargetPrice Json res: "+jsonResonse);
+    var targetPriceEstimation = JSON.parse(jsonResonse);
+    createTargetPriceTable(targetPriceHeaders(),targetPriceDataPoints(),targetPriceEstimation);
+
+}
+
+function createTargetPriceTable(headers,datapoints,targetPriceEstimation){
+
+    targetPriceMap = targetPriceEstimation.targetPriceMap;
+    var divID = "targetprice-tbl-div";
+    var tableID = "targetprice-tbl-id";
+
+     var ele = document.getElementById(tableID);
+        if(ele!=null){
+            ele.remove();
+        }
+
+     var table = document.createElement("TABLE");
+     var rowh = table.insertRow();
+     for(var i=0;i<headers.length;i++){
+        var cellH = document.createElement("TH");
+        cellH.innerHTML=headers[i][0];
+        rowh.appendChild(cellH);
+     }
+
+    for(var i=0;i<datapoints.length;i++){
+        var row = table.insertRow();
+        var cell1 = document.createElement("TD");
+        cell1.innerHTML = datapoints[i][0];
+        row.appendChild(cell1);
+        targetPriceModel = targetPriceMap[datapoints[i][1]].priceMap;
+        console.log(targetPriceModel);
+        for(var j=1;j<headers.length;j++){
+            var cellj = document.createElement("TD");
+            var param = headers[j][1];
+            console.log("Param Name : "+param);
+
+            cellj.innerHTML = targetPriceModel[param];
+            row.appendChild(cellj);
+        }
+         if((i%2)==0){
+                    bgColor = "white";
+                }
+                else{
+                    bgColor="lightgray";
+                }
+        row.style.backgroundColor=bgColor;
+
+    }
+     var div = document.getElementById(divID);
+     div.appendChild(table);
+
+}
+
+function onTYearSelection(){
+    var years = document.getElementById("tyears").value;
+   console.log("Years selection : "+years);
+   targetPriceValuation(years);
+}
+
 /*====================== Http Request Utility =========================*/
 function GetRawBookContent(yourUrl){
     var Httpreq = new XMLHttpRequest(); // a new request

@@ -1,25 +1,28 @@
 package org.arijit.stock.analyze.analysisdto;
 
+import java.util.HashMap;
+
 public class EVEBITDAValuationModelDto {
 
-    private double targetPrice;
-    private double entryPrice;
-    EVEBITDAValuationModelDto(){
+    HashMap<String, String> priceMap;
+
+    public EVEBITDAValuationModelDto(){
+        priceMap = new HashMap<>();
 
     }
-    public void setEntryPrice(double entryPrice) {
-        this.entryPrice = entryPrice;
+    public void setEntryPrice(String entryPrice) {
+        this.priceMap.put("entryPrice",entryPrice);
     }
 
-    public void setTargetPrice(double targetPrice) {
-        this.targetPrice = targetPrice;
+    public void setTargetPrice(String targetPrice) {
+        this.priceMap.put("targetPrice",targetPrice);
     }
 
-    public double getEntryPrice() {
-        return entryPrice;
+    public String getEntryPrice() {
+        return this.priceMap.get("entryPrice");
     }
 
-    public double getTargetPrice() {
-        return targetPrice;
+    public String getTargetPrice() {
+        return this.priceMap.get("targetPrice");
     }
 }

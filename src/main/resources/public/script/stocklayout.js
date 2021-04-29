@@ -4,8 +4,14 @@ var balancesheetDeatilsUrl ='http://localhost:8080/fundamental/balancesheetDetai
 var profitAndLossDetailUrl = 'http://localhost:8080/fundamental/profitAndLossDetails';
 var yearlyReportDetailUrl = 'http://localhost:8080/fundamental/yearlyReportDetails';
 var ratioDetailUrl = 'http://localhost:8080/fundamental/ratioDetails';
+var blUploadlUrl = 'http://localhost:8080/fundamental/uploadbl';
+
 
 var stockID=null;
+
+function tabopen(tabid){
+    document.getElementById(tabid).click();
+}
 function startTab(){
     document.getElementById("defaultOpen").click();
 }
@@ -14,6 +20,7 @@ function openCity(evt, cityName) {
   console.log("Selected tab: "+cityName)
   if(cityName == "Balance-Sheet"){
     balancesheetTable();
+
   }
   else if(cityName == "Profit-And-Loss"){
     porfitAndLossTable();
@@ -44,14 +51,16 @@ function openCity(evt, cityName) {
 function submitCompanyDetails(){
     startTab();
     var companyName = document.getElementById("companyName").value;
-    var marketCap = document.getElementById("marketCap").value;
+    var marketCap = document.getElementById("marketCap").value.replace(',','');
     marketCap = marketCap.replace(',','');
     var industry = document.getElementById("industry").value;
     var currentSharePrice = document.getElementById("currentSharePrice").value;
     var industryPE = document.getElementById("industryPE").value;
     var faceValue = document.getElementById("faceValue").value;
+    var ttmpe = document.getElementById("ttmpe").value;
+    var ttmeps = document.getElementById("ttmeps").value;
     var years = document.getElementById("years").value;
-    console.log("CompanyName: "+companyName+" marketCap: "+marketCap+" industry: "+industry+" currentSharePrice: "+currentSharePrice+" industryPE: "+industryPE+" faceValue: "+faceValue+" years: "+years)
+    console.log("CompanyName: "+companyName+" marketCap: "+marketCap+" industry: "+industry+" currentSharePrice: "+currentSharePrice+" industryPE: "+industryPE+" faceValue: "+faceValue+" ttmeps: "+ttmeps+" years: "+years)
 //    localStorage.setItem("companyName", companyName);
     var companyDetails={
         "companyName":companyName,
@@ -60,6 +69,8 @@ function submitCompanyDetails(){
         "currentSharePrice":currentSharePrice,
         "industryPE":industryPE,
         "faceValue":faceValue,
+        "ttmpe":ttmpe,
+        "ttmeps":ttmeps,
         "years":years
     };
     var companyDetailsJson = generateJsonString(companyDetails);
@@ -84,6 +95,36 @@ function disableCompaneSection(){
 }
 
 /*======================================Functions for BalanceSheet Handle================================*/
+
+function chooseBlWay(){
+    var divID = "Balance-Sheet";
+    var table = document.createElement("TABLE");
+    var row = table.insertRow();
+    var cell1 = document.createElement("TD");
+     var label1 = document.createElement("LABEL");
+        label1.innerHTML="Upload Balancesheet";
+        var x = document.createElement("INPUT");
+        x.setAttribute("type", "radio");
+        x.setAttribute('id', "ubl");
+        cell1.appendChild(label1);
+        cell1.appendChild(x);
+    row.appendChild(cell1);
+
+    var cell2 = document.createElement("TD");
+         var label2 = document.createElement("LABEL");
+            label2.innerHTML="Manual Insert Balancesheet";
+            var x2 = document.createElement("INPUT");
+            x2.setAttribute("type", "radio");
+            x2.setAttribute('id', "mbl");
+            cell2.appendChild(label2);
+            cell2.appendChild(x2);
+        row.appendChild(cell2);
+
+        var dvTable = document.getElementById(divID);
+         dvTable.appendChild(table);
+
+
+}
 function balancesheetDatPoints(){
     var datapoints = new Array();
     datapoints.push(["Total Share Capital","total_share_capital"]);
@@ -93,7 +134,61 @@ function balancesheetDatPoints(){
     return datapoints;
 }
 
+function submitBalancesheetPDF(){
+
+    var filePath = document.getElementById("ubl").value;
+    console.log("Submitting Balancesheet PDF from:"+filePath);
+    var fileUpload = document.getElementById("ubl");
+
+                if (typeof (FileReader) != "undefined") {
+                    var reader = new FileReader();
+                    console.log(reader);
+                    reader.onload = function (e) {
+                        console.log(e.target.result);
+                    }
+
+                    var file  = fileUpload.files[0];
+//                    var content = reader.readAsText(fileUpload.files[0]);
+//                    var content = reader.readAsDataURL(fileUpload.files[0]);
+//                    console.log(content);
+                    var responseText =  postFile(blUploadlUrl,file);
+                    console.log("File Upload Response: "+responseText);
+                    tabopen("plopen");
+                } else {
+                    alert("This browser does not support HTML5.");
+                }
+}
+
+function uploadBalancesheetPDF(){
+
+}
+
+
+function uploadFile(parentid,id, submitBtnId, submitAction){
+    var fileu = document.createElement("INPUT");
+    fileu.setAttribute("type", "file");
+    fileu.setAttribute("id", id);
+    var btn = createSubmitButton(submitBtnId,"submit","submit-button",submitAction);
+    var div = document.getElementById(parentid);
+    div.appendChild(fileu);
+    div.appendChild(btn);
+}
+
+function uploadFile1(parentid,id){
+    var fileu = document.createElement("INPUT");
+    fileu.setAttribute("type", "file");
+    fileu.setAttribute("id", id);
+    var btn = createSubmitButton("ublsubmit","submit","submit-button",submitBalancesheetPDF);
+    var div = document.getElementById(parentid);
+    div.appendChild(fileu);
+    div.appendChild(btn);
+}
+
 function balancesheetTable(){
+    uploadFile("Balance-Sheet","ubl");
+//    document.querySelector('#ubl').addEventListener('change', event => {
+//      handleBanalcesheetUpload(event)
+//    })
     console.log("creaing Balancesheet table");
     var datapoints = balancesheetDatPoints();
     var bltbl = document.getElementById("bltbl");
@@ -104,6 +199,10 @@ function balancesheetTable(){
     console.log("Generated Headers: "+headerList);
     createTable("Balance-Sheet","bltbl",headerList,datapoints,submitBalancesheetDetails);
 }
+
+
+
+
 
 
 function submitBalancesheetDetails(){
@@ -131,7 +230,8 @@ function submitBalancesheetDetails(){
     console.log(balanceSheetDtoList)
     var balanceSheetJson = generateJsonString(balanceSheetDtoList);
     console.log(balanceSheetJson);
-    var responseText = postRequest(balancesheetDeatilsUrl,balanceSheetJson)
+    var responseText = postRequest(balancesheetDeatilsUrl,balanceSheetJson);
+    tabopen("plopen");
 }
 
 
@@ -189,6 +289,7 @@ function submitPofitAndLossDetails(){
     var profitAndLossJson = generateJsonString(profitAndLossDtoList);
     console.log(profitAndLossJson);
     var responseText = postRequest(profitAndLossDetailUrl,profitAndLossJson)
+    tabopen("yropen");
 }
 
 
@@ -238,6 +339,7 @@ function submitYearlyReportDetails(){
     var yearlyReportJson = generateJsonString(yearlyReportDtoList);
     console.log(yearlyReportJson);
     var responseText = postRequest(yearlyReportDetailUrl,yearlyReportJson);
+    tabopen("ratioopen");
 }
 
 
@@ -249,6 +351,7 @@ function ratiosDataPoints(){
     datapoints.push(["ROE Ratio","roe"]);
     datapoints.push(["Enterprise Value","ev"]);
     datapoints.push(["EV/EBITDA","evEbitda"]);
+    datapoints.push(["Debt-to-Equity","debtToEquityRatio"]);
     return datapoints;
 }
 
@@ -303,16 +406,33 @@ function postRequest(url, requestBody){
         return Httpreq.responseText;
 }
 
-
-
+function postFile(url, file){
+        var Httpreq = new XMLHttpRequest(); // a new request
+        Httpreq.open("POST",url,true);
+//        var md5Sum = md5(requestBody);
+        Httpreq.setRequestHeader('x-stockid',stockID);
+        formData = new FormData()
+        formData.append('stockid', stockID);
+        formData.append('balancesheet', file);
+        console.log("File details: "+file.type);
+        Httpreq.send(formData);
+        return Httpreq.responseText;
+}
 
 /*============================  Function for report generation ===================================*/
 function generateReport(){
+    updateStockDetails();
     console.log("generateReport action is triggered");
     window.open("stock-report.html?stockID="+stockID);
     window.focus();
 }
 
+function updateStockDetails(){
+
+    var insertStockDetailsUrl = 'http://localhost:8080/fundamental/storeDetails/';
+    postRequest(insertStockDetailsUrl,"updatestock");
+
+}
 /*============================  Utility Functions ===================================*/
 
 function createHeaders(){

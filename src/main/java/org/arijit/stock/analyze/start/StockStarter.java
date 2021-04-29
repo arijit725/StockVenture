@@ -4,7 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.cache.MemCache;
 import org.arijit.stock.analyze.dto.*;
+import org.arijit.stock.analyze.store.FileStore;
 import org.arijit.stock.analyze.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -30,8 +32,12 @@ public class StockStarter implements ApplicationRunner {
         SpringApplication.run(StockStarter.class);
     }
 
+    @Autowired
+    private FileStore fileStore;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        fileStore.createStore("/home/arijit/Documents/stockAnalysis");
         Date date = DateUtil.convertToDate("Jul-2001");
 
         logger.info(date+"=== "+ DateUtil.convertToEpochMilli("Jul-2001"));
@@ -55,6 +61,8 @@ public class StockStarter implements ApplicationRunner {
         companyDto.setIndustry("Computers- software");
         companyDto.setIndustryPE(35.04);
         companyDto.setMarketCap(1250500);
+        companyDto.setTtmpe(21.22);
+        companyDto.setTtmeps(87.67);
         FundamentalInfoDto tcsFundamental = FundamentalInfoDto.builder(companyDto.getYears());
 
         tcsFundamental.setCompanyDto(companyDto);

@@ -11,6 +11,6 @@ public class TestForwardPE {
     public static void main(String args[]){
 
         double estimatedEPS=YearlyReportEvaluation.getInstance().calcEstimatedEPS(185.14,158.26,3);
-        RatiosEvaluation.getInstance().calcForwardPE(3460.00,estimatedEPS);
+//        RatiosEvaluation.getInstance().calcForwardPE(3460.00,estimatedEPS);
     }
 }

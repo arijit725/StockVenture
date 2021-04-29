@@ -33,6 +33,10 @@
                 <tr><td>Industry PE:</td><td><input type="text" id="industryPE"></td></tr>
                 <tr><td>Face Value:</td><td><input type="text" id="faceValue"></td></tr>
             </table></td>
+            <td><table>
+                <tr><td>TTM PE:</td><td><input type="text" id="ttmpe"></td></tr>
+                <tr><td>TTM EPS:</td><td><input type="text" id="ttmeps"></td></tr>
+            </table></td>
         </tr>
         <tr><td><label for="years" >Years of Entry:</label>
             <select name="years" id="years" class="year-selection">
@@ -49,10 +53,10 @@
 <div class="financial-details">
     <div class="tab">
         <button class="tablinks" id="defaultOpen" onclick="openCity(event, 'Balance-Sheet')">Balance-Sheet</button>
-        <button class="tablinks" onclick="openCity(event, 'Profit-And-Loss')">Profit-And-Loss</button>
-        <button class="tablinks" onclick="openCity(event, 'Yearly-Report')">Yearly-Report</button>
-        <button class="tablinks" onclick="openCity(event, 'Quarterly-Report')">Quarterly-Report</button>
-        <button class="tablinks" onclick="openCity(event, 'Ratios')">Ratios</button>
+        <button class="tablinks" id="plopen" onclick="openCity(event, 'Profit-And-Loss')">Profit-And-Loss</button>
+        <button class="tablinks" id="yropen" onclick="openCity(event, 'Yearly-Report')">Yearly-Report</button>
+        <button class="tablinks" id="qropen" onclick="openCity(event, 'Quarterly-Report')">Quarterly-Report</button>
+        <button class="tablinks" id="ratioopen" onclick="openCity(event, 'Ratios')">Ratios</button>
     </div>
 
     <div id="Balance-Sheet"  class="tabcontent balancesheet" >

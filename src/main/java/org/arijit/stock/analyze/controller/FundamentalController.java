@@ -1,26 +1,37 @@
 package org.arijit.stock.analyze.controller;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.BalanceSheetAnalysisInfo;
 import org.arijit.stock.analyze.analysisdto.ProfitAndLossAnalysisInfo;
 import org.arijit.stock.analyze.analysisdto.RatioAnalysisInfo;
+import org.arijit.stock.analyze.analysisdto.TargetPriceEstimationDto;
 import org.arijit.stock.analyze.cache.MemCache;
-import org.arijit.stock.analyze.dto.BalanceSheetDto;
-import org.arijit.stock.analyze.dto.CompanyDto;
-import org.arijit.stock.analyze.dto.ProfitAndLossDto;
-import org.arijit.stock.analyze.dto.RatiosDto;
+import org.arijit.stock.analyze.dto.*;
+import org.arijit.stock.analyze.parser.BalanceSheetPDFParser;
 import org.arijit.stock.analyze.service.FundamentalService;
 import org.arijit.stock.analyze.util.StockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.FileChannel;
+import java.nio.file.*;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -30,6 +41,8 @@ public class FundamentalController {
 
     @Autowired
     private FundamentalService fundamentalService;
+
+
 
     @PostMapping(value = "/companyDetails", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity> companyDetails(@RequestBody String companyDetails)throws IOException {
@@ -102,6 +115,23 @@ public class FundamentalController {
             res = ResponseEntity.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
+            res = ResponseEntity.notFound().build();
+        }
+
+        return Mono.just(res);
+    }
+
+    @PostMapping(value = "/storeDetails", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity> storeDetails(@RequestBody String ratioDetails, ServerWebExchange webExchange)throws IOException {
+        String stockID = webExchange.getRequest().getHeaders().get("x-stockid").get(0);
+        logger.info("Accpeted ratioDetails Request: stockID: "+stockID);
+        ResponseEntity<String> res = null;
+        try {
+            fundamentalService.storeStock(stockID);
+            logger.info("StockDetails  in memory.");
+            res = ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Uable to store stock details: ",e);
             res = ResponseEntity.notFound().build();
         }
 
@@ -328,4 +358,127 @@ public class FundamentalController {
         return Mono.just(res);
     }
 
+
+    @GetMapping(value = "/targetPrice/{stockID}/{years}")
+    public Mono<ResponseEntity> getargetPrice(@PathVariable("stockID") String stockID, @PathVariable("years") int years, ServerWebExchange webExchange)throws IOException {
+        logger.info("Ratio analysis Request for: stockID: "+stockID+" years: "+years);
+
+        ResponseEntity<String> res = null;
+        try {
+            TargetPriceEstimationDto targetPriceEstimationDto = fundamentalService.getTargetPriceEstimation(stockID,years);
+            if(targetPriceEstimationDto == null)
+                res = ResponseEntity.noContent().build();
+            else{
+                String jsonString = StockUtil.generateJsonString(targetPriceEstimationDto);
+                logger.info("Response: targetPriceEstimationDto : "+jsonString);
+                res = ResponseEntity.ok().body(jsonString);
+            }
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
+
+    @GetMapping(value = "/listindustry")
+    public Mono<ResponseEntity> listIndustry(ServerWebExchange webExchange)throws IOException {
+        ResponseEntity<String> res = null;
+        try {
+            List<String> industryList = fundamentalService.listIndustry();
+            String jsonString = StockUtil.generateJsonString(industryList);
+            res = ResponseEntity.ok(jsonString);
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
+    @GetMapping(value = "/liststock/{industry}")
+    public Mono<ResponseEntity> listStock(@PathVariable("industry") String industry, ServerWebExchange webExchange)throws IOException {
+        ResponseEntity<String> res = null;
+        try {
+            List<String> stockList = fundamentalService.listStock(industry);
+            String jsonString = StockUtil.generateJsonString(stockList);
+            res = ResponseEntity.ok(jsonString);
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
+
+    @GetMapping(value = "/loadanalysis/{industry}/{companyname}")
+    public Mono<ResponseEntity> loadAnalysis(@PathVariable("industry") String industry,@PathVariable("companyname") String companyName, ServerWebExchange webExchange)throws IOException {
+        ResponseEntity<String> res = null;
+        try {
+            logger.info("Loadind details for Industry : "+industry+" Company: "+companyName);
+            String stockID = fundamentalService.loadAnalysis(industry,companyName);
+            res = ResponseEntity.ok(stockID);
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
+    @PostMapping(value = "/uploadbl", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<ResponseEntity> uploadBook(@RequestPart("balancesheet") FilePart filePart,@RequestPart("stockid") String stockID)throws IOException {
+        logger.info("Acceepted balancesheet for : stockID :"+stockID+" fileName: "+filePart.filename());
+        String basePathStr = "/home/arijit/Documents/aditi";
+//        Path tempFile = Files.createTempFile("/home/arijit/IdeaProjects/libraryAdmin/fileloadtest/", filePart.filename());
+        Path tempFile = Paths.get(basePathStr+"/"+filePart.filename());
+        if(!tempFile.toFile().exists())
+            tempFile.toFile().delete();
+        tempFile.toFile().createNewFile();
+        //NOTE method one
+        AsynchronousFileChannel channel =
+                AsynchronousFileChannel.open(tempFile, StandardOpenOption.WRITE);
+        DataBufferUtils.write(filePart.content(), channel, 0)
+                .doOnComplete(() -> {
+                    logger.info("File writing finish at: "+tempFile.toString());
+                })
+                .subscribe();
+
+
+        BalanceSheetPDFParser balanceSheetPDFParser = new BalanceSheetPDFParser(tempFile.toFile());
+
+        try {
+            fundamentalService.updateBalancesheetFromPDF(stockID,tempFile.toFile());
+            ResponseEntity res = ResponseEntity.status(HttpStatus.ACCEPTED).body("parsed and processed");
+            logger.info("Parsing done");
+            return Mono.just(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ResponseEntity<String> responseEntity = ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Not supported");
+        return Mono.just(responseEntity);
+
+    }
 }

@@ -136,12 +136,27 @@
     </table>
     This section is for instant report
 </div>
-<div class="instant-review">
-    <div class="reivew-header">Target Price (1yr froward)</div>
+<div id="targetPrice" class="targetPrice">
+    <p class="subject-line">Target Price Estimation(1 year forward)
+        <label for="tyears" > Based of previous Years:</label>
+        <select name="tyears" id="tyears" class="year-selection" onclick="onTYearSelection()">
+            <option value="3">3</option>
+            <option value="5" selected>5</option>
+            <option value="7">7</option>
+        </select>
+    </p>
     <table>
-        <tr></tr>
+        <tr><td>
+            <div id="targetprice-tbl-div" class="tableholder">
+                <!-- this part of code is generated from javascript-->
+            </div>
+        </td>
+            <td>
+                <div id="targetprice_choice_div" class="analysisholder">
+                </div>
+            </td>
+           </tr>
     </table>
-    This section is for instant report
 </div>
 </body>
 </html>

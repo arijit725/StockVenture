@@ -60,6 +60,7 @@ public class RatiosDto implements Comparable<RatiosDto > {
      *  </pre>
      */
     private double evEbitda;
+    private double debtToEquityRatio;
 
     private RatiosDto(){
 
@@ -95,6 +96,11 @@ public class RatiosDto implements Comparable<RatiosDto > {
         return this;
     }
 
+    public RatiosDto setDebtToEquityRatio(double debtToEquityRatio) {
+        this.debtToEquityRatio = debtToEquityRatio;
+        return this;
+    }
+
     public String getDate() {
         return date;
     }
@@ -117,6 +123,10 @@ public class RatiosDto implements Comparable<RatiosDto > {
 
     public double getEvEbitda() {
         return evEbitda;
+    }
+
+    public double getDebtToEquityRatio() {
+        return debtToEquityRatio;
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.analysisdto.RatioAnalysisInfo;
+import org.arijit.stock.analyze.dto.CompanyDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.RatiosDto;
 import org.arijit.stock.analyze.enums.ValuationEnums;
@@ -25,9 +26,10 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
         List<RatiosDto> ratioDtoList  = fundamentalInfoDto.getRatiosDtoList();
         if(ratioDtoList.isEmpty()||ratioDtoList.size()<year)
             throw new Exception("Number of year exceeds RatioDtoList list");
-//        calcForwardPE(fundamentalInfoDto,analyzedInfoDto,year);
+        calcForwardPE(fundamentalInfoDto,analyzedInfoDto,year);
         calcGrowth(analyzedInfoDto.getRatioAnalysisInfo(),ratioDtoList);
         evaluateMultiBagger(analyzedInfoDto,ratioDtoList);
+        evaluatePE(analyzedInfoDto,fundamentalInfoDto.getCompanyDto());
     }
 
 
@@ -71,6 +73,29 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
             }
 
         }
+    }
+
+    private void evaluatePE(AnalyzedInfoDto analyzedInfoDto, CompanyDto companyDto){
+        double ttmPE = companyDto.getTtmpe();
+        double industryPE = companyDto.getIndustryPE();
+        double peGap = (double)(industryPE*20/100);
+        double lowerPEThreshold = industryPE-peGap;
+        double upperThreshold = industryPE+peGap;
+
+        String peAnalysis = "TTM PE Valuation:";
+
+        if(lowerPEThreshold<ttmPE && upperThreshold>ttmPE){
+            logger.info("Stock is Fair Valued. [TTM PE is between PE Thresold (20% of Industry PE) : upperThreshold: "+upperThreshold+" lowerThreshold: "+lowerPEThreshold);
+            peAnalysis = peAnalysis+" Stock is Fair Valued. [ (lower, actual,upper)="+lowerPEThreshold+" , "+ttmPE+" , "+upperThreshold+" ]";
+        }
+        else if(ttmPE<lowerPEThreshold){
+            peAnalysis = peAnalysis+" Stock is Under Valued.[ (lower, actual,upper)="+lowerPEThreshold+" , "+ttmPE+" , "+upperThreshold+" ]";
+        }
+        else if(ttmPE>upperThreshold){
+            peAnalysis = peAnalysis+" Stock is Over Valued.[ (lower, actual,upper)="+lowerPEThreshold+" , "+ttmPE+" , "+upperThreshold+" ]";
+        }
+
+        analyzedInfoDto.getRatioAnalysisInfo().setTtmPEAnalysis(peAnalysis);
     }
     private void evaluateMultiBagger(AnalyzedInfoDto analyzedInfoDto, List<RatiosDto> ratiosDtoList){
 

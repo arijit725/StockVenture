@@ -18,6 +18,8 @@ public class RatioAnalysisInfo {
     private ValuationEnums forwardPEValuation;
     private boolean possibilityOfMultiBagger;
 
+    private String ttmPEAnalysis;
+
     private boolean isROEIncreasingContinuously;
     private boolean isPBDecreasingConinuously;
 
@@ -60,6 +62,10 @@ public class RatioAnalysisInfo {
 
     public boolean isPossibilityOfMultiBagger() {
         return possibilityOfMultiBagger;
+    }
+
+    public void setTtmPEAnalysis(String ttmPEAnalysis) {
+        this.ttmPEAnalysis = ttmPEAnalysis;
     }
 
     @Override

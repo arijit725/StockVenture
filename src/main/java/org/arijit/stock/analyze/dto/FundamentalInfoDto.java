@@ -19,6 +19,7 @@ public final class FundamentalInfoDto {
 //    private double currentSharePrice;
 //    private double industryPE;
 
+    private String stockID;
     private CompanyDto companyDto;
     private List<BalanceSheetDto> balanceSheetDtoList;
     private List<ProfitAndLossDto> profitAndLossDtoList;
@@ -36,6 +37,14 @@ public final class FundamentalInfoDto {
         fundamentalInfoDto.ratiosDtoList = new ArrayList<>(years);
         fundamentalInfoDto.yearlyReportDtoList = new ArrayList<>(years);
         return fundamentalInfoDto;
+    }
+
+    public void setStockID(String stockID) {
+        this.stockID = stockID;
+    }
+
+    public String getStockID() {
+        return stockID;
     }
 
     public FundamentalInfoDto setCompanyDto(CompanyDto companyDto){

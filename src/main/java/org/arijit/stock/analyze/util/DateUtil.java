@@ -2,6 +2,7 @@ package org.arijit.stock.analyze.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 
 public class DateUtil {
@@ -14,5 +15,11 @@ public class DateUtil {
         Date date1=new SimpleDateFormat("MMM-yyyy").parse(date);
         return date1.toInstant().toEpochMilli();
 
+    }
+
+    public static String dateFomratConverter(String date){
+        String[] brk = date.split(" '");
+        String newDate = brk[0]+"-20"+brk[1];
+        return newDate;
     }
 }

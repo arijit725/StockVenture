@@ -11,6 +11,9 @@ public class CompanyDto {
     private double currentSharePrice;
     private double industryPE;
 
+    private double ttmpe;
+    private double ttmeps;
+
     public String getCompanyName() {
         return companyName;
     }
@@ -67,6 +70,22 @@ public class CompanyDto {
         this.industryPE = industryPE;
     }
 
+    public double getTtmeps() {
+        return ttmeps;
+    }
+
+    public double getTtmpe() {
+        return ttmpe;
+    }
+
+    public void setTtmeps(double ttmeps) {
+        this.ttmeps = ttmeps;
+    }
+
+    public void setTtmpe(double ttmpe) {
+        this.ttmpe = ttmpe;
+    }
+
     @Override
     public String toString() {
         return "CompanyDto{" +
@@ -77,6 +96,8 @@ public class CompanyDto {
                 ", faceValue=" + faceValue +
                 ", currentSharePrice=" + currentSharePrice +
                 ", industryPE=" + industryPE +
+                ", peTTM=" + ttmpe +
+                ", epsTTM=" + ttmeps +
                 '}';
     }
 }

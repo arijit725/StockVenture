@@ -34,6 +34,11 @@ public class MemCache {
             stockAnalysisCache.put("dummy",AnalyzedInfoDto.create());
     }
 
+    public void insertFundamentalInfo(String stockID, FundamentalInfoDto fundamentalInfoDto){
+        stockCache.put(stockID,fundamentalInfoDto);
+        stockAnalysisCache.put(stockID,AnalyzedInfoDto.create());
+    }
+
 
     public void insertCompanyDetails(String stockID, CompanyDto companyDto){
         if(!stockCache.containsKey(stockID)){

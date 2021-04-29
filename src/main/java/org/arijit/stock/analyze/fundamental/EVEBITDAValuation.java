@@ -3,9 +3,11 @@ package org.arijit.stock.analyze.fundamental;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
+import org.arijit.stock.analyze.analysisdto.EVEBITDAValuationModelDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.RatiosDto;
 import org.arijit.stock.analyze.util.FundamentalAnalysisUtil;
+import org.arijit.stock.analyze.util.StockUtil;
 
 import java.util.List;
 
@@ -54,9 +56,11 @@ public class EVEBITDAValuation implements IFundamentalEvaluation{
         double entryPrice = (double)(targetPrice*2)/3; //standard norm is to pick 2/3 as entry price for safe margin.
 
         logger.info("EV/EBDIT valuation model outcome: targetPrice: "+Math.ceil(targetPrice)+" EntryPrice: "+Math.ceil(entryPrice));
-
-        analyzedInfoDto.getEvebitdaValuationModelDto().setEntryPrice(entryPrice);
-        analyzedInfoDto.getEvebitdaValuationModelDto().setTargetPrice(targetPrice);
+        EVEBITDAValuationModelDto evebitdaValuationModelDto = new EVEBITDAValuationModelDto();
+        int precision = 2;
+        evebitdaValuationModelDto.setEntryPrice(StockUtil.convertDoubleToPrecision(entryPrice,precision));
+        evebitdaValuationModelDto.setTargetPrice(StockUtil.convertDoubleToPrecision(targetPrice,precision));
+        analyzedInfoDto.getTargetPriceEstimationDto().setEvebitdaValuationModelDto(evebitdaValuationModelDto);
 
     }
 
