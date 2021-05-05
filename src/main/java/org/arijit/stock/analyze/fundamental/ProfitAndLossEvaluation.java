@@ -53,10 +53,14 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
 
     private void pbitGrowthPercentage(AnalyzedInfoDto analyzedInfoDto,ProfitAndLossDto endingYearProfitAndLossDto, ProfitAndLossDto startingYearProfitAndLossDto){
 
-        double endYearRawMaterial = endingYearProfitAndLossDto.getPbit();
-        double startYearRawMaterial = startingYearProfitAndLossDto.getPbit();
+        double endYearPBit = endingYearProfitAndLossDto.getPbit();
+        double startYearPBit = startingYearProfitAndLossDto.getPbit();
 
-        double changeInPercentage  = (double) (endYearRawMaterial-startYearRawMaterial)/startYearRawMaterial;
+        if(startYearPBit==0){
+            //we are making lowest value set.
+            startYearPBit=0.00001;
+        }
+        double changeInPercentage  = (double) (endYearPBit-startYearPBit)/startYearPBit;
         changeInPercentage = (double) changeInPercentage*100;
 
         analyzedInfoDto.getProfitAndLossAnalysisInfo().setPBITGrowthPercentage(changeInPercentage);

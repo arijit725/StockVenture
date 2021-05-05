@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class AbstractPDFProcessor implements IMoneyControlPDFParser {
     private static final Logger logger = LogManager.getLogger(AbstractPDFProcessor.class);
 
-    private File pdfFile;
+    protected File pdfFile;
     private List<String> dataPoints;
 
     private List<String> dates;
@@ -49,7 +49,7 @@ public class AbstractPDFProcessor implements IMoneyControlPDFParser {
         return Collections.emptyMap();
     }
 
-    private Map<String,Map<String, String>> generateFilteredDatapointMap(List<String> filteredContent){
+    protected Map<String,Map<String, String>> generateFilteredDatapointMap(List<String> filteredContent){
         Map<String,Map<String, String>> parsedContent = new HashMap<>();
         if(dates==null || dates.isEmpty()|| dataPoints==null || dataPoints.isEmpty())
             return Collections.emptyMap();
@@ -84,7 +84,7 @@ public class AbstractPDFProcessor implements IMoneyControlPDFParser {
         return parsedContent;
     }
 
-    private List<String> filterByDataPoints(List<String> lines) throws Exception {
+    protected List<String> filterByDataPoints(List<String> lines) throws Exception {
         if(lines==null|| lines.isEmpty())
             throw new Exception(pdfFile.getAbsolutePath()+" content is empty");
        List<String> filteredLines =  lines.stream().filter(line->{

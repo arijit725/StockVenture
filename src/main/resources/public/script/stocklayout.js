@@ -5,6 +5,12 @@ var profitAndLossDetailUrl = 'http://localhost:8080/fundamental/profitAndLossDet
 var yearlyReportDetailUrl = 'http://localhost:8080/fundamental/yearlyReportDetails';
 var ratioDetailUrl = 'http://localhost:8080/fundamental/ratioDetails';
 var blUploadlUrl = 'http://localhost:8080/fundamental/uploadbl';
+var plUploadUrl = 'http://localhost:8080/fundamental/uploadpl';
+var uploadPDFuRL = 'http://localhost:8080/fundamental/uploadPDF';
+
+var getDataUrl = 'http://localhost:8080/fundamental/getData';
+
+var getBalancesheetUrl ='http://localhost:8080/fundamental/balancesheet/';
 
 
 var stockID=null;
@@ -135,60 +141,36 @@ function balancesheetDatPoints(){
 }
 
 function submitBalancesheetPDF(){
-
     var filePath = document.getElementById("ubl").value;
     console.log("Submitting Balancesheet PDF from:"+filePath);
     var fileUpload = document.getElementById("ubl");
+        if (typeof (FileReader) != "undefined") {
+            var reader = new FileReader();
+            console.log(reader);
+            reader.onload = function (e) {
+                console.log(e.target.result);
+            }
+            var file  = fileUpload.files[0];
+//            var responseText =  postFile(blUploadlUrl,file,'balancesheet');
+               var responseText =  postFile(uploadPDFuRL,file,'balancesheet',getBalancesheetData);
+               console.log("File Upload Response: "+responseText);
 
-                if (typeof (FileReader) != "undefined") {
-                    var reader = new FileReader();
-                    console.log(reader);
-                    reader.onload = function (e) {
-                        console.log(e.target.result);
-                    }
-
-                    var file  = fileUpload.files[0];
-//                    var content = reader.readAsText(fileUpload.files[0]);
-//                    var content = reader.readAsDataURL(fileUpload.files[0]);
-//                    console.log(content);
-                    var responseText =  postFile(blUploadlUrl,file);
-                    console.log("File Upload Response: "+responseText);
-                    tabopen("plopen");
-                } else {
-                    alert("This browser does not support HTML5.");
-                }
+//            tabopen("plopen");
+        } else {
+            alert("This browser does not support HTML5.");
+        }
 }
 
-function uploadBalancesheetPDF(){
-
+function uploadBalancesheetPDF(parentid,id){
+    uploadFile(parentid,id,"ublsubmit",submitBalancesheetPDF);
 }
 
-
-function uploadFile(parentid,id, submitBtnId, submitAction){
-    var fileu = document.createElement("INPUT");
-    fileu.setAttribute("type", "file");
-    fileu.setAttribute("id", id);
-    var btn = createSubmitButton(submitBtnId,"submit","submit-button",submitAction);
-    var div = document.getElementById(parentid);
-    div.appendChild(fileu);
-    div.appendChild(btn);
-}
-
-function uploadFile1(parentid,id){
-    var fileu = document.createElement("INPUT");
-    fileu.setAttribute("type", "file");
-    fileu.setAttribute("id", id);
-    var btn = createSubmitButton("ublsubmit","submit","submit-button",submitBalancesheetPDF);
-    var div = document.getElementById(parentid);
-    div.appendChild(fileu);
-    div.appendChild(btn);
-}
-
-function balancesheetTable(){
-    uploadFile("Balance-Sheet","ubl");
-//    document.querySelector('#ubl').addEventListener('change', event => {
-//      handleBanalcesheetUpload(event)
-//    })
+function getBalancesheetData(){
+    var url = getDataUrl+'/balancesheet/'+stockID;
+    console.log("Getting data from url: "+url);
+    var jsonResonse = getContent(url);
+    console.log("BalanceSheet Json res: "+jsonResonse);
+    var balancesheetMap = JSON.parse(jsonResonse);
     console.log("creaing Balancesheet table");
     var datapoints = balancesheetDatPoints();
     var bltbl = document.getElementById("bltbl");
@@ -197,13 +179,12 @@ function balancesheetTable(){
     }
     var headerList =createHeaders();
     console.log("Generated Headers: "+headerList);
-    createTable("Balance-Sheet","bltbl",headerList,datapoints,submitBalancesheetDetails);
+    createTable1("Balance-Sheet","bltbl",headerList,datapoints,submitBalancesheetDetails,balancesheetMap);
 }
 
-
-
-
-
+function balancesheetTable(){
+    uploadBalancesheetPDF("Balance-Sheet","ubl");
+}
 
 function submitBalancesheetDetails(){
     console.log("Submit Balancesheet action is triggered");
@@ -222,8 +203,6 @@ function submitBalancesheetDetails(){
 //            console.log("Balancesheet details"+ id+" : "+value);
             balanceSheetDto[datapoints[i][1]] = value;
             }
-//        console.log("Balance sheet for year:");
-//        console.log(balanceSheetDto);
         balanceSheetDtoList.push(balanceSheetDto);
     }
     console.log("Stored records: "+balanceSheetDtoList.length)
@@ -244,22 +223,63 @@ function porfiAndLossDataPoints(){
     datapoints.push(["Net Sales","netSales"]);
     datapoints.push(["Consumption Of Raw Material","consumptionRawMaterial"]);
     datapoints.push(["Employee Cost","employeeCost"]);
-    datapoints.push(["PBDIT","pbit"]);
+//    datapoints.push(["PBIT","pbit"]);
     datapoints.push(["Interest","interest"]);
     datapoints.push(["Net Profit","netProfit"]);
     return datapoints;
 }
 
-function porfitAndLossTable(){
+
+function getProfitAndLossData(){
+    var url = getDataUrl+'/profitandloss/'+stockID;
+    console.log("Getting data from url: "+url);
+    var jsonResonse = getContent(url);
+    console.log("ProfitANdLoss Json res: "+jsonResonse);
+    var profitTableMap = JSON.parse(jsonResonse);
     console.log("creaing ProfitAndLoss table");
-    var datapoints = porfiAndLossDataPoints();
-    var tableID = document.getElementById("pftbl");
-    if(tableID!=null){
-        tableID.remove();
-    }
-    var headerList =createHeaders();
-    console.log("Generated Headers: "+headerList);
-    createTable("Profit-And-Loss","pftbl",headerList,datapoints,submitPofitAndLossDetails);
+        var datapoints = porfiAndLossDataPoints();
+        var tableID = document.getElementById("pftbl");
+        if(tableID!=null){
+            tableID.remove();
+        }
+        var headerList =createHeaders();
+        console.log("Generated Headers: "+headerList);
+        createTable1("Profit-And-Loss","pftbl",headerList,datapoints,submitPofitAndLossDetails,profitTableMap);
+}
+
+function submitProfitAndLossPDF(){
+    var filePath = document.getElementById("plpdf").value;
+    console.log("Submitting Profit PDF from:"+filePath);
+    var fileUpload = document.getElementById("plpdf");
+        if (typeof (FileReader) != "undefined") {
+            var reader = new FileReader();
+            console.log(reader);
+            reader.onload = function (e) {
+                console.log(e.target.result);
+            }
+            var file  = fileUpload.files[0];
+            var responseText =  postFile(plUploadUrl,file,'profitandloss',getProfitAndLossData);
+            console.log("File Upload Response: "+responseText);
+        } else {
+            alert("This browser does not support HTML5.");
+        }
+}
+
+function uploadProfitAndLossPDF(parentid,id){
+    uploadFile(parentid,id,"plsubmit",submitProfitAndLossPDF)
+}
+
+function porfitAndLossTable(){
+    uploadProfitAndLossPDF("Profit-And-Loss","plpdf");
+//    console.log("creaing ProfitAndLoss table");
+//    var datapoints = porfiAndLossDataPoints();
+//    var tableID = document.getElementById("pftbl");
+//    if(tableID!=null){
+//        tableID.remove();
+//    }
+//    var headerList =createHeaders();
+//    console.log("Generated Headers: "+headerList);
+//    createTable("Profit-And-Loss","pftbl",headerList,datapoints,submitPofitAndLossDetails);
 }
 
 
@@ -297,19 +317,64 @@ function submitPofitAndLossDetails(){
 function yearlyReportsDataPoints(){
     var datapoints = new Array();
     datapoints.push(["Basic EPS","basicEPS"]);
+    datapoints.push(["PBIT","pbit"]);
     return datapoints;
 }
 
+
+function getYearlyReportData(){
+    var url = getDataUrl+'/yearlyreport/'+stockID;
+    console.log("Getting data from url: "+url);
+    var jsonResonse = getContent(url);
+    console.log("YearlyReport Json res: "+jsonResonse);
+    var yearlyTableMap = JSON.parse(jsonResonse);
+    console.log("creating Yearly-Report table");
+        var datapoints = yearlyReportsDataPoints();
+        var tableID = document.getElementById("yrtbl");
+        if(tableID!=null){
+            tableID.remove();
+        }
+        var headerList =createHeaders();
+        console.log("Generated Headers: "+headerList);
+//        createTable("Yearly-Report","yrtbl",headerList,datapoints,submitYearlyReportDetails);
+        createTable1("Yearly-Report","yrtbl",headerList,datapoints,submitYearlyReportDetails,yearlyTableMap);
+}
+
+function submitYearlyReportPDF(){
+    var filePath = document.getElementById("yrpdf").value;
+    console.log("Submitting Yearly Report PDF from:"+filePath);
+    var fileUpload = document.getElementById("yrpdf");
+        if (typeof (FileReader) != "undefined") {
+            var reader = new FileReader();
+            console.log(reader);
+            reader.onload = function (e) {
+                console.log(e.target.result);
+            }
+            var file  = fileUpload.files[0];
+//            var responseText =  postFile(uploadPDFuRL,file,'yearlyreport');
+            var responseText =  postFile(uploadPDFuRL,file,'yearlyreport',getYearlyReportData);
+            console.log("File Upload Response: "+responseText);
+
+        } else {
+            alert("This browser does not support HTML5.");
+        }
+}
+
+function uploadYearlyReportPDF(parentid,id){
+    uploadFile(parentid,id,"yrsubmit",submitYearlyReportPDF)
+}
+
 function yearlyReportsTable(){
-    console.log("creaing Yearly-Report table");
-    var datapoints = yearlyReportsDataPoints();
-    var tableID = document.getElementById("yrtbl");
-    if(tableID!=null){
-        tableID.remove();
-    }
-    var headerList =createHeaders();
-    console.log("Generated Headers: "+headerList);
-    createTable("Yearly-Report","yrtbl",headerList,datapoints,submitYearlyReportDetails);
+    uploadYearlyReportPDF("Yearly-Report","yrpdf");
+//    console.log("creaing Yearly-Report table");
+//    var datapoints = yearlyReportsDataPoints();
+//    var tableID = document.getElementById("yrtbl");
+//    if(tableID!=null){
+//        tableID.remove();
+//    }
+//    var headerList =createHeaders();
+//    console.log("Generated Headers: "+headerList);
+//    createTable("Yearly-Report","yrtbl",headerList,datapoints,submitYearlyReportDetails);
 }
 
 
@@ -397,26 +462,37 @@ function submitRatiosDetails(){
 function postRequest(url, requestBody){
         var Httpreq = new XMLHttpRequest(); // a new request
         Httpreq.open("POST",url,false);
-        var md5Sum = md5(requestBody);
+//        var md5Sum = md5(requestBody);
         Httpreq.setRequestHeader('x-stockid',stockID);
-        Httpreq.setRequestHeader('x-md5sum',md5Sum);
+//        Httpreq.setRequestHeader('x-md5sum',md5Sum);
         Httpreq.setRequestHeader('Content-type','application/json; charset=utf-8');
         console.log("requestBody: "+requestBody);
         Httpreq.send(requestBody);
         return Httpreq.responseText;
 }
 
-function postFile(url, file){
+function postFile(url, file, pdftype,onloadfunc){
         var Httpreq = new XMLHttpRequest(); // a new request
         Httpreq.open("POST",url,true);
 //        var md5Sum = md5(requestBody);
         Httpreq.setRequestHeader('x-stockid',stockID);
-        formData = new FormData()
+        formData = new FormData();
+        formData.append("pdftype",pdftype);
         formData.append('stockid', stockID);
         formData.append('balancesheet', file);
         console.log("File details: "+file.type);
         Httpreq.send(formData);
+
+        Httpreq.onload =onloadfunc;
+
         return Httpreq.responseText;
+}
+
+function getContent(yourUrl){
+    var Httpreq = new XMLHttpRequest(); // a new request
+    Httpreq.open("GET",yourUrl,false);
+    Httpreq.send(null);
+    return Httpreq.responseText;
 }
 
 /*============================  Function for report generation ===================================*/
@@ -435,16 +511,34 @@ function updateStockDetails(){
 }
 /*============================  Utility Functions ===================================*/
 
+function uploadFile(parentid,id, submitBtnId, submitAction){
+    var prev = document.getElementById(id);
+    if(prev!=null)
+        prev.remove();
+    var prevBtn = document.getElementById(submitBtnId);
+    if(prevBtn!=null)
+        prevBtn.remove();
+    var fileu = document.createElement("INPUT");
+    fileu.setAttribute("type", "file");
+    fileu.setAttribute("id", id);
+    var btn = createSubmitButton(submitBtnId,"submit","submit-button",submitAction);
+    var div = document.getElementById(parentid);
+    div.appendChild(fileu);
+    div.appendChild(btn);
+}
+
 function createHeaders(){
     var header = new Array();
     header.push("DataPoints");
     var today = new Date();
     var currentYear = today.getFullYear();
+    var month = today.getMonth();
     var years = document.getElementById("years").value;
-
-    for(var i=0;i<years;i++){
+    if(month<4)
         currentYear = currentYear-1;
-        header.push("Mar-"+currentYear)
+    for(var i=0;i<years;i++){
+        header.push("Mar-"+currentYear);
+        currentYear = currentYear-1;
     }
     return header;
 
@@ -468,6 +562,64 @@ function getTableHeader(tableID){
     }
     console.log("getTableHeader:: headers: "+headerList);
     return headerList;
+}
+
+
+
+
+function createTable1(divID,tableID,headerList,datapoints, submitAction, datamap){
+
+    var table = document.createElement("TABLE");
+    table.setAttribute('id', tableID);
+//    var rowCount = document.getElementById("years").value;
+    var row = table.insertRow(0);
+    var columnCount = headerList.length;
+    console.log("Column count: "+columnCount)
+    for (var i = 0; i < columnCount; i++) {
+                var headerCell = document.createElement("TH");
+                headerCell.innerHTML = headerList[i];
+                row.appendChild(headerCell);
+
+          }
+    //adding datapoints row
+    for(var i=0;i<datapoints.length;i++){
+        var tmprow = table.insertRow(i+1);
+        var isDPCell = true;
+        for(var j=0;j<headerList.length;j++){
+            var datapointsCell = document.createElement("TD");
+            if(isDPCell){
+                 datapointsCell.innerHTML = datapoints[i][0];
+                 isDPCell = false;
+            }
+            else{
+                  var tmpInput = document.createElement("INPUT");
+                  tmpInput.setAttribute("type", "text");
+                  dataPerYear = datamap[headerList[j]];
+                  try{
+                    console.log("setting datapoint: "+datapoints[i][1]+" "+headerList[j]+" val: "+dataPerYear[datapoints[i][1]]);
+                  tmpInput.value=dataPerYear[datapoints[i][1]]
+                  }catch(e){
+                    console.log(e);
+                  }
+                  var id = datapoints[i][1]+'-'+headerList[j];
+                  tmpInput.setAttribute("id", id);
+                  datapointsCell.appendChild(tmpInput);
+            }
+
+            tmprow.appendChild(datapointsCell);
+        }
+
+    }
+    var btnRow = table.insertRow();
+    var btncell = document.createElement("TD");
+    btncell.setAttribute("colspan",headerList.length);
+    btncell.setAttribute("align","right");
+    var btn = createSubmitButton("blSubmit","submit","submit-button",submitAction);
+    btncell.appendChild(btn);
+    btnRow.appendChild(btncell);
+
+    var dvTable = document.getElementById(divID);
+    dvTable.appendChild(table);
 }
 
 function createTable(divID,tableID,headerList,datapoints, submitAction){

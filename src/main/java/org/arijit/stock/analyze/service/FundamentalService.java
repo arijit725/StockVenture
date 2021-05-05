@@ -8,6 +8,8 @@ import org.arijit.stock.analyze.cache.MemCache;
 import org.arijit.stock.analyze.dto.*;
 import org.arijit.stock.analyze.fundamental.*;
 import org.arijit.stock.analyze.parser.BalanceSheetPDFParser;
+import org.arijit.stock.analyze.parser.ProfitAndLossPDFParser;
+import org.arijit.stock.analyze.parser.YearlyReportParser;
 import org.arijit.stock.analyze.store.FileStore;
 import org.arijit.stock.analyze.util.StockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -63,6 +64,20 @@ public class FundamentalService {
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
         BalanceSheetPDFParser balanceSheetPDFParser = new BalanceSheetPDFParser(file);
         balanceSheetPDFParser.generateDto(fundamentalInfoDto);
+    }
+
+
+    public void updateProfitAndLossFromPDF(String stockID, File file) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        ProfitAndLossPDFParser profitAndLossPDFParser = new ProfitAndLossPDFParser(file);
+        profitAndLossPDFParser.generateDto(fundamentalInfoDto);
+    }
+
+
+    public void updateYearlyReportFromPDF(String stockID, File file) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        YearlyReportParser yearlyReportParser = new YearlyReportParser(file);
+        yearlyReportParser.generateDto(fundamentalInfoDto);
     }
 
     public void updateBalanceSheetList(String stockID, String baancesheetDetails) throws Exception {
@@ -146,6 +161,34 @@ public class FundamentalService {
         if(fundamentalInfoDto.getBalanceSheetDtoList().size()<years)
             throw new Exception("Years excced balancesheet list size");
         return fundamentalInfoDto.getBalanceSheetDtoList().stream().limit(years).collect(Collectors.toList());
+    }
+
+    public Map<String,BalanceSheetDto> getBalanceSheet(String stockID) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        Map<String, BalanceSheetDto> map = new HashMap<>();
+//        fundamentalInfoDto.getBalanceSheetDtoList().stream().forEach(balanceSheetDto -> map.put(balanceSheetDto.getDate(),balanceSheetDto));
+
+        return fundamentalInfoDto.getBalanceSheetDtoList().stream().collect(Collectors.toMap(BalanceSheetDto::getDate, balanceSheetDto -> balanceSheetDto));
+    }
+
+    public Map<String,ProfitAndLossDto> getProfitAndLoss(String stockID) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+//        fundamentalInfoDto.getBalanceSheetDtoList().stream().forEach(balanceSheetDto -> map.put(balanceSheetDto.getDate(),balanceSheetDto));
+
+        return fundamentalInfoDto.getProfitAndLossDtoList().stream().collect(Collectors.toMap(ProfitAndLossDto::getDate, profitAndLossDto -> profitAndLossDto));
+    }
+
+    public Map<String,YearlyReportDto> getYearlyReport(String stockID) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+//        fundamentalInfoDto.getBalanceSheetDtoList().stream().forEach(balanceSheetDto -> map.put(balanceSheetDto.getDate(),balanceSheetDto));
+
+        return fundamentalInfoDto.getYearlyReportDtoList().stream().collect(Collectors.toMap(YearlyReportDto::getDate, yearlyReportDto -> yearlyReportDto));
     }
 
     public List<ProfitAndLossDto> getProfitAndLoss(String stockID, int years) throws Exception {

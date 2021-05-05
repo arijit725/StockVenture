@@ -20,6 +20,7 @@ public class YearlyReportDto implements Comparable<YearlyReportDto>{
     /**
      * Basic EPS under EPS Before Extra Ordinary
      */
+    private double pbit;
     private double basicEPS;
 
     private YearlyReportDto(){
@@ -29,6 +30,15 @@ public class YearlyReportDto implements Comparable<YearlyReportDto>{
     public YearlyReportDto setDate(String date) {
         this.date = date;
         return this;
+    }
+
+    public YearlyReportDto setPbit(double pbit) {
+        this.pbit = pbit;
+        return this;
+    }
+
+    public double getPbit() {
+        return pbit;
     }
 
     public String getDate() {
@@ -75,6 +85,7 @@ public class YearlyReportDto implements Comparable<YearlyReportDto>{
     public String toString() {
         return "YearlyReportDto{" +
                 "date='" + date + '\'' +
+                ", pbit=" + pbit +
                 ", basicEPS=" + basicEPS +
                 '}';
     }

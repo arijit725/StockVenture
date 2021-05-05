@@ -155,10 +155,11 @@ public final class ProfitAndLossDto implements Comparable<ProfitAndLossDto> {
         return new ProfitAndLossDto();
     }
 
-    public void build() throws Exception {
+    public ProfitAndLossDto build() throws Exception {
         validate();
         calculateNetProfitVsNetSalesRatio();
         logger.info("NetProfitVsNetSalesRatio: "+this.netProfitVsNetSalesRatio);
+        return this;
     }
 
     private void validate() throws Exception {
