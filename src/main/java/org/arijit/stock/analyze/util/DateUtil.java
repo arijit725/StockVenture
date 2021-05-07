@@ -18,8 +18,11 @@ public class DateUtil {
     }
 
     public static String dateFomratConverter(String date){
-        String[] brk = date.split(" '");
-        String newDate = brk[0]+"-20"+brk[1];
+        String splitter = " ";
+        if(date.contains("'"))
+            splitter = "'";
+        String[] brk = date.split(splitter);
+        String newDate = brk[0].trim()+"-20"+brk[1].trim();
         return newDate;
     }
 }

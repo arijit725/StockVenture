@@ -8,6 +8,7 @@ import org.arijit.stock.analyze.util.DateUtil;
 import java.text.ParseException;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Balancesheet dto will contain the informations that we need from a company balancesheet.
@@ -50,6 +51,7 @@ public final class BalanceSheetDto implements Comparable<BalanceSheetDto> {
     * */
     private double reserves;
     /* For a good company debt should always decrease. Will be found in old format
+    * In new format Debt  = Long Term Borrowings + Short Term Borrowings
     */
     private double debt;
 
@@ -100,6 +102,19 @@ public final class BalanceSheetDto implements Comparable<BalanceSheetDto> {
 
     public double getEquityShareCapital() {
         return equityShareCapital;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BalanceSheetDto that = (BalanceSheetDto) o;
+        return Objects.equals(date, that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(date);
     }
 
     @Override

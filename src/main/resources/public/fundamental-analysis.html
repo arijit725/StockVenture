@@ -38,7 +38,15 @@
                 <tr><td>TTM EPS:</td><td><input type="text" id="ttmeps"></td></tr>
             </table></td>
         </tr>
-        <tr><td><label for="years" >Years of Entry:</label>
+        <tr>
+            <td>
+                <label for="snl">Seasonal Company : </label>
+                <select name="snl" id="snl" class="year-selection">
+                    <option value="false" selected>NO</option>
+                    <option value="true">YES</option>
+                </select>
+            </td>
+            <td><label for="years" >Years of Entry:</label>
             <select name="years" id="years" class="year-selection">
                 <option value="3">3</option>
                 <option value="5" selected>5</option>
@@ -71,21 +79,24 @@
     <div id="Yearly-Report" class="tabcontent yearlyreport">
     </div>
 
-    <div id="Quarterly-Report" class="tabcontent yearlyreport">
-        not yet implemented!!
+    <div id="Quarterly-Report" class="tabcontent quarterlyreport">
+
     </div>
     <div id="Ratios" class="tabcontent ratios">
     </div>
-    <div id="CashFlow" class="tabcontent ratios">
+    <div id="CashFlow" class="tabcontent cashflow">
         not yet implemented!!
     </div>
 </div>
 <div class="instant-review">
-    <div class="reivew-header">Price Evaluation</div>
-    <table>
-        <tr></tr>
-    </table>
-    This section is for instant report
+<!--    <div class="reivew-header">Misleneous Informatios</div>-->
+<!--    <form action="/action_page.php">-->
+<!--    <table>-->
+<!--        <tr><td><label for="sesonal">Seasonal Company (Yes/No)</label></td><td> <input type="text" id="sesonal" name="sesonal" value="No"></td></tr>-->
+<!--        <tr><td><label for="peAvg">Last 3 Months Average PE Ratio:</label>Last 3 Months Average PE: </td><td><input type="text" id="peAvg" name="peAvg" value="No"></td></tr>-->
+<!--        <tr><td><input type="submit" value="Submit"></td></tr>-->
+<!--    </table>-->
+<!--    </form>-->
 </div>
 <div class="footer">
     <table><tr><td align="center"><input type="button" value="Generate-Report" class="report-generate" onclick="generateReport()"></td></tr></table>

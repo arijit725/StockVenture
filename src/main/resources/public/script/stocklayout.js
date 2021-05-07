@@ -3,6 +3,7 @@ var companyDeatilsUrl ='http://localhost:8080/fundamental/companyDetails';
 var balancesheetDeatilsUrl ='http://localhost:8080/fundamental/balancesheetDetails';
 var profitAndLossDetailUrl = 'http://localhost:8080/fundamental/profitAndLossDetails';
 var yearlyReportDetailUrl = 'http://localhost:8080/fundamental/yearlyReportDetails';
+var quarterlyReportDetailUrl = 'http://localhost:8080/fundamental/quarterlyReportDetails';
 var ratioDetailUrl = 'http://localhost:8080/fundamental/ratioDetails';
 var blUploadlUrl = 'http://localhost:8080/fundamental/uploadbl';
 var plUploadUrl = 'http://localhost:8080/fundamental/uploadpl';
@@ -33,6 +34,9 @@ function openCity(evt, cityName) {
   }
   else if(cityName == "Yearly-Report"){
     yearlyReportsTable();
+  }
+  else if(cityName == "Quarterly-Report"){
+    quarterlyReportTable();
   }
    else if(cityName == "Ratios"){
       ratiosTable();
@@ -66,7 +70,10 @@ function submitCompanyDetails(){
     var ttmpe = document.getElementById("ttmpe").value;
     var ttmeps = document.getElementById("ttmeps").value;
     var years = document.getElementById("years").value;
-    console.log("CompanyName: "+companyName+" marketCap: "+marketCap+" industry: "+industry+" currentSharePrice: "+currentSharePrice+" industryPE: "+industryPE+" faceValue: "+faceValue+" ttmeps: "+ttmeps+" years: "+years)
+    var seasonal = document.getElementById("snl").value;
+//    var cars = document.getElementById("cars").value;
+    console.log("CompanyName: "+companyName+" marketCap: "+marketCap+" industry: "+industry+" currentSharePrice: "+currentSharePrice+" industryPE: "+industryPE+" faceValue: "+faceValue+" ttmeps: "+ttmeps+" years: "+years+" seasonal: "+seasonal);
+
 //    localStorage.setItem("companyName", companyName);
     var companyDetails={
         "companyName":companyName,
@@ -77,7 +84,9 @@ function submitCompanyDetails(){
         "faceValue":faceValue,
         "ttmpe":ttmpe,
         "ttmeps":ttmeps,
-        "years":years
+        "years":years,
+//        "cars":cars,
+        "seasonal":seasonal
     };
     var companyDetailsJson = generateJsonString(companyDetails);
     console.log("Company Details: "+companyDetailsJson)
@@ -404,6 +413,78 @@ function submitYearlyReportDetails(){
     var yearlyReportJson = generateJsonString(yearlyReportDtoList);
     console.log(yearlyReportJson);
     var responseText = postRequest(yearlyReportDetailUrl,yearlyReportJson);
+    tabopen("qropen");
+}
+
+/*======================================Functions for Quarterly Report Handle================================*/
+function quarterReprtDataPoints(){
+    var datapoints = new Array();
+    datapoints.push(["Basic EPS","eps"]);
+    datapoints.push(["YOY Sales Growth","yoySalesGrowth"]);
+    return datapoints;
+}
+
+function createQuarterlyReportHeaders(){
+    var header = new Array();
+    header.push("DataPoints");
+    var today = new Date();
+    var currentYear = today.getFullYear();
+    var month = today.getMonth();
+    var years = 2;
+    if(month>8)
+       header.push("Sep-"+currentYear);
+    if(month>5)
+        header.push("Jun-"+currentYear);
+    if(month>2)
+        header.push("Mar-"+currentYear);
+
+    for(var i=1;i<years;i++){
+        currentYear = currentYear-1;
+        header.push("Dec-"+currentYear);
+        header.push("Sep-"+currentYear);
+        header.push("Jun-"+currentYear);
+        header.push("Mar-"+currentYear);
+    }
+    return header;
+
+}
+
+function quarterlyReportTable(){
+    console.log("creaing quarterly report table");
+    var datapoints = quarterReprtDataPoints();
+    var tableID = document.getElementById("qrtbl");
+    if(tableID!=null){
+        tableID.remove();
+    }
+    var headerList =createQuarterlyReportHeaders();
+    console.log("Generated Headers: "+headerList);
+    createTable("Quarterly-Report","qrtbl",headerList,datapoints,submitQuarterlyReportDetails);
+}
+
+
+function submitQuarterlyReportDetails(){
+    console.log("submitQuarterlyReportDetails action is triggered");
+    var tableID = "qrtbl";
+    var datapoints = quarterReprtDataPoints();
+    var headers = getTableHeader(tableID);
+    var ratioDtoList = new Array();
+    for(var y=0;y<headers.length;y++){
+        var year = headers[y];
+        var yearlyReportDto =  new Map();
+        yearlyReportDto['date']=headers[y];
+        for(var i=0;i<datapoints.length;i++){
+            id  = getCellID(datapoints[i][1],headers[y]);
+            var value = document.getElementById(id).value.trim();
+            value = value.replace(',','');
+            yearlyReportDto[datapoints[i][1]] = value;
+            }
+        ratioDtoList.push(yearlyReportDto);
+    }
+    console.log("Stored Ratio Details records: "+ratioDtoList.length)
+    console.log(ratioDtoList)
+    var ratioDtoJson = generateJsonString(ratioDtoList);
+    console.log(ratioDtoJson);
+    var responseText = postRequest(quarterlyReportDetailUrl,ratioDtoJson);
     tabopen("ratioopen");
 }
 
@@ -447,6 +528,7 @@ function submitRatiosDetails(){
             id  = getCellID(datapoints[i][1],headers[y]);
             var value = document.getElementById(id).value.trim();
             value = value.replace(',','');
+            value=Number(value.split(',').join(''));
             yearlyReportDto[datapoints[i][1]] = value;
             }
         ratioDtoList.push(yearlyReportDto);

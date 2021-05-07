@@ -128,8 +128,8 @@ function balancesheetDataPoints(){
     var datapoints = new Array();
     datapoints.push(["Total Share Capital","total_share_capital"]);
     datapoints.push(["Equity Share Capital","equity_share_capital"]);
-    datapoints.push(["Reserves","reserves"]);
-    datapoints.push(["Debt","debt"]);
+    datapoints.push(["Reserves and Surplus","reserves"]);
+    datapoints.push(["Long Term Borrowings(Debt)","debt"]);
     return datapoints;
 }
 
@@ -879,10 +879,13 @@ function createHeaders(years){
     header.push("DataPoints");
     var today = new Date();
     var currentYear = today.getFullYear();
+    var month = today.getMonth();
+    if(month<4)
+      currentYear = currentYear-1;
 //    var years = document.getElementById("years").value;
     for(var i=0;i<years;i++){
-        currentYear = currentYear-1;
-        header.push("Mar-"+currentYear)
+            header.push("Mar-"+currentYear);
+            currentYear = currentYear-1;
     }
     return header;
 

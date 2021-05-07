@@ -87,6 +87,7 @@ public class FundamentalService {
         if(balanceSheetDtos==null || balanceSheetDtos.length == 0)
             throw new Exception("Balancesheet data not found");
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        fundamentalInfoDto.clearBalancesheetDtos();
         for(BalanceSheetDto balanceSheetDto:balanceSheetDtos){
             fundamentalInfoDto.addBalanceSheetDto(balanceSheetDto);
         }
@@ -100,6 +101,7 @@ public class FundamentalService {
         if(profitAndLossDtos==null || profitAndLossDtos.length == 0)
             throw new Exception("ProfitAndLoss data not found");
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        fundamentalInfoDto.clearProfitAndLossDtos();
         for(ProfitAndLossDto profitAndLossDto:profitAndLossDtos){
             fundamentalInfoDto.addProfitAndLossDto(profitAndLossDto);
         }
@@ -113,8 +115,23 @@ public class FundamentalService {
         if(yearlyReportDtos==null || yearlyReportDtos.length == 0)
             throw new Exception("Yearly Report Details data not found");
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        fundamentalInfoDto.clearYearlyReportDtos();
         for(YearlyReportDto yearlyReportDto:yearlyReportDtos){
             fundamentalInfoDto.addYearlyReportDto(yearlyReportDto);
+        }
+        fundamentalInfoDto.build();
+    }
+
+    public void updateQuarterlyReportDetails(String stockID, String quarterlyReportDetails) throws Exception {
+        Gson gson = new Gson();
+        QuarterlyReportDTO[] quarterlyReportDTOS = gson.fromJson(quarterlyReportDetails, QuarterlyReportDTO[].class);
+        logger.info(Arrays.toString(quarterlyReportDTOS));
+        if(quarterlyReportDTOS==null || quarterlyReportDTOS.length == 0)
+            throw new Exception("Yearly Report Details data not found");
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        fundamentalInfoDto.clearQuarterlyReportDtos();
+        for(QuarterlyReportDTO quarterlyReportDTO:quarterlyReportDTOS){
+            fundamentalInfoDto.addQuarterlyReportDto(quarterlyReportDTO);
         }
         fundamentalInfoDto.build();
     }
@@ -124,8 +141,9 @@ public class FundamentalService {
         RatiosDto[] ratiosDtos = gson.fromJson(ratioDetails, RatiosDto[].class);
         logger.info(Arrays.toString(ratiosDtos));
         if(ratiosDtos==null || ratiosDtos.length == 0)
-            throw new Exception("Ratio data not found");
+            throw new Exception("Quarterly data not found");
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        fundamentalInfoDto.clearRatiosDtos();
         for(RatiosDto ratiosDto:ratiosDtos){
             fundamentalInfoDto.addRatiosDto(ratiosDto);
         }

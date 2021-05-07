@@ -13,7 +13,8 @@ import java.util.Map;
 public class ProfitAndLossPDFParser extends AbstractPDFProcessor {
     private static final Logger logger = LogManager.getLogger(ProfitAndLossPDFParser.class);
 
-    private String[] dataPoints = {"Net Sales","Raw Materials","Employee Cost","Interest","Reported Net Profit"};
+    private String[] dataPoints = {"Revenue From Operations [Net]","Purchase Of Stock-In Trade",
+            "Employee Benefit Expenses","Finance Costs","Profit/Loss For The Period"};
 
     public ProfitAndLossPDFParser(File file){
         super(file);
@@ -37,15 +38,15 @@ public class ProfitAndLossPDFParser extends AbstractPDFProcessor {
                 Map.Entry<String,String> entry1 = it1.next();
                 String key = entry1.getKey();
                 String value = entry1.getValue();
-                if(key.equals("Net Sales"))
+                if(key.equals("Revenue From Operations [Net]"))
                     profitAndLossDto.setNetSales(Double.parseDouble(value));
-                if(key.equals("Raw Materials"))
+                if(key.equals("Purchase Of Stock-In Trade"))
                     profitAndLossDto.setConsumptionRawMaterial(Double.valueOf(value));
-                if(key.equals("Employee Cost"))
+                if(key.equals("Employee Benefit Expenses"))
                     profitAndLossDto.setEmployeeCost(Double.valueOf(value));
-                if(key.equals("Interest"))
+                if(key.equals("Finance Costs"))
                     profitAndLossDto.setInterest(Double.valueOf(value));
-                if(key.equals("Reported Net Profit"))
+                if(key.equals("Profit/Loss For The Period"))
                     profitAndLossDto.setNetProfit(Double.parseDouble(value));
             }
             logger.info("profitAndLossDto: "+profitAndLossDto);

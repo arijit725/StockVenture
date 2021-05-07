@@ -4,6 +4,7 @@ public class CompanyDto {
 
     private String companyName;
     private int years;
+    private boolean seasonal;
 
     private String industry;
     private long marketCap;
@@ -14,8 +15,17 @@ public class CompanyDto {
     private double ttmpe;
     private double ttmeps;
 
+
     public String getCompanyName() {
         return companyName;
+    }
+
+    public boolean isSeasonal() {
+        return seasonal;
+    }
+
+    public void setSeasonal(boolean seasonal) {
+        this.seasonal = seasonal;
     }
 
     public void setCompanyName(String companyName) {
@@ -91,6 +101,7 @@ public class CompanyDto {
         return "CompanyDto{" +
                 "companyName='" + companyName + '\'' +
                 ", years=" + years +
+                ", sesonal="+ seasonal +
                 ", industry='" + industry + '\'' +
                 ", marketCap=" + marketCap +
                 ", faceValue=" + faceValue +

@@ -11,7 +11,7 @@ import java.util.*;
 public class BalanceSheetPDFParser extends AbstractPDFProcessor {
     private static final Logger logger = LogManager.getLogger(BalanceSheetPDFParser.class);
 
-    private String[] dataPoints = {"Total Share Capital","Equity Share Capital","Reserves","Total Debt"};
+    private String[] dataPoints = {"Total Share Capital","Equity Share Capital","Reserves and Surplus","Long Term Borrowings","Short Term Borrowings"};
 
     public BalanceSheetPDFParser(File file){
         super(file);
@@ -39,10 +39,19 @@ public class BalanceSheetPDFParser extends AbstractPDFProcessor {
                     balanceSheetDto.setTotalShareCapital(Double.parseDouble(value));
                 if(key.equals("Equity Share Capital"))
                     balanceSheetDto.setEquityShareCapital(Double.parseDouble(value));
-                if(key.equals("Reserves"))
+                if(key.equals("Reserves and Surplus"))
                     balanceSheetDto.setReserves(Double.parseDouble(value));
-                if(key.equals("Total Debt"))
-                    balanceSheetDto.setDebt(Double.parseDouble(value));
+                if(key.equals("Long Term Borrowings")) {
+                    double val = balanceSheetDto.getDebt();
+                    val = val + Double.parseDouble(value);
+                    balanceSheetDto.setDebt(val);
+                }
+                if(key.equals("Short Term Borrowings")){
+                    double val = balanceSheetDto.getDebt();
+                    val = val + Double.parseDouble(value);
+                    balanceSheetDto.setDebt(val);
+                }
+
             }
             logger.info("BalancesheetDto: "+balanceSheetDto);
             fundamentalInfoDto.addBalanceSheetDto(balanceSheetDto.build());

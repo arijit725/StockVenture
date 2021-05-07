@@ -17,7 +17,7 @@ public class AbstractPDFProcessor implements IMoneyControlPDFParser {
     protected File pdfFile;
     private List<String> dataPoints;
 
-    private List<String> dates;
+    protected List<String> dates;
 
 //    private  parsedContent;
 
@@ -42,9 +42,9 @@ public class AbstractPDFProcessor implements IMoneyControlPDFParser {
             List<String> filteredContent = filterByDataPoints(lines);
             return generateFilteredDatapointMap(filteredContent);
         } catch (IOException e) {
-            logger.error("Unable to parse PDF file :"+pdfFile.getAbsolutePath());
+            logger.error("Unable to parse PDF file :"+pdfFile.getAbsolutePath(),e);
         } catch (Exception e) {
-            logger.error("Unable to parse PDF file :"+pdfFile.getAbsolutePath());
+            logger.error("Unable to parse PDF file :"+pdfFile.getAbsolutePath(),e);
         }
         return Collections.emptyMap();
     }
@@ -97,9 +97,9 @@ public class AbstractPDFProcessor implements IMoneyControlPDFParser {
         return filteredLines;
     }
 
-    private void parseDates(List<String> lines){
-        String patStr = "^((Mar(\\s)+'[0-9]{2})(\\s)*)*$";
-        String patgroup="(Mar\\s+'[0-9]{2})";
+    protected void parseDates(List<String> lines){
+        String patStr = "^((Mar(\\s)+[0-9]{2})(\\s)*)*$";
+        String patgroup="(Mar\\s+[0-9]{2})";
         Pattern pattern = Pattern.compile(patStr);
         for(String line:lines){
             line = line.trim();
@@ -115,8 +115,6 @@ public class AbstractPDFProcessor implements IMoneyControlPDFParser {
 
             }
         }
-
-
     }
 
 }

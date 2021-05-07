@@ -5,9 +5,12 @@ import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.ProfitAndLossDto;
 import org.arijit.stock.analyze.dto.YearlyReportDto;
+import org.arijit.stock.analyze.util.DateUtil;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class YearlyReportParser extends AbstractPDFProcessor {
@@ -85,6 +88,26 @@ public class YearlyReportParser extends AbstractPDFProcessor {
             prevLine = line1;
         }
         return filteredLines;
+    }
+
+    protected void parseDates(List<String> lines){
+        String patStr = "^((Mar(\\s)+'[0-9]{2})(\\s)*)*$";
+        String patgroup="(Mar\\s+'[0-9]{2})";
+        Pattern pattern = Pattern.compile(patStr);
+        for(String line:lines){
+            line = line.trim();
+            Matcher matcher = pattern.matcher(line);
+            if(matcher.matches() && dates==null){
+                dates = new ArrayList<>();
+                Pattern pattern1 = Pattern.compile(patgroup);
+                Matcher matcher1 = pattern1.matcher(line);
+                while(matcher1.find()){
+                    String date = matcher1.group();
+                    dates.add(DateUtil.dateFomratConverter(date));
+                }
+
+            }
+        }
     }
 
 }

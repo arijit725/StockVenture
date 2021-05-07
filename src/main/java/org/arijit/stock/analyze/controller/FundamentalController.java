@@ -106,6 +106,24 @@ public class FundamentalController {
         return Mono.just(res);
     }
 
+    @PostMapping(value = "/quarterlyReportDetails", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity> quarterlyReportDetails(@RequestBody String quarterlyReportDetails, ServerWebExchange webExchange)throws IOException {
+        String stockID = webExchange.getRequest().getHeaders().get("x-stockid").get(0);
+        logger.info("Accpeted quarterlyReport Request: stockID: "+stockID+" "+quarterlyReportDetails);
+        ResponseEntity<String> res = null;
+        try {
+            fundamentalService.updateQuarterlyReportDetails(stockID,quarterlyReportDetails);
+            logger.info("Quarterly Report details updated in memory.");
+            res = ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            res = ResponseEntity.notFound().build();
+        }
+
+        return Mono.just(res);
+    }
+
+
     @PostMapping(value = "/ratioDetails", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity> ratioDetails(@RequestBody String ratioDetails, ServerWebExchange webExchange)throws IOException {
         String stockID = webExchange.getRequest().getHeaders().get("x-stockid").get(0);

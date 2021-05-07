@@ -25,6 +25,7 @@ public final class FundamentalInfoDto {
     private List<ProfitAndLossDto> profitAndLossDtoList;
     private List<RatiosDto> ratiosDtoList;
     private List<YearlyReportDto> yearlyReportDtoList;
+    private List<QuarterlyReportDTO> quarterlyReportDtoList;
 
     private FundamentalInfoDto(){
 
@@ -36,6 +37,7 @@ public final class FundamentalInfoDto {
         fundamentalInfoDto.profitAndLossDtoList = new ArrayList<>(years);
         fundamentalInfoDto.ratiosDtoList = new ArrayList<>(years);
         fundamentalInfoDto.yearlyReportDtoList = new ArrayList<>(years);
+        fundamentalInfoDto.quarterlyReportDtoList = new ArrayList<>(years);
         return fundamentalInfoDto;
     }
 
@@ -97,6 +99,11 @@ public final class FundamentalInfoDto {
         return this;
     }
 
+    public FundamentalInfoDto addQuarterlyReportDto(QuarterlyReportDTO quarterlyReportDto) {
+        this.quarterlyReportDtoList.add(quarterlyReportDto);
+        return this;
+    }
+
     public CompanyDto getCompanyDto() {
         return this.companyDto;
     }
@@ -133,23 +140,32 @@ public final class FundamentalInfoDto {
         return yearlyReportDtoList;
     }
 
-//    public double getFaceValue() {
-//        return faceValue;
-//    }
+    public void clearBalancesheetDtos(){
+        this.balanceSheetDtoList.clear();
+    }
 
-//    public double getCurrentSharePrice() {
-//        return currentSharePrice;
-//    }
-//
-//    public double getIndustryPE() {
-//        return industryPE;
-//    }
+    public void clearProfitAndLossDtos(){
+        this.profitAndLossDtoList.clear();
+    }
+
+    public void clearYearlyReportDtos(){
+        this.yearlyReportDtoList.clear();
+    }
+
+    public void clearQuarterlyReportDtos(){
+        this.quarterlyReportDtoList.clear();
+    }
+
+    public void clearRatiosDtos(){
+        this.ratiosDtoList.clear();
+    }
 
     public FundamentalInfoDto build(){
         Collections.sort(this.balanceSheetDtoList,Collections.reverseOrder());
         Collections.sort(this.ratiosDtoList,Collections.reverseOrder());
         Collections.sort(this.yearlyReportDtoList,Collections.reverseOrder());
         Collections.sort(this.profitAndLossDtoList,Collections.reverseOrder());
+        Collections.sort(this.quarterlyReportDtoList,Collections.reverseOrder());
         return this;
     }
 
