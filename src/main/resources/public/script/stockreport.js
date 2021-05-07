@@ -18,6 +18,9 @@ var getProfitAndLossAnalysisUrl='http://localhost:8080/fundamental/profitAndLoss
 
 var getRatiosUrl = 'http://localhost:8080/fundamental/ratios/'+stockID;
 var getRatiosAnalysusUrl='http://localhost:8080/fundamental/ratioAnalysis/'+stockID;
+var stockValuationUrl = 'http://localhost:8080/fundamental/stockvaluation/'+stockID;
+var getStockValuationUrl='http://localhost:8080/fundamental/getStockValuation/'+stockID;
+
 
 var targetPriceUrl = 'http://localhost:8080/fundamental/targetPrice/'+stockID;
 
@@ -616,6 +619,7 @@ function ratiosDataPoints(){
     datapoints.push(["Return On Equity","roe"," PE Ratio ToolTips PlaceHolder"]);
     datapoints.push(["Enterprise Value","ev"," PE Ratio ToolTips PlaceHolder"]);
     datapoints.push(["EV/EBITDA","evEbitda"," PE Ratio ToolTips PlaceHolder"]);
+    datapoints.push(["Debt-To-Equity Ratio","debtToEquityRatio"," Debt to equity ratio placeholder"]);
     return datapoints;
 }
 
@@ -635,17 +639,19 @@ function ROEToolTips(){
 
 function createRatiosDataPoints(dataJson){
     var dataJsonList = JSON.parse(dataJson);
-    console.log("inside createPlDataPoints: datapoints count: "+dataJsonList.length);
+    console.log("inside createRatiosDataPoints: datapoints count: "+dataJsonList.length);
 
     var plFY = new Map();
     for(var i =0;i<dataJsonList.length;i++){
         var data = dataJsonList[i];
+        console.log(data);
         var datamap = new Map();
         datamap['peRatio']=data.peRatio;
         datamap['pbRatio']=data.pbRatio;
         datamap['roe']=data.roe;
         datamap['ev']=data.ev;
         datamap['evEbitda']=data.evEbitda;
+        datamap['debtToEquityRatio']=data.debtToEquityRatio;
         plFY[data.date] = datamap;
     }
     return plFY;
@@ -654,7 +660,7 @@ function createRatiosDataPoints(dataJson){
 function ratiosTable(years){
      var jsonResonse = getDataFY(getRatiosUrl,years);
     var dataFY = createRatiosDataPoints(jsonResonse);
-    console.log("creaing RatiosTable: "+dataFY.peRatio);
+    console.log("creating RatiosTable: "+dataFY.peRatio);
     var datapoints = ratiosDataPoints();
 
     var headerList =createHeaders(years);
@@ -744,8 +750,32 @@ function onRYearSelection(){
    ratiosAnalysis(years);
 }
 
+/*====================== Quarterly Intrinsic Stock Valuation  =========================*/
 
+function requestQtrIntriscStockValuation(){
+    var peAvg = document.getElementById("peAvg").value;
+    console.log("peAvg: "+peAvg);
 
+    var request={
+        "peAvg":peAvg
+    };
+    var requestBody = generateJsonString(request);
+    console.log("requestQtrIntriscStockValuation request body:  "+requestBody);
+    var url = stockValuationUrl+'/quarterlyIntrinsic';
+    console.log("Posting data to url: "+url);
+    var jsonResonse = postRequest(url,requestBody, showQtrIntrinsicStockValue);
+}
+
+function showQtrIntrinsicStockValue(){
+    var url = getStockValuationUrl+'/quarterlyIntrinsic';
+    var jsonResonse = GetRawBookContent(url);
+    console.log("showQtrIntrinsicStockValue: response: "+jsonResonse)
+    var targetPriceLbl = document.createElement("LABEL");
+     targetPriceLbl.innerHTML=jsonResonse;
+
+     var qtInEval = document.getElementById("qtInEval");
+     qtInEval.appendChild(targetPriceLbl);
+}
 /*====================== Target Price Estimation =========================*/
 
 
@@ -838,7 +868,26 @@ function GetRawBookContent(yourUrl){
     return Httpreq.responseText;
 }
 
+function postRequest(url, requestBody,onloadfunc){
+        var Httpreq = new XMLHttpRequest(); // a new request
+        Httpreq.open("POST",url,true);
+        Httpreq.setRequestHeader('x-stockid',stockID);
+        Httpreq.setRequestHeader('Content-type','application/json; charset=utf-8');
+        Httpreq.send(requestBody);
+
+        Httpreq.onload =onloadfunc;
+
+        return Httpreq.responseText;
+}
+
 /*============================  Utility Functions ===================================*/
+
+
+
+function generateJsonString(obj){
+    var jsonStr = JSON.stringify(obj);
+    return jsonStr
+}
 
 function createGrowthLabel(cellid, growthVal){
     var parent = document.getElementById(cellid);

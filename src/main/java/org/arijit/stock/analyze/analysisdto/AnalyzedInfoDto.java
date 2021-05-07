@@ -10,6 +10,7 @@ public class AnalyzedInfoDto {
     private final TargetPriceEstimationDto targetPriceEstimationDto;
     private final RatioAnalysisInfo ratioAnalysisInfo;
     private final ProfitAndLossAnalysisInfo profitAndLossAnalysisInfo;
+    private final MisleneousAnalysisInfo misleneousAnalysisInfo;
 
     private AnalyzedInfoDto(){
         balanceSheetAnalysisInfo = new BalanceSheetAnalysisInfo();
@@ -17,6 +18,7 @@ public class AnalyzedInfoDto {
         targetPriceEstimationDto = new TargetPriceEstimationDto();
         ratioAnalysisInfo = new RatioAnalysisInfo();
         profitAndLossAnalysisInfo = new ProfitAndLossAnalysisInfo();
+        misleneousAnalysisInfo = new MisleneousAnalysisInfo();
     }
 
     public static AnalyzedInfoDto create(){
@@ -43,6 +45,11 @@ public class AnalyzedInfoDto {
         return ratioAnalysisInfo;
     }
 
+    public MisleneousAnalysisInfo getMisleneousAnalysisInfo() {
+        return misleneousAnalysisInfo;
+    }
+
+
     @Override
     public String toString() {
         return "AnalyzedInfoDto{" +
@@ -51,6 +58,7 @@ public class AnalyzedInfoDto {
                 ", targetPriceEstimationDto=" + targetPriceEstimationDto +
                 ", ratioAnalysisInfo=" + ratioAnalysisInfo +
                 ", profitAndLossAnalysisInfo="+profitAndLossAnalysisInfo+
+                ", misleneousAnalysisInfo="+misleneousAnalysisInfo+
                 '}';
     }
 }

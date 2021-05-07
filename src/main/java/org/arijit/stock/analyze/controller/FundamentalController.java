@@ -12,6 +12,7 @@ import org.arijit.stock.analyze.dto.*;
 import org.arijit.stock.analyze.parser.BalanceSheetPDFParser;
 import org.arijit.stock.analyze.parser.ProfitAndLossPDFParser;
 import org.arijit.stock.analyze.service.FundamentalService;
+import org.arijit.stock.analyze.service.StockAnalysisService;
 import org.arijit.stock.analyze.util.StockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -43,6 +44,9 @@ public class FundamentalController {
 
     @Autowired
     private FundamentalService fundamentalService;
+
+    @Autowired
+    private StockAnalysisService stockAnalysisService;
 
 
 
@@ -144,7 +148,7 @@ public class FundamentalController {
     @PostMapping(value = "/storeDetails", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity> storeDetails(@RequestBody String ratioDetails, ServerWebExchange webExchange)throws IOException {
         String stockID = webExchange.getRequest().getHeaders().get("x-stockid").get(0);
-        logger.info("Accpeted ratioDetails Request: stockID: "+stockID);
+        logger.info("Accpeted storeDetails persist Request: stockID: "+stockID);
         ResponseEntity<String> res = null;
         try {
             fundamentalService.storeStock(stockID);
@@ -633,5 +637,61 @@ public class FundamentalController {
         return Mono.just(res);
     }
 
+
+
+    @PostMapping(value = "/stockvaluation/{stockid}/{type}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity> stockValuation(@PathVariable("stockid") String stockID, @PathVariable("type") String valuationType,@RequestBody String requestBody, ServerWebExchange webExchange)throws IOException {
+//        String stockID = webExchange.getRequest().getHeaders().get("x-stockid").get(0);
+        logger.info("Accpeted stockValuation Request: stockID: "+stockID+requestBody);
+        ResponseEntity<String> res = null;
+        try {
+            switch (valuationType){
+                case "evebitda":
+                    break;
+                case "quarterlyIntrinsic":
+                        String targetPrice = stockAnalysisService.quarterlyIntrinsicValuation(stockID,requestBody);
+                        res = ResponseEntity.ok(targetPrice);
+                    break;
+                default:
+                    logger.error("Valuation model not found for type: "+valuationType);
+                    res = ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.error("Unable to prepare stock valuation report",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
+    @GetMapping(value = "/getStockValuation/{stockid}/{type}")
+    public Mono<ResponseEntity> getValuation(@PathVariable("stockid") String stockID, @PathVariable("type") String valuationType, ServerWebExchange webExchange)throws IOException {
+        logger.info(" Request for: stockID: "+stockID+" type: "+valuationType);
+
+        ResponseEntity<String> res = null;
+        try {
+            switch (valuationType) {
+                case "evebitda":
+                    break;
+                case "quarterlyIntrinsic":
+                    String targetPrice = stockAnalysisService.getQuarterlyIntrinsicValuation(stockID);
+                    res = ResponseEntity.ok(targetPrice);
+                    break;
+                default:
+                    logger.error("Valuation model not found for type: " + valuationType);
+                    res = ResponseEntity.notFound().build();
+            }
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
 
 }

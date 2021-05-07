@@ -130,10 +130,12 @@
     </div>
 </div>
 <div class="instant-review">
-    <div class="reivew-header">Valuations</div>
-    <table>
-        <tr></tr>
-    </table>
+    <div class="reivew-header">Quarterly Intrinsic Valuations</div>
+        <table>
+            <tr><td><label for="peAvg">Last 3 Months Average PE Ratio:</label></td><td><input type="text" id="peAvg" name="peAvg"></td><td><input type="submit" value="Submit" onclick="requestQtrIntriscStockValuation()"></td></tr>
+        </table>
+        <div id="qtInEval">
+        </div>
     This section is for instant report
 </div>
 <div id="targetPrice" class="targetPrice">

@@ -17,6 +17,13 @@ public class TargetPriceEstimationDto {
         targetPriceMap.put("evebitda",evebitdaValuationModelDto);
     }
 
+    public void setQuarterlyIntrinsicTargetPrice(String targetPrice){
+        targetPriceMap.put("qtrIntrtrgt",targetPrice);
+    }
+
+    public String getQuarterlyIntrinsicTargetPrice(){
+        return targetPriceMap.get("qtrIntrtrgt").toString();
+    }
     @Override
     public String toString() {
         return "TargetPriceEstimationDto{" +

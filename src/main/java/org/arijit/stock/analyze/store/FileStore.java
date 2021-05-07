@@ -48,7 +48,7 @@ public class FileStore implements IStore {
             Files.write(path, jsonString.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
         }catch (NoSuchFileException e){
             logger.info("Creating "+path.toAbsolutePath().toString());
-            Files.write(path, jsonString.getBytes(), StandardOpenOption.CREATE_NEW);
+            Files.write(path, jsonString.getBytes(), StandardOpenOption.CREATE);
         }
         logger.info("Company Fundamentalinfo written at Path: "+path.toAbsolutePath().toString());
     }

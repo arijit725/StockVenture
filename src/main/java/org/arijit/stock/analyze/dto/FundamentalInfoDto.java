@@ -54,31 +54,6 @@ public final class FundamentalInfoDto {
         return this;
     }
 
-//    public FundamentalInfoDto setIndustry(String industry) {
-//        this.industry = industry;
-//        return this;
-//    }
-
-//    public FundamentalInfoDto setMarketCap(long marketCap) {
-//        this.marketCap = marketCap;
-//        return this;
-//    }
-
-//    public FundamentalInfoDto setFaceValue(double faceValue) {
-//        this.faceValue = faceValue;
-//        return this;
-//    }
-
-//    public FundamentalInfoDto setCurrentSharePrice(double currentSharePrice) {
-//        this.currentSharePrice = currentSharePrice;
-//        return this;
-//    }
-
-//    public FundamentalInfoDto setIndustryPE(double industryPE) {
-//        this.industryPE = industryPE;
-//        return this;
-//    }
-
     public FundamentalInfoDto addBalanceSheetDto(BalanceSheetDto balanceSheetDto) {
         this.balanceSheetDtoList.add(balanceSheetDto);
         return this;
@@ -108,22 +83,6 @@ public final class FundamentalInfoDto {
         return this.companyDto;
     }
 
-//    public String getCompanyName() {
-//        return companyName;
-//    }
-
-//    public int getYears() {
-//        return years;
-//    }
-
-//    public String getIndustry() {
-//        return industry;
-//    }
-
-//    public long getMarketCap() {
-//        return marketCap;
-//    }
-
     public List<BalanceSheetDto> getBalanceSheetDtoList() {
         return balanceSheetDtoList;
     }
@@ -138,6 +97,10 @@ public final class FundamentalInfoDto {
 
     public List<YearlyReportDto> getYearlyReportDtoList() {
         return yearlyReportDtoList;
+    }
+
+    public List<QuarterlyReportDTO> getQuarterlyReportDtoList() {
+        return quarterlyReportDtoList;
     }
 
     public void clearBalancesheetDtos(){

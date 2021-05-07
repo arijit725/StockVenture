@@ -32,6 +32,14 @@ public class QuarterlyReportDTO implements Comparable<QuarterlyReportDTO> {
         return this;
     }
 
+    public double getEps() {
+        return eps;
+    }
+
+    public double getYoySalesGrowth() {
+        return yoySalesGrowth;
+    }
+
     public static QuarterlyReportDTO builder(){
         return new QuarterlyReportDTO();
     }
