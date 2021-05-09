@@ -16,6 +16,12 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
 
     private static final Logger logger = LogManager.getLogger(BalanceSheetEvaluation.class);
 
+    private boolean evaluated = false;
+    @Override
+    public boolean isEvaluated() {
+        return evaluated;
+    }
+
     @Override
     public void evaluate(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year) throws Exception {
         List<BalanceSheetDto> balanceSheetDtoList = fundamentalInfoDto.getBalanceSheetDtoList();
@@ -57,6 +63,8 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
         analyzedInfoDto.getBalanceSheetAnalysisInfo().setDebtChangePercentage(debtChangeRatio);
 
         debtToReserveRatio(analyzedInfoDto.getBalanceSheetAnalysisInfo(),balanceSheetDtoList);
+
+        evaluated = true;
     }
 
     private void debtToReserveRatio(BalanceSheetAnalysisInfo balanceSheetAnalysisInfo, List<BalanceSheetDto> balanceSheetDtos){

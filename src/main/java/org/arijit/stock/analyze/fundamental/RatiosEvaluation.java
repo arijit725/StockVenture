@@ -7,10 +7,12 @@ import org.arijit.stock.analyze.analysisdto.RatioAnalysisInfo;
 import org.arijit.stock.analyze.dto.CompanyDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.RatiosDto;
+import org.arijit.stock.analyze.dto.YearlyReportDto;
 import org.arijit.stock.analyze.enums.ValuationEnums;
 import org.arijit.stock.analyze.util.StockUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class will evaluate different ratios, will calculate future possible ratios.
@@ -18,9 +20,17 @@ import java.util.*;
 public class RatiosEvaluation implements IFundamentalEvaluation{
 
     private static Logger logger = LogManager.getLogger(RatiosEvaluation.class);
+
+    private boolean evaluated;
     private RatiosEvaluation(){
 
     }
+
+    @Override
+    public boolean isEvaluated() {
+        return evaluated;
+    }
+
     @Override
     public void evaluate(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year) throws Exception {
         List<RatiosDto> ratioDtoList  = fundamentalInfoDto.getRatiosDtoList();
@@ -28,8 +38,11 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
             throw new Exception("Number of year exceeds RatioDtoList list");
         calcForwardPE(fundamentalInfoDto,analyzedInfoDto,year);
         calcGrowth(analyzedInfoDto.getRatioAnalysisInfo(),ratioDtoList);
+        calcPEGRatio(fundamentalInfoDto,analyzedInfoDto,year);
         evaluateMultiBagger(analyzedInfoDto,ratioDtoList);
         evaluatePE(analyzedInfoDto,fundamentalInfoDto.getCompanyDto());
+
+        evaluated = true;
     }
 
 
@@ -42,36 +55,38 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
             if(lastRatiosDto==null)
                 lastRatiosDto = iterator.next();
             else{
-                RatiosDto currentRatiosDto = iterator.next();
-                double peRatioGrowth = (lastRatiosDto.getPeRatio()-currentRatiosDto.getPeRatio())/currentRatiosDto.getPeRatio();
+                RatiosDto prevRatiosDto = iterator.next();
+                double peRatioGrowth = (lastRatiosDto.getPeRatio()-prevRatiosDto.getPeRatio())/prevRatiosDto.getPeRatio();
                 peRatioGrowth = (double) peRatioGrowth*100;
                 ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"peRatio",StockUtil.convertDoubleToPrecision(peRatioGrowth, precision));
 
-                double pbRatioGrowth = (lastRatiosDto.getPbRatio()-currentRatiosDto.getPbRatio())/currentRatiosDto.getPbRatio();
+                double pbRatioGrowth = (lastRatiosDto.getPbRatio()-prevRatiosDto.getPbRatio())/prevRatiosDto.getPbRatio();
                 pbRatioGrowth = (double) pbRatioGrowth*100;
                 ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"pbRatio",StockUtil.convertDoubleToPrecision(pbRatioGrowth, precision));
 
-                double roeGrowth = (lastRatiosDto.getRoe()-currentRatiosDto.getRoe())/currentRatiosDto.getRoe();
+                double roeGrowth = (lastRatiosDto.getRoe()-prevRatiosDto.getRoe())/prevRatiosDto.getRoe();
                 roeGrowth = (double) roeGrowth*100;
                 ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"roe",StockUtil.convertDoubleToPrecision(roeGrowth, precision));
 
-                double evGrowth = (lastRatiosDto.getEv()-currentRatiosDto.getEv())/currentRatiosDto.getEv();
+                double evGrowth = (lastRatiosDto.getEv()-prevRatiosDto.getEv())/prevRatiosDto.getEv();
                 evGrowth = (double) evGrowth*100;
                 ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"ev",StockUtil.convertDoubleToPrecision(evGrowth, precision));
 
-                double evEbitdaGrowth = (lastRatiosDto.getEvEbitda()-currentRatiosDto.getEvEbitda())/currentRatiosDto.getEvEbitda();
+                double evEbitdaGrowth = (lastRatiosDto.getEvEbitda()-prevRatiosDto.getEvEbitda())/prevRatiosDto.getEvEbitda();
                 evEbitdaGrowth = (double) evEbitdaGrowth*100;
                 ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"evEbitda",StockUtil.convertDoubleToPrecision(evEbitdaGrowth, precision));
 
-                lastRatiosDto = currentRatiosDto;
-//                RatioAnalysisInfo.RatioGrowthsDto ratioGrowthsDto = RatioAnalysisInfo.RatioGrowthsDto.create(lastRatiosDto.getDate())
-//                        .setPeRatio(StockUtil.convertDoubleToPrecision(peRatioGrowth, precision))
-//                        .setPbRatio(StockUtil.convertDoubleToPrecision(pbRatioGrowth,precision))
-//                        .setRoe(StockUtil.convertDoubleToPrecision(roeGrowth,precision))
-//                        .setEv(StockUtil.convertDoubleToPrecision(evGrowth,precision))
-//                        .setEvEbitda(StockUtil.convertDoubleToPrecision(evEbitdaGrowth,precision));
-            }
 
+                double debtToEquityGrowth = (lastRatiosDto.getDebtToEquityRatio()-prevRatiosDto.getDebtToEquityRatio());
+                if(debtToEquityGrowth==0)
+                    ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"debtToEquityRatio","0");
+                else {
+                    debtToEquityGrowth = debtToEquityGrowth/prevRatiosDto.getDebtToEquityRatio();
+                    debtToEquityGrowth = (double) debtToEquityGrowth*100;
+                    ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"debtToEquityRatio",StockUtil.convertDoubleToPrecision(debtToEquityGrowth, precision));
+                }
+                lastRatiosDto = prevRatiosDto;
+            }
         }
     }
 
@@ -126,40 +141,82 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
         analyzedInfoDto.getRatioAnalysisInfo().setPossibilityOfMultiBagger(isMultiBagger);
     }
 
+    private void calcPEGRatio(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int years){
+        List<YearlyReportDto> yearlyReportDtoList= fundamentalInfoDto.getYearlyReportDtoList().stream().limit(years).collect(Collectors.toList());
+        logger.info("yearlyReportDtoList: "+yearlyReportDtoList);
+        double avgEPS = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).sum();
+        if(years>=fundamentalInfoDto.getYearlyReportDtoList().size())
+            years=years-1; // if we are reaching maximum input of yearly report, we can not consider last one as there gorwoth will be 0.
+        avgEPS = (double) avgEPS/(years);
+        double currentTTMPE = fundamentalInfoDto.getCompanyDto().getTtmpe();
+        logger.info("Average EPS for last "+years+" years :: "+avgEPS+" Current TTM PE Ratio :"+currentTTMPE);
+        double pegRatio = (double) currentTTMPE/avgEPS;
+        logger.info("PEGRatio : "+pegRatio);
+
+
+        ValuationEnums pegValuation = ValuationEnums.FAIR_VALUED;
+        if(pegRatio<0)
+            pegValuation = ValuationEnums.AVOID;
+        else if(pegRatio>=4)
+            pegValuation = ValuationEnums.OVER_VALUED;
+        analyzedInfoDto.getRatioAnalysisInfo().setPEGRatio(StockUtil.convertDoubleToPrecision(pegRatio,2));
+        analyzedInfoDto.getRatioAnalysisInfo().setPEGValuation(pegValuation);
+        logger.info("PEG Valuation: "+analyzedInfoDto.getRatioAnalysisInfo().getPegRatioAnalysis());
+    }
 
 
     private void calcForwardPE(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year){
 //        double currentSharePrice,FundamentalInfoDto fundamentalInfoDto,int year
         double currentSharePrice = fundamentalInfoDto.getCompanyDto().getCurrentSharePrice();
-        double estimatedEPS = analyzedInfoDto.getYearlyReportAnalysisInfo().getEstimatedEPS();
+        double estimatedEPS = analyzedInfoDto.getYearlyReportAnalysisInfo().getEstimatedEPSCAGR();
         logger.info("currentSharePrice: "+currentSharePrice+" estimatedEPS: "+estimatedEPS);
-        double forwardPERatio = calcForwardPE(currentSharePrice,estimatedEPS);
+        double yearlyforwardPERatio = calcForwardPE(currentSharePrice,estimatedEPS);
+        double qtrForwardPERatio = caclQtrForwardPE(fundamentalInfoDto,analyzedInfoDto);
+//        double currentPERatio = fundamentalInfoDto.getRatiosDtoList().get(0).getPeRatio();
+        double currentPERatio = fundamentalInfoDto.getCompanyDto().getTtmpe();
+        double forwardPERatio = (double)(qtrForwardPERatio+yearlyforwardPERatio)/2;
 
-        double currentPERatio = fundamentalInfoDto.getRatiosDtoList().get(0).getPeRatio();
         ValuationEnums valuationEnums = analyzeForwardPE(currentPERatio,forwardPERatio);
+        logger.info("CurrentPERation: "+currentPERatio+" Yearly ForwardPERatio: "+yearlyforwardPERatio+"  Quarterly ForwardPERatio: "+qtrForwardPERatio+" ForwardPE: "+forwardPERatio+" Valuation: "+valuationEnums);
 
-        logger.info("CurrentPERation: "+currentPERatio+" ForwardPERatio: "+forwardPERatio+" Valuation: "+valuationEnums);
-
-        analyzedInfoDto.getRatioAnalysisInfo().setForwardPERatio(forwardPERatio);
+        analyzedInfoDto.getRatioAnalysisInfo().setCurrentTTMPERatio(StockUtil.convertDoubleToPrecision(currentPERatio,2));
+        analyzedInfoDto.getRatioAnalysisInfo().setForwardPERatio(StockUtil.convertDoubleToPrecision(forwardPERatio,2));
         analyzedInfoDto.getRatioAnalysisInfo().setForwardPEValuation(valuationEnums);
+        analyzedInfoDto.getRatioAnalysisInfo().setQuarterlyForwardPERatio(StockUtil.convertDoubleToPrecision(qtrForwardPERatio,2));
+        analyzedInfoDto.getRatioAnalysisInfo().setYearlyForwardPERatio(StockUtil.convertDoubleToPrecision(yearlyforwardPERatio,2));
+
+        logger.info("Forward PE Analysis Report: "+analyzedInfoDto.getRatioAnalysisInfo().getForwardPEAnalysis());
     }
 
 
 
+    private double caclQtrForwardPE(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){
+//        double currentSharePrice,FundamentalInfoDto fundamentalInfoDto,int year
+        double currentSharePrice = fundamentalInfoDto.getCompanyDto().getCurrentSharePrice();
+        double estimatedEPS = analyzedInfoDto.getQuarterlyReportAnalysisInfo().getEstimatedEPS();
+        logger.info("[Quarterly ] estimatedEPS: "+estimatedEPS);
+        double forwardPERatio = calcForwardPE(currentSharePrice,estimatedEPS);
+
+        return forwardPERatio;
+
+    }
+
     private double calcForwardPE(double currentSharePrice,double estimatedEPS ){
-        logger.info("currentSharePrice: "+currentSharePrice+" estimatedEPS: "+estimatedEPS);
         double forwardPERatio = currentSharePrice / estimatedEPS;
-        logger.info("Calculated forward PE: "+forwardPERatio);
+        logger.debug("Calculated forward PE: "+forwardPERatio);
         return forwardPERatio;
 
     }
     private ValuationEnums analyzeForwardPE(double currentPE,double forwardPE){
-        if(forwardPE<currentPE)
+        double threshold = 20;
+        double maxForwardPE = (double)currentPE*threshold/100+currentPE;
+        double minForwardPE = currentPE-(double)currentPE*threshold/100;
+        if(forwardPE<=minForwardPE)
             return ValuationEnums.UNDER_VALUED;
-        if(forwardPE==currentPE)
-            return ValuationEnums.FAIR_VALUED;
-        else
+        if(forwardPE>=maxForwardPE)
             return ValuationEnums.OVER_VALUED;
+        else
+            return ValuationEnums.FAIR_VALUED;
     }
 
 

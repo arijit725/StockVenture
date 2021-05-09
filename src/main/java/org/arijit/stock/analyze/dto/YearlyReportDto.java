@@ -23,6 +23,8 @@ public class YearlyReportDto implements Comparable<YearlyReportDto>{
     private double pbit;
     private double basicEPS;
 
+    private double epsGrowthRate;
+
     private YearlyReportDto(){
 
     }
@@ -35,6 +37,14 @@ public class YearlyReportDto implements Comparable<YearlyReportDto>{
     public YearlyReportDto setPbit(double pbit) {
         this.pbit = pbit;
         return this;
+    }
+
+    public double getEpsGrowthRate() {
+        return epsGrowthRate;
+    }
+
+    public void setEpsGrowthRate(double epsGrowthRate) {
+        this.epsGrowthRate = epsGrowthRate;
     }
 
     public double getPbit() {

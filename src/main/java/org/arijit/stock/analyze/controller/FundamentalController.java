@@ -3,10 +3,7 @@ package org.arijit.stock.analyze.controller;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.arijit.stock.analyze.analysisdto.BalanceSheetAnalysisInfo;
-import org.arijit.stock.analyze.analysisdto.ProfitAndLossAnalysisInfo;
-import org.arijit.stock.analyze.analysisdto.RatioAnalysisInfo;
-import org.arijit.stock.analyze.analysisdto.TargetPriceEstimationDto;
+import org.arijit.stock.analyze.analysisdto.*;
 import org.arijit.stock.analyze.cache.MemCache;
 import org.arijit.stock.analyze.dto.*;
 import org.arijit.stock.analyze.parser.BalanceSheetPDFParser;
@@ -327,6 +324,33 @@ public class FundamentalController {
         return Mono.just(res);
     }
 
+
+    @GetMapping(value = "/yearlyreport/{stockID}/{years}")
+    public Mono<ResponseEntity> getyearlyReport(@PathVariable("stockID") String stockID, @PathVariable("years") int years, ServerWebExchange webExchange)throws IOException {
+        logger.info("ProfitAndLoss Request for: stockID: "+stockID+" years: "+years);
+
+        ResponseEntity<String> res = null;
+        try {
+            List<YearlyReportDto> balanceSheetDtoList = fundamentalService.getYearlyReport(stockID,years);
+            if(balanceSheetDtoList == null || balanceSheetDtoList.isEmpty())
+                res = ResponseEntity.noContent().build();
+            else{
+                String jsonString = StockUtil.generateJsonString(balanceSheetDtoList);
+                logger.info("Response: Balancesheet list: size: "+balanceSheetDtoList.size()+" jsonString: "+jsonString);
+                res = ResponseEntity.ok().body(jsonString);
+            }
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
 
     @GetMapping(value = "/ratios/{stockID}/{years}")
     public Mono<ResponseEntity> getRatios(@PathVariable("stockID") String stockID, @PathVariable("years") int years, ServerWebExchange webExchange)throws IOException {
@@ -694,4 +718,37 @@ public class FundamentalController {
         return Mono.just(res);
     }
 
+    @GetMapping(value = "/analysis/{stockid}/{type}/{year}")
+    public Mono<ResponseEntity> getValuation(@PathVariable("stockid") String stockID, @PathVariable("type") String type, @PathVariable("year") int year, ServerWebExchange webExchange)throws IOException {
+        logger.info(" Request for: stockID: "+stockID+" type: "+type);
+
+        ResponseEntity<String> res = null;
+        try {
+            switch (type) {
+                case "balancesheet":
+                    break;
+                case "profitandloss":
+                    break;
+                case "yearlyreport":
+                    logger.info("Accepted Yearly report request: "+stockID+"  "+type+"  "+year);
+                    YearlyReportAnalysisInfo analyzedYearlyReport = stockAnalysisService.getAnalyzedYearlyReport(stockID,year);
+                    String analyzeReport = StockUtil.generateJsonString(analyzedYearlyReport);
+                    res = ResponseEntity.ok(analyzeReport);
+                    break;
+                default:
+                    logger.error("Valuation model not found for type: " + type);
+                    res = ResponseEntity.notFound().build();
+            }
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
 }

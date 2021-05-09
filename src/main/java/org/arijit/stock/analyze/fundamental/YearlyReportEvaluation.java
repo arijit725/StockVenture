@@ -6,13 +6,16 @@ import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.YearlyReportDto;
 import org.arijit.stock.analyze.util.FundamentalAnalysisUtil;
+import org.arijit.stock.analyze.util.StockUtil;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class YearlyReportEvaluation implements IFundamentalEvaluation {
 
     private static final Logger logger = LogManager.getLogger(YearlyReportEvaluation.class);
 
+    private boolean evaluated = false;
     private YearlyReportEvaluation(){
 
     }
@@ -27,21 +30,55 @@ public class YearlyReportEvaluation implements IFundamentalEvaluation {
 //        double epsCAGR = FundamentalAnalysisUtil.cagr(endYearReport.getBasicEPS(), startYearReport.getBasicEPS(),year);
 //        double estimatedEPS = ((endYearReport.getBasicEPS()*epsCAGR)/100)+endYearReport.getBasicEPS();
         double estimatedEPS = calcEstimatedEPS(endYearReport.getBasicEPS(),startYearReport.getBasicEPS(),year);
-        logger.info("Estimated EPS: "+estimatedEPS);
-        analyzedInfoDto.getYearlyReportAnalysisInfo().setEstimatedEPS(estimatedEPS);
-
+        analyzedInfoDto.getYearlyReportAnalysisInfo().setEstimatedEPSCAGR(estimatedEPS);
     }
 
     public double calcEstimatedEPS(double endingEPS, double startingEPS,int year){
         double epsCAGR = FundamentalAnalysisUtil.cagr(endingEPS, startingEPS,year);
-
+        logger.info("Yearly EPS Growth Rate (CAGR) : "+epsCAGR);
         double estimatedEPS = ((endingEPS*epsCAGR)/100)+endingEPS;
         logger.info("Calculated Estimated EPS: "+estimatedEPS);
         return estimatedEPS;
     }
+
+    private double calcAvgEps(FundamentalInfoDto fundamentalInfoDto, int years){
+        double avgEPS = fundamentalInfoDto.getYearlyReportDtoList().stream().limit(years).mapToDouble(mapper->mapper.getBasicEPS()).sum();
+        avgEPS = (double) avgEPS/years;
+        return avgEPS;
+    }
+    public void calculateEPSGrowth(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){
+        List<YearlyReportDto> yearlyReportDtoList = fundamentalInfoDto.getYearlyReportDtoList();
+        Iterator<YearlyReportDto> it = yearlyReportDtoList.iterator();
+        YearlyReportDto currentYearReport = null;
+        while(it.hasNext()){
+            if(currentYearReport==null)
+                currentYearReport = it.next();
+            else{
+                YearlyReportDto prevYearReport = it.next();
+                double epsGrowth = (currentYearReport.getBasicEPS()-prevYearReport.getBasicEPS())/prevYearReport.getBasicEPS();
+                epsGrowth = (double) epsGrowth*100;
+                logger.info("CurrentYear EPS: "+currentYearReport.getBasicEPS()+" PrevYear EPS: "+prevYearReport.getBasicEPS()+" gowth Percentage: "+epsGrowth);
+
+                currentYearReport.setEpsGrowthRate(epsGrowth);
+                analyzedInfoDto.getYearlyReportAnalysisInfo().addEpsGrowthRate(currentYearReport.getDate(), StockUtil.convertDoubleToPrecision(epsGrowth,2));
+                currentYearReport = prevYearReport;
+            }
+        }
+    }
+
+    @Override
+    public boolean isEvaluated() {
+        return evaluated;
+    }
+
     @Override
     public void evaluate(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year) throws Exception {
         calcEstimatedEPS(fundamentalInfoDto,analyzedInfoDto,year);
+        calculateEPSGrowth(fundamentalInfoDto,analyzedInfoDto);
+        double avgEPS=calcAvgEps(fundamentalInfoDto,year);
+        analyzedInfoDto.getYearlyReportAnalysisInfo().setAverageEPS(avgEPS);
+        logger.info("Yearly Report Analysis: "+analyzedInfoDto.getYearlyReportAnalysisInfo());
+        evaluated = true;
     }
 
     public static YearlyReportEvaluation getInstance(){

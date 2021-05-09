@@ -10,6 +10,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
+
+    private boolean evaluated = false;
+    @Override
+    public boolean isEvaluated() {
+        return evaluated;
+    }
+
     @Override
     public void evaluate(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year) throws Exception {
         List<ProfitAndLossDto> profitAndLossDtoList  = fundamentalInfoDto.getProfitAndLossDtoList();
@@ -25,7 +32,7 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
         netProfitGrowthPercnentage(analyzedInfoDto,endingYearProfitAndLossDto,startingYearProfitAndLossDto);
         interestDecreasePercentage(analyzedInfoDto,endingYearProfitAndLossDto,startingYearProfitAndLossDto);
         netSalesVsProfitRatio(analyzedInfoDto,profitAndLossDtoList);
-
+        evaluated = true;
     }
 
     private void interestDecreasePercentage(AnalyzedInfoDto analyzedInfoDto,ProfitAndLossDto endingYearProfitAndLossDto, ProfitAndLossDto startingYearProfitAndLossDto){

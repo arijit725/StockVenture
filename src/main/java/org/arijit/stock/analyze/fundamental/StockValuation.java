@@ -10,24 +10,17 @@ import org.arijit.stock.analyze.util.StockUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Quarterly intrinsic value evaluation model needs to be evaluated in each quarter.
- * www.screener.in is a good source from where we can get basic parameters for model calculation.
- */
-public class QuarterlyIntrinsicValueEvaluation implements IFundamentalEvaluation {
+public class StockValuation {
+    private static final Logger logger = LogManager.getLogger(StockValuation.class);
 
-    private static final Logger logger = LogManager.getLogger(QuarterlyIntrinsicValueEvaluation.class);
-
-    @Override
-    public void evaluate(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year) throws Exception {
-        if(fundamentalInfoDto==null)
-            throw new Exception("FundamentalInfo not found");
-        if(analyzedInfoDto==null || analyzedInfoDto.getMisleneousAnalysisInfo()==null)
-            throw new Exception("AnalzedInfo not found");
-        calcQtlIntrinsicValue(fundamentalInfoDto,analyzedInfoDto);
+    private StockValuation(){
     }
 
-    public void calcQtlIntrinsicValue(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){
+    public void quarterlyinrinsicValuation(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto) throws Exception {
+        if(!QuarterlyReportEvaluation.getInstance().isEvaluated())
+            throw new Exception("QuarterlyReports are not Evaluated Yet");
+        if(!RatiosEvaluation.getInstance().isEvaluated())
+            throw new Exception("Ratios are not evaluated yet");
         List<QuarterlyReportDTO> last4QtrReport = fundamentalInfoDto.getQuarterlyReportDtoList().stream().limit(4).collect(Collectors.toList());
         logger.info("Last 4 quarter details: "+last4QtrReport);
         double ttmEPS = last4QtrReport.stream().mapToDouble(mapper->mapper.getEps()).sum();
@@ -54,19 +47,19 @@ public class QuarterlyIntrinsicValueEvaluation implements IFundamentalEvaluation
         String targetPriceStr = StockUtil.convertDoubleToPrecision(targetPrice,2);
         logger.info("Target Price using Quarterly Intrinsic Valuation: "+targetPriceStr);
         analyzedInfoDto.getTargetPriceEstimationDto().setQuarterlyIntrinsicTargetPrice(targetPriceStr);
-
-
     }
 
-    public static QuarterlyIntrinsicValueEvaluation getInstance(){
+    public static StockValuation getInstance(){
         return InnerClass.getInstance();
     }
+
     private static class InnerClass{
-        private static final QuarterlyIntrinsicValueEvaluation instance = new QuarterlyIntrinsicValueEvaluation();
+        private static final StockValuation instance = new StockValuation();
+
         private  InnerClass(){
 
         }
-        static QuarterlyIntrinsicValueEvaluation getInstance() {
+        static StockValuation getInstance() {
             return instance;
         }
     }

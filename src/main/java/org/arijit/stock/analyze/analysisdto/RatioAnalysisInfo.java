@@ -14,9 +14,10 @@ public class RatioAnalysisInfo {
 
     private static final Logger logger = LogManager.getLogger(RatioAnalysisInfo.class);
 
-    private double forwardPERatio;
-    private ValuationEnums forwardPEValuation;
+    private ForwardPEAnalysis forwardPEAnalysis;
+    private PEGRatioAnalysis pegRatioAnalysis;
     private boolean possibilityOfMultiBagger;
+
 
     private String ttmPEAnalysis;
 
@@ -27,15 +28,46 @@ public class RatioAnalysisInfo {
 
     public RatioAnalysisInfo(){
         ratioGrowthsDtoMap = new HashMap<>();
-    }
-    public void setForwardPERatio(double forwardPERatio) {
-        this.forwardPERatio = forwardPERatio;
-    }
-
-    public void setForwardPEValuation(ValuationEnums forwardPEValuation) {
-        this.forwardPEValuation = forwardPEValuation;
+        forwardPEAnalysis = new ForwardPEAnalysis();
+        pegRatioAnalysis = new PEGRatioAnalysis();
     }
 
+    public void setPEGRatio(String pegRatio){
+        this.pegRatioAnalysis.setPegRatio(pegRatio);
+    }
+
+    public void setPEGValuation(ValuationEnums pegValuation){
+        this.pegRatioAnalysis.setValuation(pegValuation);
+    }
+
+    public PEGRatioAnalysis getPegRatioAnalysis() {
+        return pegRatioAnalysis;
+    }
+
+    public void setForwardPERatio(String forwardPERatio) {
+        forwardPEAnalysis.setForwardPE(forwardPERatio);
+    }
+
+    public void setCurrentTTMPERatio(String ttmpeRatio){
+        forwardPEAnalysis.setCurrentPE(ttmpeRatio);
+    }
+
+    public void setYearlyForwardPERatio(String yearlyForwardPERatio){
+        forwardPEAnalysis.setYearlyForwardPE(yearlyForwardPERatio);
+    }
+
+    public void setQuarterlyForwardPERatio(String quarterlyForwardPERatio){
+        forwardPEAnalysis.setQuarterlyForwardPE(quarterlyForwardPERatio);
+    }
+
+    public void setForwardPEValuation(ValuationEnums valuation){
+        forwardPEAnalysis.setValuation(valuation);
+    }
+
+
+    public ForwardPEAnalysis getForwardPEAnalysis() {
+        return forwardPEAnalysis;
+    }
 
     public void addRatioGrowths(String date, String ratioAttribute, String value){
         if(!ratioGrowthsDtoMap.containsKey(date)){
@@ -46,14 +78,6 @@ public class RatioAnalysisInfo {
 
     public Map<String, HashMap<String,String>> getRatioGrowthsDtoMap() {
         return ratioGrowthsDtoMap;
-    }
-
-    public double getForwardPERatio() {
-        return forwardPERatio;
-    }
-
-    public ValuationEnums getForwardPEValuation() {
-        return forwardPEValuation;
     }
 
     public void setPossibilityOfMultiBagger(boolean possibilityOfMultiBagger) {
@@ -71,8 +95,75 @@ public class RatioAnalysisInfo {
     @Override
     public String toString() {
         return "RatioAnalysisInfo{" +
-                "forwardPERatio=" + forwardPERatio +
-                ", forwardPEValuation=" + forwardPEValuation +
+                "forwardPEAnalysis=" + forwardPEAnalysis +
                 '}';
+    }
+
+
+    public static class PEGRatioAnalysis{
+        private String pegRatio;
+        private ValuationEnums valuation;
+
+        public void setValuation(ValuationEnums valuation) {
+            this.valuation = valuation;
+        }
+
+        public void setPegRatio(String pegRatio) {
+            this.pegRatio = pegRatio;
+        }
+
+        public String getPegRatio() {
+            return pegRatio;
+        }
+
+        public ValuationEnums getValuation() {
+            return valuation;
+        }
+
+        @Override
+        public String toString() {
+            return "PEGRatioAnalysis{" +
+                    "pegRatio='" + pegRatio + '\'' +
+                    ", valuation=" + valuation +
+                    '}';
+        }
+    }
+    public static class ForwardPEAnalysis{
+        private String currentPE;
+        private String forwardPE;
+        private String yearlyForwardPE;
+        private String quarterlyForwardPE;
+        private ValuationEnums valuation;
+
+        public void setCurrentPE(String currentPE) {
+            this.currentPE = currentPE;
+        }
+
+        public void setForwardPE(String forwardPE) {
+            this.forwardPE = forwardPE;
+        }
+
+        public void setYearlyForwardPE(String yearlyForwardPE) {
+            this.yearlyForwardPE = yearlyForwardPE;
+        }
+
+        public void setQuarterlyForwardPE(String quarterlyForwardPE) {
+            this.quarterlyForwardPE = quarterlyForwardPE;
+        }
+
+        public void setValuation(ValuationEnums valuation) {
+            this.valuation = valuation;
+        }
+
+        @Override
+        public String toString() {
+            return "ForwardPEAnalysis{" +
+                    "currentPE=" + currentPE +
+                    ", forwardPE=" + forwardPE +
+                    ", yearlyForwardPE=" + yearlyForwardPE +
+                    ", quarterlyForwardPE=" + quarterlyForwardPE +
+                    ", valuation=" + valuation +
+                    '}';
+        }
     }
 }

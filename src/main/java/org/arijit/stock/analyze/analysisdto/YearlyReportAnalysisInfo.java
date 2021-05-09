@@ -1,21 +1,47 @@
 package org.arijit.stock.analyze.analysisdto;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class YearlyReportAnalysisInfo {
 
-    private double estimatedEPS;
+    private double estimatedEPSCAGR;
+    private Map<String, String> epsGrowthRate;
+    private double averageEPS;
 
-    public void setEstimatedEPS(double estimatedEPS) {
-        this.estimatedEPS = estimatedEPS;
+    public YearlyReportAnalysisInfo(){
+        epsGrowthRate = new HashMap<>();
+    }
+    public void setAverageEPS(double averageEPS) {
+        this.averageEPS = averageEPS;
     }
 
-    public double getEstimatedEPS() {
-        return estimatedEPS;
+    public void addEpsGrowthRate(String date, String epsGrowth) {
+        this.epsGrowthRate.put(date,epsGrowth);
+    }
+
+    public Map<String, String> getEpsGrowthRate() {
+        return epsGrowthRate;
+    }
+
+    public double getAverageEPS() {
+        return averageEPS;
+    }
+
+    public void setEstimatedEPSCAGR(double estimatedEPSCAGR) {
+        this.estimatedEPSCAGR = estimatedEPSCAGR;
+    }
+
+    public double getEstimatedEPSCAGR() {
+        return estimatedEPSCAGR;
     }
 
     @Override
     public String toString() {
-        return "YearlyReportAnalysisInfo [" +
-                "estimatedEPS=" + estimatedEPS +
-                ']';
+        return "YearlyReportAnalysisInfo{" +
+                "estimatedEPSCAGR=" + estimatedEPSCAGR +
+                ", epsGrowthRate=" + epsGrowthRate +
+                ", averageEPS=" + averageEPS +
+                '}';
     }
 }

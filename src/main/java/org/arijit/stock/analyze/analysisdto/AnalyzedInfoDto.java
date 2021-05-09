@@ -7,6 +7,7 @@ public class AnalyzedInfoDto {
 
     private final BalanceSheetAnalysisInfo balanceSheetAnalysisInfo;
     private final YearlyReportAnalysisInfo yearlyReportAnalysisInfo;
+    private final QuarterlyReportAnalysisInfo quarterlyReportAnalysisInfo;
     private final TargetPriceEstimationDto targetPriceEstimationDto;
     private final RatioAnalysisInfo ratioAnalysisInfo;
     private final ProfitAndLossAnalysisInfo profitAndLossAnalysisInfo;
@@ -15,6 +16,7 @@ public class AnalyzedInfoDto {
     private AnalyzedInfoDto(){
         balanceSheetAnalysisInfo = new BalanceSheetAnalysisInfo();
         yearlyReportAnalysisInfo = new YearlyReportAnalysisInfo();
+        quarterlyReportAnalysisInfo = new QuarterlyReportAnalysisInfo();
         targetPriceEstimationDto = new TargetPriceEstimationDto();
         ratioAnalysisInfo = new RatioAnalysisInfo();
         profitAndLossAnalysisInfo = new ProfitAndLossAnalysisInfo();
@@ -45,6 +47,10 @@ public class AnalyzedInfoDto {
         return ratioAnalysisInfo;
     }
 
+    public QuarterlyReportAnalysisInfo getQuarterlyReportAnalysisInfo() {
+        return quarterlyReportAnalysisInfo;
+    }
+
     public MisleneousAnalysisInfo getMisleneousAnalysisInfo() {
         return misleneousAnalysisInfo;
     }
@@ -55,6 +61,7 @@ public class AnalyzedInfoDto {
         return "AnalyzedInfoDto{" +
                 "balanceSheetAnalysisInfo=" + balanceSheetAnalysisInfo +
                 ", yearlyReportAnalysisInfo=" + yearlyReportAnalysisInfo +
+                ", quarterlyReportAnalysisInfo=" + quarterlyReportAnalysisInfo +
                 ", targetPriceEstimationDto=" + targetPriceEstimationDto +
                 ", ratioAnalysisInfo=" + ratioAnalysisInfo +
                 ", profitAndLossAnalysisInfo="+profitAndLossAnalysisInfo+

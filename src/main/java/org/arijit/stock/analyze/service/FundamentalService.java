@@ -129,6 +129,8 @@ public class FundamentalService {
         if(quarterlyReportDTOS==null || quarterlyReportDTOS.length == 0)
             throw new Exception("Yearly Report Details data not found");
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("NO FundamentalInfo found with stock id: "+stockID);
         fundamentalInfoDto.clearQuarterlyReportDtos();
         for(QuarterlyReportDTO quarterlyReportDTO:quarterlyReportDTOS){
             fundamentalInfoDto.addQuarterlyReportDto(quarterlyReportDTO);
@@ -218,6 +220,17 @@ public class FundamentalService {
         return fundamentalInfoDto.getProfitAndLossDtoList().stream().limit(years).collect(Collectors.toList());
     }
 
+    public List<YearlyReportDto> getYearlyReport(String stockID, int years) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        if(fundamentalInfoDto.getYearlyReportDtoList().size()<years)
+            throw new Exception("Years excced ProfitAndLossDto list size");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        YearlyReportEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
+        return fundamentalInfoDto.getYearlyReportDtoList().stream().limit(years).collect(Collectors.toList());
+    }
+
     public BalanceSheetAnalysisInfo getAnalyzedBalanceSheet(String stockID, int years) throws Exception {
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
         if(fundamentalInfoDto==null)
@@ -269,6 +282,8 @@ public class FundamentalService {
         try{
             logger.info("==========================YearlyReportEvaluation==================================");
             YearlyReportEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
+            logger.info("==========================QuarterlyReportEvaluation==================================");
+            QuarterlyReportEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
             logger.info("==========================RatioEvaluation==================================");
             RatiosEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
         }catch(Exception e){

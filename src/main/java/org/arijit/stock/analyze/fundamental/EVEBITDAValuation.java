@@ -18,6 +18,13 @@ public class EVEBITDAValuation implements IFundamentalEvaluation{
 
 
     private static final Logger logger = LogManager.getLogger(EVEBITDAValuation.class);
+
+    private boolean evaluated;
+    @Override
+    public boolean isEvaluated() {
+        return evaluated;
+    }
+
     /**
      * Here we are considering 5 years ratio trends by default
      */
@@ -51,6 +58,7 @@ public class EVEBITDAValuation implements IFundamentalEvaluation{
         double endingYearEV = endingYearDto.getEv();
         double forcastedEV = (endingYearEV/endingYearEbitda)*expectedEBITDA-debtForCurrentFY;
         logger.info("Forcasted EV: "+forcastedEV);
+        //https://www.sptulsian.com/f/p/what-does-equity-share-capital-mean
         double outstandingShare = equityShareCapital/faceValue;
         double targetPrice = forcastedEV/outstandingShare;
         double entryPrice = (double)(targetPrice*2)/3; //standard norm is to pick 2/3 as entry price for safe margin.
@@ -61,7 +69,7 @@ public class EVEBITDAValuation implements IFundamentalEvaluation{
         evebitdaValuationModelDto.setEntryPrice(StockUtil.convertDoubleToPrecision(entryPrice,precision));
         evebitdaValuationModelDto.setTargetPrice(StockUtil.convertDoubleToPrecision(targetPrice,precision));
         analyzedInfoDto.getTargetPriceEstimationDto().setEvebitdaValuationModelDto(evebitdaValuationModelDto);
-
+        evaluated = true;
     }
 
     private double calculateEBITDA(double ev, double evEbitdaRatio){

@@ -13,7 +13,7 @@ import java.util.Map;
 public class ProfitAndLossPDFParser extends AbstractPDFProcessor {
     private static final Logger logger = LogManager.getLogger(ProfitAndLossPDFParser.class);
 
-    private String[] dataPoints = {"Revenue From Operations [Net]","Purchase Of Stock-In Trade",
+    private String[] dataPoints = {"Total Operating Revenues","Purchase Of Stock-In Trade",
             "Employee Benefit Expenses","Finance Costs","Profit/Loss For The Period"};
 
     public ProfitAndLossPDFParser(File file){

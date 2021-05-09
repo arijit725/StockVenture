@@ -165,6 +165,7 @@ public class RatiosDto implements Comparable<RatiosDto > {
                 ", roe=" + roe +
                 ", ev=" + ev +
                 ", evEbitda=" + evEbitda +
+                ", debtToEquityRatio=" + debtToEquityRatio +
                 '}';
     }
 }

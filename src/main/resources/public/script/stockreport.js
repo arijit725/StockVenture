@@ -16,11 +16,15 @@ var getBalancesheetAnalysisUrl ='http://localhost:8080/fundamental/balancesheetA
 var getProfitAndLossUrl ='http://localhost:8080/fundamental/profitAndLoss/'+stockID;
 var getProfitAndLossAnalysisUrl='http://localhost:8080/fundamental/profitAndLossAnalysis/'+stockID;
 
+
+var getYearlyReportUrl ='http://localhost:8080/fundamental/yearlyreport/'+stockID;
+
 var getRatiosUrl = 'http://localhost:8080/fundamental/ratios/'+stockID;
 var getRatiosAnalysusUrl='http://localhost:8080/fundamental/ratioAnalysis/'+stockID;
 var stockValuationUrl = 'http://localhost:8080/fundamental/stockvaluation/'+stockID;
 var getStockValuationUrl='http://localhost:8080/fundamental/getStockValuation/'+stockID;
 
+var getAnalysisReport = 'http://localhost:8080/fundamental/analysis/'+stockID;
 
 var targetPriceUrl = 'http://localhost:8080/fundamental/targetPrice/'+stockID;
 
@@ -28,14 +32,16 @@ function onReportLoad(){
 
     createCompanyTable();
 
-    balancesheetTable(5);
-    balancesheetAnalysis(5);
+    showBalancesheetDetails(5);
 
-    profitAndLossTable(5);
-    profitAndLossAnalysis(5);
+    showProfitAndLossDetails(5);
+//    profitAndLossTable(5);
+//    profitAndLossAnalysis(5);
 
-    ratiosTable(5);
-    ratiosAnalysis(5);
+    showYearlyReportDetails(5);
+
+    showRatioDetails(5);
+//    ratiosAnalysis(5);
 //    console.log("onReportLoad triggered: url: "+generateReportUrl);
 //    GetRawBookContent(generateReportUrl);
     targetPriceValuation(5);
@@ -136,6 +142,18 @@ function balancesheetDataPoints(){
     return datapoints;
 }
 
+
+function showBalancesheetDetails(years){
+    var url = getBalancesheetUrl+'/'+years;
+    console.log("Getting data from url: "+url);
+    var jsonResonse = GetRawBookContent(url);
+    console.log("BalanceSheet Json res: "+jsonResonse);
+    var headerList = createHeaderFromResponse(jsonResonse);
+    var balancesheetFY = createBalancesheetDataPoints(jsonResonse);
+    balancesheetTable(headerList,balancesheetFY);
+    balancesheetAnalysis(years);
+}
+
 function createBalancesheetDataPoints(balancesheetJson){
     var balancesheetList = JSON.parse(balancesheetJson);
     console.log("inside createBalancesheetDataPoints: datapoints count: "+balancesheetList.length);
@@ -153,12 +171,10 @@ function createBalancesheetDataPoints(balancesheetJson){
     return balancesheetFY;
 }
 
-
-function balancesheetTable(years){
-     var balancesheetFY = getBalancesheetData(years);
+function balancesheetTable(headerList, balancesheetFY){
     console.log("creaing Balancesheet table: ");
     var datapoints = balancesheetDataPoints();
-    var headerList =createHeaders(years);
+//    var headerList =createHeaders(years);
     console.log("Generated Headers: "+headerList);
     var tableID="bltbl";
     var tableEle = document.getElementById(tableID);
@@ -167,6 +183,21 @@ function balancesheetTable(years){
         }
     createTable("balancesheet-tbl",tableID,headerList,datapoints,balancesheetFY);
 }
+
+//function balancesheetTable(years){
+//     var balancesheetFY = getBalancesheetData(years);
+//    console.log("creaing Balancesheet table: ");
+//    var datapoints = balancesheetDataPoints();
+////    var headerList =createHeaders(years);
+//    var headerList = createHeaderFromResponse()
+//    console.log("Generated Headers: "+headerList);
+//    var tableID="bltbl";
+//    var tableEle = document.getElementById(tableID);
+//    if(tableEle!=null){
+//            tableEle.remove();
+//        }
+//    createTable("balancesheet-tbl",tableID,headerList,datapoints,balancesheetFY);
+//}
 
 
 function getBalancesheetData(years){
@@ -179,6 +210,7 @@ function getBalancesheetData(years){
     var balancesheetFY = createBalancesheetDataPoints(jsonResonse);
     return balancesheetFY;
 }
+
 
 
 
@@ -359,8 +391,10 @@ function balancesheetCalcAnalysis(balAnal){
 function onBLYearSelection(){
    var years = document.getElementById("blyears").value;
    console.log("Years selection : "+years);
-   balancesheetTable(years);
-   balancesheetAnalysis(years);
+   showBalancesheetDetails(years);
+//   balancesheetTable(years);
+
+//   balancesheetAnalysis(years);
 }
 
 
@@ -368,13 +402,23 @@ function onBLYearSelection(){
 /*====================== Get Profit And Loss Details =========================*/
 function plDataPoints(){
     var datapoints = new Array();
-     datapoints.push(["Net Sales","netSales"]);
+    datapoints.push(["Net Sales","netSales"]);
     datapoints.push(["Consumption Of Raw Material","consumptionRawMaterial"]);
     datapoints.push(["Employee Cost","employeeCost"]);
-    datapoints.push(["PBDIT","pbit"]);
+    datapoints.push(["PBIT","pbit"]);
     datapoints.push(["Interest","interest"]);
     datapoints.push(["Net Profit","netProfit"]);
     return datapoints;
+}
+
+function showProfitAndLossDetails(years){
+
+    var jsonResonse = getDataFY(getProfitAndLossUrl,years);
+    console.log("Profit And Loss Json res: "+jsonResonse);
+    var headerList = createHeaderFromResponse(jsonResonse);
+    var dataFY = createPlDataPoints(jsonResonse)
+    profitAndLossTable(headerList,dataFY);
+    profitAndLossAnalysis(years);
 }
 
 function createPlDataPoints(dataJson){
@@ -396,13 +440,13 @@ function createPlDataPoints(dataJson){
     return plFY;
 }
 
-function profitAndLossTable(years){
-     var jsonResonse = getDataFY(getProfitAndLossUrl,years);
-    var dataFY = createPlDataPoints(jsonResonse);
+function profitAndLossTable(headerList,dataFY){
+//     var jsonResonse = getDataFY(getProfitAndLossUrl,years);
+//    var dataFY = createPlDataPoints(jsonResonse);
     console.log("creaing profitAndLossTable: ");
     var datapoints = plDataPoints();
 
-    var headerList =createHeaders(years);
+//    var headerList =createHeaders(years);
 //    console.log("Generated Headers: "+headerList);
 //    console.log(dataFY)
      var tableID="pltbl";
@@ -605,11 +649,93 @@ function profitAndLossCalcAnalysis(plAnal){
 function onPLYearSelection(){
    var years = document.getElementById("plyears").value;
    console.log("Years selection : "+years);
-   profitAndLossTable(years);
-   profitAndLossAnalysis(years);
+//   profitAndLossTable(years);
+//   profitAndLossAnalysis(years);
+    showProfitAndLossDetails(years);
 }
 
 
+/*====================== Get Yearly Report Details =========================*/
+function showYearlyReportDetails(years){
+        var jsonResonse = getDataFY(getYearlyReportUrl,years);
+        console.log("Yearly Report Json res: "+jsonResonse);
+        var headerList = createHeaderFromResponse(jsonResonse);
+        var dataFY = createYlDataPoints(jsonResonse)
+        yearlyReportTable(headerList,dataFY);
+
+        var url = getAnalysisReport+'/yearlyreport/'+years;
+        console.log("Getting data from url: "+url);
+        var analyzedjsonResonse = GetRawBookContent(url);
+        console.log("Yearly Report Analysis Json response: "+jsonResonse);
+        yearlyReportAnalysis(years,headerList,analyzedjsonResonse);
+}
+
+function yearltReportDataPoints(){
+    var datapoints = new Array();
+     datapoints.push(["Basic EPS","basicEPS"," PE Ratio ToolTips PlaceHolder"]);
+     datapoints.push(["PBIT","pbit"," PE Ratio ToolTips PlaceHolder"]);
+    return datapoints;
+}
+
+function createYlDataPoints(dataJson){
+    var dataJsonList = JSON.parse(dataJson);
+    console.log("inside createYlDataPoints: datapoints count: "+dataJsonList.length);
+
+    var plFY = new Map();
+    for(var i =0;i<dataJsonList.length;i++){
+        var data = dataJsonList[i];
+        var datamap = new Map();
+        datamap['basicEPS']=data.basicEPS;
+        datamap['pbit']=data.pbit;
+        datamap['epsGrowthRate'] = data.epsGrowthRate;
+        plFY[data.date] = datamap;
+    }
+    return plFY;
+}
+
+
+
+function yearlyReportTable(headerList,dataFY){
+    console.log("creaing yearlyReportTable: ");
+    var datapoints = yearltReportDataPoints();
+     var tableID="yltbl";
+        var tableEle = document.getElementById(tableID);
+        if(tableEle!=null){
+                tableEle.remove();
+            }
+    createTableWithToolTips("yearly-tbl",tableID,headerList,datapoints,dataFY);
+}
+function yearlyReportAnalysis(years,headerList,analyzedjsonResonse){
+    console.log("analyzing Yearly Report: "+analyzedjsonResonse);
+    var analysis = JSON.parse(analyzedjsonResonse);
+    console.log(analysis);
+    showYearlyGrowthRate(analysis,headerList,years);
+//    highlightedPoints(ratioAnalysis,years);
+}
+
+
+function showYearlyGrowthRate(analysis,headerList,years){
+    console.log("Calculating  YearlyGrowthRate:");
+    epsGrowthRate = analysis.epsGrowthRate;
+//    console.log("Fetched ratioGrowthsDtoMap: ");
+    console.log(epsGrowthRate);
+//    var headerList =createHeaders(years);
+//    var dataPoints = new Array();
+//    dataPoints.push(["Basic EPS","basicEPS"," PE Ratio ToolTips PlaceHolder"]);
+    console.log("headerList:" +headerList );
+        //we can not calculate growth for the very first year. .
+        for(var j=1;j<headerList.length-1;j++){
+                   var cellid = "basicEPS-"+headerList[j];
+                   var growthMap = epsGrowthRate[headerList[j]];
+                   console.log("growthmap: "+growthMap);
+                   createGrowthLabel(cellid, growthMap);
+            }
+}
+function onYLYearSelection(){
+   var years = document.getElementById("ylyears").value;
+   console.log("Years selection : "+years);
+    showYearlyReportDetails(years);
+}
 /*====================== Get Ratios Details =========================*/
 
 function ratiosDataPoints(){
@@ -656,14 +782,28 @@ function createRatiosDataPoints(dataJson){
     }
     return plFY;
 }
-
-function ratiosTable(years){
-     var jsonResonse = getDataFY(getRatiosUrl,years);
+function showRatioDetails(years){
+    var jsonResonse = getDataFY(getRatiosUrl,years);
+    console.log("Ratio Json res: "+jsonResonse);
+    var headerList = createHeaderFromResponse(jsonResonse);
     var dataFY = createRatiosDataPoints(jsonResonse);
-    console.log("creating RatiosTable: "+dataFY.peRatio);
+    ratiosTable(headerList,dataFY);
+
+    var url = getRatiosAnalysusUrl+'/'+years;
+    console.log("Getting data from url: "+url);
+    var analyzedjsonResonse = GetRawBookContent(url);
+    console.log("RatioAnalysis Json response: "+jsonResonse);
+    ratiosAnalysis(years,headerList,analyzedjsonResonse);
+    showforwardPE(analyzedjsonResonse);
+    showPEG(analyzedjsonResonse);
+}
+function ratiosTable(headerList,dataFY){
+//     var jsonResonse = getDataFY(getRatiosUrl,years);
+//    var dataFY = createRatiosDataPoints(jsonResonse);
+//    console.log("creating RatiosTable: "+dataFY.peRatio);
     var datapoints = ratiosDataPoints();
 
-    var headerList =createHeaders(years);
+//    var headerList =createHeaders(years);
 //    console.log("Generated Headers: "+headerList);
     console.log(dataFY)
      var tableID="rtbl";
@@ -674,24 +814,26 @@ function ratiosTable(years){
     createTableWithToolTips("ratio-tbl-div",tableID,headerList,datapoints,dataFY);
 }
 
-function ratiosAnalysis(years){
-    var url = getRatiosAnalysusUrl+'/'+years;
-    console.log("Getting data from url: "+url);
-    var jsonResonse = GetRawBookContent(url);
-    console.log("RatioAnalysis Json res: "+jsonResonse);
+function ratiosAnalysis(years,headerList,jsonResonse){
+//    var url = getRatiosAnalysusUrl+'/'+years;
+//    console.log("Getting data from url: "+url);
+//    var jsonResonse = GetRawBookContent(url);
+    console.log("Analyzing ratio:");
     var ratioAnalysis = JSON.parse(jsonResonse);
-    showGrowthRate(ratioAnalysis,years);
+    showGrowthRate(ratioAnalysis,headerList,years);
     highlightedPoints(ratioAnalysis,years);
 }
 
 
-function showGrowthRate(ratioAnalysis,years){
+function showGrowthRate(ratioAnalysis,headerList,years){
+    console.log("Calculating  GrowthRate:");
     ratioGrowthsDtoMap = ratioAnalysis.ratioGrowthsDtoMap;
-    console.log("Fetched ratioGrowthsDtoMap: ");
+//    console.log("Fetched ratioGrowthsDtoMap: ");
     console.log(ratioGrowthsDtoMap);
-    var headerList =createHeaders(years);
+//    var headerList =createHeaders(years);
     var dataPoints = ratiosDataPoints();
-
+    console.log("showGrowthRate datapoints: "+dataPoints);
+    console.log("headerList:" +headerList );
     for(var i=0;i<dataPoints.length;i++){
         //we can not calculate growth for the very first year. .
         for(var j=1;j<headerList.length-1;j++){
@@ -743,11 +885,105 @@ function highlightedPoints(ratioAnalysis,years){
     dvTable.appendChild(table);
 
 }
+
+function createForwardPEDataPoints(dataJson){
+    var dataJsonList = JSON.parse(dataJson);
+//    console.log("inside createForwardPEDataPoints: datapoints count: "+dataJsonList.length);
+//    console.log(dataJsonList.forwardPEAnalysis);
+    var afwpe = dataJsonList.forwardPEAnalysis;
+    var plFY = new Map();
+    var datamap = new Map();
+    datamap['currentPE'] = afwpe.currentPE;
+    datamap['yearlyForwardPE'] = afwpe.yearlyForwardPE;
+    datamap['quarterlyForwardPE'] = afwpe.quarterlyForwardPE;
+    datamap['forwardPE'] = afwpe.forwardPE;
+    datamap['fwpevaluation'] = afwpe.valuation;
+
+    plFY["Value"] = datamap;
+
+    return plFY;
+}
+
+function showforwardPE(jsonResonse){
+    var parentDiv = document.getElementById("forwardPE_div");
+    var tableID = "forwardpetbl";
+    var dataFY = createForwardPEDataPoints(jsonResonse);
+    var header = new Array();
+    header.push("Forward PE");
+    header.push("Value");
+
+     var tmpdatapoints = new Array();
+     tmpdatapoints.push(["Current/TTM PE Ratio","currentPE"," Current TTM PE Ratio"]);
+     tmpdatapoints.push(["Yearly Forward PE Ratio","yearlyForwardPE","Forward PE Ratio calculated based on past years data"]);
+     tmpdatapoints.push(["Quarterly Forward PE Ratio","quarterlyForwardPE","Forward PE Ratio calculated based on last 4 quarters data"]);
+     tmpdatapoints.push(["Forward PE Ratio","forwardPE","Forward PE gives idea about future valuation of stock for 1 down the line. Forward PE = (Yearly Forward PE + Quarterly Forward PE)/2."]);
+     tmpdatapoints.push(["Forward PE Valuation","fwpevaluation","We should consider to invest in FAIR_VALUED stock. Avoid under valued stock or over valued stock. Consider to sell stock when it shows Over valued."]);
+
+    var ele = document.getElementById(tableID);
+        if(ele!=null){
+            ele.remove();
+        }
+
+    createTableWithToolTips("forwardPE_div",tableID,header,tmpdatapoints,dataFY);
+    var valrow = document.getElementById("fwpevaluation-Value");
+    console.log("valrow value: "+valrow.innerHTML);
+    var value = valrow.innerHTML;
+    if(value=='FAIR_VALUED')
+        valrow.style.color='green';
+    else
+        valrow.style.backgroundColor='red';
+}
+
+
+
+function createPEGDataPoints(dataJson){
+    var dataJsonList = JSON.parse(dataJson);
+//    console.log("inside createForwardPEDataPoints: datapoints count: "+dataJsonList.length);
+//    console.log(dataJsonList.forwardPEAnalysis);
+    var afwpe = dataJsonList.pegRatioAnalysis;
+    var plFY = new Map();
+    var datamap = new Map();
+    datamap['pegRatio'] = afwpe.pegRatio;
+    datamap['pegvaluation'] = afwpe.valuation;
+
+    plFY["Value"] = datamap;
+
+    return plFY;
+}
+
+
+function showPEG(jsonResonse){
+    var parentDiv = document.getElementById("peg_div");
+    var tableID = "peg_tbl";
+    var dataFY = createPEGDataPoints(jsonResonse);
+    var header = new Array();
+    header.push("PEG Ratio");
+    header.push("Value");
+
+     var tmpdatapoints = new Array();
+     tmpdatapoints.push(["PEG Ratio","pegRatio"," PEG Ratio = (PE Ratio)/(Growth in EPS). This helps to understand if growth in EPS justify PE. This is a stock valuation parameter."]);
+     tmpdatapoints.push(["PEG Valuation","pegvaluation","For India Market, PEG <3 considered to be good for investment. PEG<1 is undervalued and could be invested.PEG negative means growth of earning per share (EPS) is negative. One should not consider such stock to invest"]);
+
+    var ele = document.getElementById(tableID);
+        if(ele!=null){
+            ele.remove();
+        }
+
+    createTableWithToolTips("peg_div",tableID,header,tmpdatapoints,dataFY);
+    var valrow = document.getElementById("pegvaluation-Value");
+    var value = valrow.innerHTML;
+    if(value=='FAIR_VALUED')
+        valrow.style.color='green';
+    else
+        valrow.style.backgroundColor='red';
+}
+
 function onRYearSelection(){
     var years = document.getElementById("ryears").value;
    console.log("Years selection : "+years);
-   ratiosTable(years);
-   ratiosAnalysis(years);
+//   ratiosTable(years);
+//   ratiosAnalysis(years)
+    showRatioDetails(years);
 }
 
 /*====================== Quarterly Intrinsic Stock Valuation  =========================*/
@@ -771,8 +1007,8 @@ function showQtrIntrinsicStockValue(){
     var jsonResonse = GetRawBookContent(url);
     console.log("showQtrIntrinsicStockValue: response: "+jsonResonse)
     var targetPriceLbl = document.createElement("LABEL");
-     targetPriceLbl.innerHTML=jsonResonse;
-
+    targetPriceLbl.innerHTML="Calculated Target Price : "+ jsonResonse;
+    targetPriceLbl.style.fontSize="large";
      var qtInEval = document.getElementById("qtInEval");
      qtInEval.appendChild(targetPriceLbl);
 }
@@ -891,7 +1127,6 @@ function generateJsonString(obj){
 
 function createGrowthLabel(cellid, growthVal){
     var parent = document.getElementById(cellid);
-
     var label = document.createElement("LABEL");
     label.innerHTML="("+growthVal+"%)";
     if(growthVal>0)
@@ -921,6 +1156,19 @@ function getDataFY(url,years){
     var jsonResonse = GetRawBookContent(url);
     console.log("Json res: "+jsonResonse);
     return jsonResonse;
+}
+
+function createHeaderFromResponse(jsonResonse){
+    var datalist = JSON.parse(jsonResonse);
+    var header = new Array();
+    header.push("DataPoints");
+     for(var i =0;i<datalist.length;i++){
+       var data = datalist[i];
+       var d = data.date;
+       header.push(d);
+      }
+      console.log("createHeaderFromResponse: "+header);
+      return header;
 }
 
 function createHeaders(years){
@@ -967,7 +1215,7 @@ function createTableWithToolTips(divID,tableID,headerList,datapoints,dataFY){
 //    var rowCount = document.getElementById("years").value;
     var row = table.insertRow(0);
     var columnCount = headerList.length;
-    console.log("Column count: "+columnCount)
+//    console.log("Column count: "+columnCount)
     for (var i = 0; i < columnCount; i++) {
                 var headerCell = document.createElement("TH");
                 headerCell.innerHTML = headerList[i];
@@ -1003,11 +1251,11 @@ function createTableWithToolTips(divID,tableID,headerList,datapoints,dataFY){
             }
             else{
                   dataPerYear = dataFY[headerList[j]];
-                  console.log("dataPerYear for: "+headerList[j]+" = "+dataPerYear);
+//                  console.log("dataPerYear for: "+headerList[j]+" = "+dataPerYear);
                   var valueEle = document.createElement("LABEL");
                   valueEle.innerHTML = dataPerYear[datapoints[i][1]];
                   var id = datapoints[i][1]+'-'+headerList[j];
-                  console.log("Setting cell ID: "+id);
+//                  console.log("Setting cell ID: "+id);
                   valueEle.setAttribute("id", id);
                   datapointsCell.appendChild(valueEle);
             }
