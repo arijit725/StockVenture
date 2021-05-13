@@ -124,6 +124,22 @@ public class FundamentalController {
         return Mono.just(res);
     }
 
+    @PostMapping(value = "/cashFlowDetails", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity> cashFlowDetails(@RequestBody String cashFlowDetails, ServerWebExchange webExchange)throws IOException {
+        String stockID = webExchange.getRequest().getHeaders().get("x-stockid").get(0);
+        logger.info("Accpeted quarterlyReport Request: stockID: "+stockID+" "+cashFlowDetails);
+        ResponseEntity<String> res = null;
+        try {
+            fundamentalService.updateCashFlowDetails(stockID,cashFlowDetails);
+            logger.info("CashFlow Details updated in memory.");
+            res = ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            res = ResponseEntity.notFound().build();
+        }
+
+        return Mono.just(res);
+    }
 
     @PostMapping(value = "/ratioDetails", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity> ratioDetails(@RequestBody String ratioDetails, ServerWebExchange webExchange)throws IOException {
@@ -337,6 +353,33 @@ public class FundamentalController {
             else{
                 String jsonString = StockUtil.generateJsonString(balanceSheetDtoList);
                 logger.info("Response: Balancesheet list: size: "+balanceSheetDtoList.size()+" jsonString: "+jsonString);
+                res = ResponseEntity.ok().body(jsonString);
+            }
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
+    @GetMapping(value = "/quarterlyreport/{stockID}/{years}")
+    public Mono<ResponseEntity> getQuarterlyReport(@PathVariable("stockID") String stockID, @PathVariable("years") int years, ServerWebExchange webExchange)throws IOException {
+        logger.info("quarterlyreport Request for: stockID: "+stockID+" years: "+years);
+
+        ResponseEntity<String> res = null;
+        try {
+            List<QuarterlyReportDTO> balanceSheetDtoList = fundamentalService.getQuarterlyReport(stockID,years);
+            if(balanceSheetDtoList == null || balanceSheetDtoList.isEmpty())
+                res = ResponseEntity.noContent().build();
+            else{
+                String jsonString = StockUtil.generateJsonString(balanceSheetDtoList);
+                logger.info("Response: Quarterly Report list: size: "+balanceSheetDtoList.size()+" jsonString: "+jsonString);
                 res = ResponseEntity.ok().body(jsonString);
             }
         }
@@ -734,6 +777,12 @@ public class FundamentalController {
                     YearlyReportAnalysisInfo analyzedYearlyReport = stockAnalysisService.getAnalyzedYearlyReport(stockID,year);
                     String analyzeReport = StockUtil.generateJsonString(analyzedYearlyReport);
                     res = ResponseEntity.ok(analyzeReport);
+                    break;
+                case "quarterlyreport":
+                    logger.info("Accepted Quarterly report request: "+stockID+"  "+type+"  "+year);
+                    QuarterlyReportAnalysisInfo analyzedquarterlyReport = stockAnalysisService.getAnalyzedQuarterlyReport(stockID,year);
+                    String analyzedReport = StockUtil.generateJsonString(analyzedquarterlyReport);
+                    res = ResponseEntity.ok(analyzedReport);
                     break;
                 default:
                     logger.error("Valuation model not found for type: " + type);

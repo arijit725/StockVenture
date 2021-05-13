@@ -8,8 +8,6 @@ var companyDetailsURL = 'http://localhost:8080/fundamental/companydetails/'+stoc
 
 var generateReportUrl = 'http://localhost:8080/fundamental/generateReport/'+stockID;
 
-
-
 var getBalancesheetUrl ='http://localhost:8080/fundamental/balancesheet/'+stockID;
 var getBalancesheetAnalysisUrl ='http://localhost:8080/fundamental/balancesheetAnalysis/'+stockID;
 
@@ -18,6 +16,10 @@ var getProfitAndLossAnalysisUrl='http://localhost:8080/fundamental/profitAndLoss
 
 
 var getYearlyReportUrl ='http://localhost:8080/fundamental/yearlyreport/'+stockID;
+
+var getQuarerlyReportUrl ='http://localhost:8080/fundamental/quarterlyreport/'+stockID;
+
+
 
 var getRatiosUrl = 'http://localhost:8080/fundamental/ratios/'+stockID;
 var getRatiosAnalysusUrl='http://localhost:8080/fundamental/ratioAnalysis/'+stockID;
@@ -39,6 +41,7 @@ function onReportLoad(){
 //    profitAndLossAnalysis(5);
 
     showYearlyReportDetails(5);
+    showQuarterlyReportDetails(10);
 
     showRatioDetails(5);
 //    ratiosAnalysis(5);
@@ -319,6 +322,7 @@ function balancesheetAnalysis(years){
 }
 
 function balancesheetCalcAnalysis(balAnal){
+    console.log("balancesheet score: "+balAnal.balanceSheetScore);
     console.log("debtToReserveRatioMap: "+balAnal.debtToReserveRatioMap);
     var debtToResrveRatioMap = balAnal.debtToReserveRatioMap;
     console.log(debtToResrveRatioMap);
@@ -386,6 +390,8 @@ function balancesheetCalcAnalysis(balAnal){
     var dvTable = document.getElementById(divID);
     dvTable.appendChild(table);
 
+    var scoreLbl = document.getElementById("bl_score_val");
+    scoreLbl.innerHTML = balAnal.balanceSheetScore;
 }
 
 function onBLYearSelection(){
@@ -711,6 +717,7 @@ function yearlyReportAnalysis(years,headerList,analyzedjsonResonse){
     console.log(analysis);
     showYearlyGrowthRate(analysis,headerList,years);
 //    highlightedPoints(ratioAnalysis,years);
+    yearlyReportEstmation(analyzedjsonResonse);
 }
 
 
@@ -730,11 +737,165 @@ function showYearlyGrowthRate(analysis,headerList,years){
                    console.log("growthmap: "+growthMap);
                    createGrowthLabel(cellid, growthMap);
             }
+    }
+function createYearlyReportAnalysisDataPoints(dataJson){
+    var dataJsonList = JSON.parse(dataJson);
+    console.log("inside createYearlyReportAnalysisDataPoints: datapoints count: "+dataJsonList.length);
+    console.log(dataJsonList.estimatedEPSCAGR);
+//    var afwpe = dataJsonList.pegRatioAnalysis;
+    var plFY = new Map();
+    var datamap = new Map();
+    datamap['estimatedEPSCAGR'] = dataJsonList.estimatedEPSCAGR;
+    datamap['averageEPS'] = dataJsonList.averageEPS;
+
+    plFY["Value"] = datamap;
+
+    return plFY;
 }
+function yearlyReportEstmation(jsonResonse){
+    console.log("inside yearlyReportEstmation:");
+    var parentDivID = "yearly_analysis_div";
+    var parentDiv = document.getElementById(parentDivID);
+    var tableID = "yl_analysis_tbl";
+    var dataFY = createYearlyReportAnalysisDataPoints(jsonResonse);
+    var header = new Array();
+    header.push("Analysis");
+    header.push("Value");
+
+     var tmpdatapoints = new Array();
+     tmpdatapoints.push(["Estimated EPS (CAGR)","estimatedEPSCAGR"," EPS estimated using CAGR technique."]);
+     tmpdatapoints.push(["Average EPS","averageEPS","Average EPS over period of years"]);
+
+    var ele = document.getElementById(tableID);
+        if(ele!=null){
+            ele.remove();
+        }
+
+    createTableWithToolTips(parentDivID,tableID,header,tmpdatapoints,dataFY);
+}
+
 function onYLYearSelection(){
    var years = document.getElementById("ylyears").value;
    console.log("Years selection : "+years);
     showYearlyReportDetails(years);
+}
+
+/*====================== Get Quarterly Report Details =========================*/
+function showQuarterlyReportDetails(years){
+        var jsonResonse = getDataFY(getQuarerlyReportUrl,years);
+        console.log("Quarterly Report Json res: "+jsonResonse);
+        var headerList = createHeaderFromResponse(jsonResonse);
+        var dataFY = createQlDataPoints(jsonResonse)
+        quarterlyReportTable(headerList,dataFY);
+
+        var url = getAnalysisReport+'/quarterlyreport/'+years;
+        console.log("Getting data from url: "+url);
+        var analyzedjsonResonse = GetRawBookContent(url);
+        console.log("Quarterly Report Analysis Json response: "+analyzedjsonResonse);
+        quarterlyReportAnalysis(years,headerList,analyzedjsonResonse);
+}
+
+function quarterlyReportDataPoints(){
+    var datapoints = new Array();
+     datapoints.push(["EPS","eps","Quarterly Earning per share"]);
+     datapoints.push(["YOY Sales Growth","yoySalesGrowth","YOY sales growth"]);
+    return datapoints;
+}
+
+function createQlDataPoints(dataJson){
+    var dataJsonList = JSON.parse(dataJson);
+    console.log("inside createQlDataPoints: datapoints count: "+dataJsonList.length);
+
+    var plFY = new Map();
+    for(var i =0;i<dataJsonList.length;i++){
+        var data = dataJsonList[i];
+        var datamap = new Map();
+        datamap['eps']=data.eps;
+        datamap['yoySalesGrowth']=data.yoySalesGrowth;
+        plFY[data.date] = datamap;
+    }
+    return plFY;
+}
+
+
+
+function quarterlyReportTable(headerList,dataFY){
+    console.log("creaing yearlyReportTable: ");
+    var datapoints = quarterlyReportDataPoints();
+     var tableID="qltbl";
+        var tableEle = document.getElementById(tableID);
+        if(tableEle!=null){
+                tableEle.remove();
+            }
+    createTableWithToolTips("quarterly-tbl",tableID,headerList,datapoints,dataFY);
+}
+function quarterlyReportAnalysis(years,headerList,analyzedjsonResonse){
+    console.log("analyzing Quarterly Report: "+analyzedjsonResonse);
+    var analysis = JSON.parse(analyzedjsonResonse);
+    console.log(analysis);
+    showQuarterlyGrowthRate(analysis,headerList,years);
+//    highlightedPoints(ratioAnalysis,years);
+    quarterlyReportEstmation(analyzedjsonResonse);
+}
+
+
+function showQuarterlyGrowthRate(analysis,headerList,years){
+//    console.log("Calculating  QuarterlyGrowthRate:");
+//    epsGrowthRate = analysis.epsGrowthRate;
+////    console.log("Fetched ratioGrowthsDtoMap: ");
+//    console.log(epsGrowthRate);
+////    var headerList =createHeaders(years);
+////    var dataPoints = new Array();
+////    dataPoints.push(["Basic EPS","basicEPS"," PE Ratio ToolTips PlaceHolder"]);
+////    console.log("headerList:" +headerList );
+//        //we can not calculate growth for the very first year. .
+//        for(var j=1;j<headerList.length-1;j++){
+//                   var cellid = "eps-"+headerList[j];
+//                   var growthMap = epsGrowthRate[headerList[j]];
+//                   console.log("growthmap: "+growthMap);
+//                   createGrowthLabel(cellid, growthMap);
+//            }
+    }
+function createQuarterlyReportAnalysisDataPoints(dataJson){
+    var dataJsonList = JSON.parse(dataJson);
+    console.log("inside createQuarterlyReportAnalysisDataPoints: datapoints count: "+dataJsonList.length);
+    console.log(dataJsonList.estimatedEPSCAGR);
+//    var afwpe = dataJsonList.pegRatioAnalysis;
+    var plFY = new Map();
+    var datamap = new Map();
+    datamap['qestimatedEPSCAGR'] = dataJsonList.estimatedEPSCAGRStr;
+    datamap['qttmEPS'] = dataJsonList.ttmEPSStr;
+
+    plFY["Value"] = datamap;
+
+    return plFY;
+}
+function quarterlyReportEstmation(jsonResonse){
+    console.log("inside yearlyReportEstmation:");
+    var parentDivID = "quarterly_analysis_div";
+    var parentDiv = document.getElementById(parentDivID);
+    var tableID = "ql_analysis_tbl";
+    var dataFY = createQuarterlyReportAnalysisDataPoints(jsonResonse);
+    var header = new Array();
+    header.push("Analysis");
+    header.push("Value");
+
+     var tmpdatapoints = new Array();
+     tmpdatapoints.push(["Estimated EPS (CAGR)","qestimatedEPSCAGR"," EPS estimated using CAGR technique."]);
+     tmpdatapoints.push(["TTM EPS","qttmEPS","Average EPS over period of years"]);
+
+    var ele = document.getElementById(tableID);
+        if(ele!=null){
+            ele.remove();
+        }
+
+    createTableWithToolTips(parentDivID,tableID,header,tmpdatapoints,dataFY);
+}
+
+function onQLYearSelection(){
+   var years = document.getElementById("qlyears").value;
+   console.log("Quarters selection : "+years);
+    showQuarterlyReportDetails(years);
 }
 /*====================== Get Ratios Details =========================*/
 
@@ -931,7 +1092,7 @@ function showforwardPE(jsonResonse){
     if(value=='FAIR_VALUED')
         valrow.style.color='green';
     else
-        valrow.style.backgroundColor='red';
+        valrow.style.color='red';
 }
 
 
@@ -975,7 +1136,7 @@ function showPEG(jsonResonse){
     if(value=='FAIR_VALUED')
         valrow.style.color='green';
     else
-        valrow.style.backgroundColor='red';
+        valrow.style.color='red';
 }
 
 function onRYearSelection(){

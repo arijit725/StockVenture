@@ -52,7 +52,10 @@
                     </div>
                 </td>
             </tr>
+            <tr><td><div id="bl_score_div" class="score">Balancesheet Score: <label id="bl_score_val"></label></div></td>
+            </tr>
         </table>
+
     </div>
 
     <div id="Profit-And-Loss" class="profitandloss">
@@ -89,7 +92,7 @@
     <div id="Yearly-Report" class="yearlyreport">
         <p class="subject-line">Yearly Report Analysis
             <label for="ylyears" > For Years:</label>
-            <select name="ylyears" id="ylyears" class="year-selection" onclick="onYearSelection()">
+            <select name="ylyears" id="ylyears" class="year-selection" onclick="onYLYearSelection()">
                 <option value="3">3</option>
                 <option value="5" selected>5</option>
                 <option value="7">7</option>
@@ -101,23 +104,49 @@
                 </div>
             </td>
                 <td>
-                    <div id="yearly_analysis_div" class="analysisholder">
+                    <div id="yearly_analysis_div" class="tableholder">
                     </div>
                     <label class="tooltip">
                         <span id="ylTips" class="tooltiptext">Yearly Report Analysis Fundamental</span>
                     </label>
                 </td>
-                <td>
-                    <div id="yl_calc_div" class="tableholder">
+<!--                <td>-->
+<!--                    <div id="yl_calc_div" class="tableholder">-->
 
-                    </div>
-                </td>
+<!--                    </div>-->
+<!--                </td>-->
             </tr>
         </table>
     </div>
 
-    <div id="Quarterly-Report" class="yearlyreport">
-        not yet implemented!!
+    <div id="Quarterly-Report" class="quarterlyreport">
+        <p class="subject-line">Quarterly Report Analysis
+            <label for="qlyears" > For Quarters:</label>
+            <select name="qlyears" id="qlyears" class="year-selection" onclick="onQLYearSelection()">
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+            </select></p>
+        <table>
+            <tr><td>
+                <div id="quarterly-tbl" class="tableholder">
+                    <!-- this part of code is generated from javascript-->
+                </div>
+            </td>
+                <td>
+                    <div id="quarterly_analysis_div" class="tableholder">
+                    </div>
+                    <label class="tooltip">
+                        <span id="qlTips" class="tooltiptext">Yearly Report Analysis Fundamental</span>
+                    </label>
+                </td>
+<!--                <td>-->
+<!--                    <div id="ql_calc_div" class="tableholder">-->
+
+<!--                    </div>-->
+<!--                </td>-->
+            </tr>
+        </table>
     </div>
     <div id="Ratios" class="ratios">
         <p class="subject-line">Ratios Analysis

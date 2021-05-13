@@ -26,6 +26,7 @@ public final class FundamentalInfoDto {
     private List<RatiosDto> ratiosDtoList;
     private List<YearlyReportDto> yearlyReportDtoList;
     private List<QuarterlyReportDTO> quarterlyReportDtoList;
+    private List<CashFlowDto> cashFlowDtoList;
 
     private FundamentalInfoDto(){
 
@@ -38,6 +39,7 @@ public final class FundamentalInfoDto {
         fundamentalInfoDto.ratiosDtoList = new ArrayList<>(years);
         fundamentalInfoDto.yearlyReportDtoList = new ArrayList<>(years);
         fundamentalInfoDto.quarterlyReportDtoList = new ArrayList<>(years);
+        fundamentalInfoDto.cashFlowDtoList = new ArrayList<>(years);
         return fundamentalInfoDto;
     }
 
@@ -61,6 +63,11 @@ public final class FundamentalInfoDto {
 
     public FundamentalInfoDto addProfitAndLossDto(ProfitAndLossDto profitAndLossDto) {
         this.profitAndLossDtoList.add(profitAndLossDto);
+        return this;
+    }
+
+    public FundamentalInfoDto addCashFlowDto(CashFlowDto cashFlowDto) {
+        this.cashFlowDtoList.add(cashFlowDto);
         return this;
     }
 
@@ -129,17 +136,21 @@ public final class FundamentalInfoDto {
         Collections.sort(this.yearlyReportDtoList,Collections.reverseOrder());
         Collections.sort(this.profitAndLossDtoList,Collections.reverseOrder());
         Collections.sort(this.quarterlyReportDtoList,Collections.reverseOrder());
+        Collections.sort(this.cashFlowDtoList,Collections.reverseOrder());
         return this;
     }
 
     @Override
     public String toString() {
         return "FundamentalInfoDto{" +
-                "companyDto=" + companyDto +
+                "stockID='" + stockID + '\'' +
+                ", companyDto=" + companyDto +
                 ", balanceSheetDtoList=" + balanceSheetDtoList +
                 ", profitAndLossDtoList=" + profitAndLossDtoList +
                 ", ratiosDtoList=" + ratiosDtoList +
                 ", yearlyReportDtoList=" + yearlyReportDtoList +
+                ", quarterlyReportDtoList=" + quarterlyReportDtoList +
+                ", cashFlowDtoList=" + cashFlowDtoList +
                 '}';
     }
 }

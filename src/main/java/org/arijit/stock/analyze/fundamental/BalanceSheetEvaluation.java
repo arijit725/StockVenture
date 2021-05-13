@@ -6,6 +6,7 @@ import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.analysisdto.BalanceSheetAnalysisInfo;
 import org.arijit.stock.analyze.dto.BalanceSheetDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
+import org.arijit.stock.analyze.score.ScorService;
 import org.arijit.stock.analyze.util.StockUtil;
 
 import java.util.Iterator;
@@ -63,6 +64,8 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
         analyzedInfoDto.getBalanceSheetAnalysisInfo().setDebtChangePercentage(debtChangeRatio);
 
         debtToReserveRatio(analyzedInfoDto.getBalanceSheetAnalysisInfo(),balanceSheetDtoList);
+
+        ScorService.getInstance().getBalancesheetScore().score(fundamentalInfoDto,analyzedInfoDto,year);
 
         evaluated = true;
     }

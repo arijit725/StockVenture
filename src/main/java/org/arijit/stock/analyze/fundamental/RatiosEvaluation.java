@@ -193,7 +193,7 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
     private double caclQtrForwardPE(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){
 //        double currentSharePrice,FundamentalInfoDto fundamentalInfoDto,int year
         double currentSharePrice = fundamentalInfoDto.getCompanyDto().getCurrentSharePrice();
-        double estimatedEPS = analyzedInfoDto.getQuarterlyReportAnalysisInfo().getEstimatedEPS();
+        double estimatedEPS = analyzedInfoDto.getQuarterlyReportAnalysisInfo().getEstimatedEPSCAGR();
         logger.info("[Quarterly ] estimatedEPS: "+estimatedEPS);
         double forwardPERatio = calcForwardPE(currentSharePrice,estimatedEPS);
 

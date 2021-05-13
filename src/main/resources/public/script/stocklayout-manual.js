@@ -4,6 +4,7 @@ var balancesheetDeatilsUrl ='http://localhost:8080/fundamental/balancesheetDetai
 var profitAndLossDetailUrl = 'http://localhost:8080/fundamental/profitAndLossDetails';
 var yearlyReportDetailUrl = 'http://localhost:8080/fundamental/yearlyReportDetails';
 var quarterlyReportDetailUrl = 'http://localhost:8080/fundamental/quarterlyReportDetails';
+var cashFlowDetailUrl = 'http://localhost:8080/fundamental/cashFlowDetails';
 var ratioDetailUrl = 'http://localhost:8080/fundamental/ratioDetails';
 var blUploadlUrl = 'http://localhost:8080/fundamental/uploadbl';
 var plUploadUrl = 'http://localhost:8080/fundamental/uploadpl';
@@ -41,6 +42,10 @@ function openCity(evt, cityName) {
    else if(cityName == "Ratios"){
       ratiosTable();
     }
+   else if(cityName == "CashFlow"){
+         cashFlowTable();
+       }
+
 
 
 
@@ -400,7 +405,6 @@ function submitYearlyReportDetails(){
 //        yearlyReportDto['date']=headers[y];
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
-
             var key = datapoints[i][1];
             var value = document.getElementById(id).value.trim();
             value = value.replace(',','');
@@ -431,68 +435,24 @@ function submitYearlyReportDetails(){
 var qtrDataSource = "screener.com"
 function quarterReprtDataPoints(){
     var datapoints = new Array();
+    datapoints.push(["FY Date","qrdate"]);
     datapoints.push(["Basic EPS","eps"]);
     datapoints.push(["YOY Sales Growth","yoySalesGrowth"]);
     return datapoints;
 }
 
-
 function createQuarterlyReportHeaders(){
     var header = new Array();
-
+    header.push("DataPoints");
     var today = new Date();
     var currentYear = today.getFullYear();
-    var startYear = currentYear-3;
     var month = today.getMonth();
-    var years = 4;
-    var datapoint = 12; //we are taking 12 quarters datapoint
-    if(month>8)
-       header.push("Sep-"+currentYear);
-    if(month>5)
-        header.push("Jun-"+currentYear);
-    if(month>2)
-        header.push("Mar-"+currentYear);
-
-    for(var i=1;i<years;i++){
-        currentYear = currentYear-1;
-        header.push("Dec-"+currentYear);
-        header.push("Sep-"+currentYear);
-        header.push("Jun-"+currentYear);
-        header.push("Mar-"+currentYear);
+    var years = 12;
+    for(var i=0;i<years;i++){
+    header.push("QTR-"+(i+1));
     }
-    slicedArray = header.slice(0, datapoint);
-    slicedArray.push("DataPoints");
-    slicedArray.reverse();
-
-    console.log("Quarterly report headers: "+slicedArray)
-    return slicedArray;
-
+    return header;
 }
-
-//function createQuarterlyReportHeaders(){
-//    var header = new Array();
-//    header.push("DataPoints");
-//    var today = new Date();
-//    var currentYear = today.getFullYear();
-//    var month = today.getMonth();
-//    var years = 2;
-//    if(month>8)
-//       header.push("Sep-"+currentYear);
-//    if(month>5)
-//        header.push("Jun-"+currentYear);
-//    if(month>2)
-//        header.push("Mar-"+currentYear);
-//
-//    for(var i=1;i<years;i++){
-//        currentYear = currentYear-1;
-//        header.push("Dec-"+currentYear);
-//        header.push("Sep-"+currentYear);
-//        header.push("Jun-"+currentYear);
-//        header.push("Mar-"+currentYear);
-//    }
-//    return header;
-//
-//}
 
 function quarterlyReportTable(){
     console.log("creaing quarterly report table");
@@ -502,6 +462,7 @@ function quarterlyReportTable(){
         tableID.remove();
     }
     var headerList =createQuarterlyReportHeaders();
+
     console.log("Generated Headers: "+headerList);
 //    createTable("Quarterly-Report","qrtbl",headerList,datapoints,submitQuarterlyReportDetails);
     createTable2("Quarterly-Report","qrtbl",headerList,datapoints,submitQuarterlyReportDetails);
@@ -518,15 +479,36 @@ function submitQuarterlyReportDetails(){
         var year = headers[y];
         var yearlyReportDto =  new Map();
         yearlyReportDto['date']=headers[y];
+        var dontPush = false;
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
+            var ele = document.getElementById(id);
             var key = datapoints[i][1];
             var value = document.getElementById(id).value.trim();
+            console.log("value: "+value);
+            if(!value){
+                dontPush = true;
+                break;
+              }
             value = value.replace(',','');
             value = value.replace('%','');
+             if(key=='qrdate'){
+                value = value.replace('\'','');
+                var tmpValue = value.split(" ");
+                console.log("value: "+value+" tmpvalue: "+tmpValue[0]+" "+tmpValue[1]);
+                if(tmpValue[1].trim().length==4)
+                    value =  tmpValue[0].trim() +"-"+tmpValue[1].trim();
+                else
+                    value = tmpValue[0].trim()+"-20"+tmpValue[1];
+               }
+//            console.log("ProfitAndLoss details"+ id+" : "+value);
+            if(key=='qrdate')
+                key='date';
             yearlyReportDto[key] = value;
             }
-        ratioDtoList.push(yearlyReportDto);
+            if(!dontPush){
+                ratioDtoList.push(yearlyReportDto);
+                }
     }
     console.log("Stored Ratio Details records: "+ratioDtoList.length)
     console.log(ratioDtoList)
@@ -576,21 +558,6 @@ function submitRatiosDetails(){
         var yearlyReportDto =  new Map();
 //        yearlyReportDto['date']=headers[y];
         for(var i=0;i<datapoints.length;i++){
-//            id  = getCellID(datapoints[i][1],headers[y]);
-//            var key = datapoints[i][1];
-//            var value = document.getElementById(id).value.trim();
-//            value = value.replace(',','');
-//            value=Number(value.split(',').join(''));
-//            if(key=='rdate'){
-//                var tmpValue = value.split(" ");
-//                value = tmpValue[0].trim()+"-20"+tmpValue[1];
-//               }
-//            if(key=='rdate'){
-//                key='date';
-//                console.log(key+" : "+value);
-//              }
-//            yearlyReportDto[key] = value;
-
 
             id  = getCellID(datapoints[i][1],headers[y]);
             var key = datapoints[i][1];
@@ -615,6 +582,98 @@ function submitRatiosDetails(){
     var ratioDtoJson = generateJsonString(ratioDtoList);
     console.log(ratioDtoJson);
     var responseText = postRequest(ratioDetailUrl,ratioDtoJson);
+
+    tabopen("cashflowopen");
+}
+
+
+/*======================================Functions for Cashflow Report Handle================================*/
+
+var cashFlowDataSource = "screener.com"
+function cashFlowDataPoints(){
+    var datapoints = new Array();
+    datapoints.push(["FY Date","cfdate"]);
+    datapoints.push(["Cash from Operating Activity","cashFromOperatingActivity"]);
+    datapoints.push(["Fixed assets purchased","fixedAssestsPurchased"]);
+    datapoints.push(["Net Cash Flow","netCashFlow"]);
+    return datapoints;
+}
+
+function createCashFlowHeaders(){
+    var header = new Array();
+    header.push("DataPoints");
+    var today = new Date();
+    var currentYear = today.getFullYear();
+    var month = today.getMonth();
+    var years = 12;
+    for(var i=0;i<years;i++){
+    header.push("Year-"+(i+1));
+    }
+    return header;
+}
+
+function cashFlowTable(){
+    console.log("creaing cash flow table");
+    var datapoints = cashFlowDataPoints();
+    var tableID = document.getElementById("cftbl");
+    if(tableID!=null){
+        tableID.remove();
+    }
+    var headerList =createCashFlowHeaders();
+
+    console.log("Generated Headers: "+headerList);
+//    createTable("Quarterly-Report","qrtbl",headerList,datapoints,submitQuarterlyReportDetails);
+    createTable2("CashFlow","cftbl",headerList,datapoints,submitCashFlowDetails);
+}
+
+
+function submitCashFlowDetails(){
+    console.log("submitCashFlowDetails action is triggered");
+    var tableID = "cftbl";
+    var datapoints = cashFlowDataPoints();
+    var headers = getTableHeader(tableID);
+    var ratioDtoList = new Array();
+    for(var y=0;y<headers.length;y++){
+        var year = headers[y];
+        var yearlyReportDto =  new Map();
+        yearlyReportDto['date']=headers[y];
+        var dontPush = false;
+        for(var i=0;i<datapoints.length;i++){
+            id  = getCellID(datapoints[i][1],headers[y]);
+            var ele = document.getElementById(id);
+            var key = datapoints[i][1];
+            var value = document.getElementById(id).value.trim();
+            console.log("value: "+value);
+            if(!value){
+                dontPush = true;
+                break;
+              }
+            value = value.replace(',','');
+            value = value.replace('%','');
+             if(key=='cfdate'){
+                value = value.replace('\'','');
+                var tmpValue = value.split(" ");
+                console.log("value: "+value+" tmpvalue: "+tmpValue[0]+" "+tmpValue[1]);
+                if(tmpValue[1].trim().length==4)
+                    value =  tmpValue[0].trim() +"-"+tmpValue[1].trim();
+                else
+                    value = tmpValue[0].trim()+"-20"+tmpValue[1];
+               }
+//            console.log("ProfitAndLoss details"+ id+" : "+value);
+            if(key=='cfdate')
+                key='date';
+            yearlyReportDto[key] = value;
+            }
+            if(!dontPush){
+                ratioDtoList.push(yearlyReportDto);
+                }
+    }
+    console.log("Stored Ratio Details records: "+ratioDtoList.length)
+    console.log(ratioDtoList)
+    var ratioDtoJson = generateJsonString(ratioDtoList);
+    console.log(ratioDtoJson);
+    var responseText = postRequest(cashFlowDetailUrl,ratioDtoJson);
+
 }
 
 /*============================  Http Request Functions ===================================*/
@@ -725,7 +784,7 @@ function createHeaders(){
 
 }
 
-   function createGenericHeader(){
+function createGenericHeader(){
     var header = new Array();
     header.push("DataPoints");
     var today = new Date();
@@ -736,7 +795,7 @@ function createHeaders(){
     header.push("Year-"+(i+1));
     }
     return header;
-    }
+}
 
 function generateJsonString(obj){
     var jsonStr = JSON.stringify(obj);

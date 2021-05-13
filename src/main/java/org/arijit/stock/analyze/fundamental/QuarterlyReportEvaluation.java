@@ -5,10 +5,9 @@ import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.QuarterlyReportDTO;
-import org.arijit.stock.analyze.dto.YearlyReportDto;
 import org.arijit.stock.analyze.util.FundamentalAnalysisUtil;
-import org.arijit.stock.analyze.util.StockUtil;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,19 +46,48 @@ public class QuarterlyReportEvaluation implements IFundamentalEvaluation {
         logger.info("Start year QuarterlyReport: "+startQtrReport);
         double ttmEPS = (double) quarterlyReportDTOS.stream().mapToDouble(mapper->mapper.getEps()).sum();
         logger.info("Querterly TTM EPS: "+ttmEPS);
-//        double epsCAGR = FundamentalAnalysisUtil.cagr(endYearReport.getBasicEPS(), startYearReport.getBasicEPS(),year);
-//        double estimatedEPS = ((endYearReport.getBasicEPS()*epsCAGR)/100)+endYearReport.getBasicEPS();
-        double estimatedEPS = calcEstimatedEPS(ttmEPS,endQtrReport.getEps(),startQtrReport.getEps(),qtr);
 
-        analyzedInfoDto.getQuarterlyReportAnalysisInfo().setEstimatedEPS(estimatedEPS);
-        logger.info("Quarterly TTM Estimated EPS: "+analyzedInfoDto.getQuarterlyReportAnalysisInfo().getEstimatedEPS());
+        double estimatedEPS = calcEstimatedEPS(ttmEPS,endQtrReport.getEps(),startQtrReport.getEps(),qtr);
+        calcEstimatedEPS(ttmEPS,quarterlyReportDTOS,qtr);
+        analyzedInfoDto.getQuarterlyReportAnalysisInfo().setEstimatedEPSCAGR(estimatedEPS);
+        analyzedInfoDto.getQuarterlyReportAnalysisInfo().setTtmEPS(ttmEPS);
+        logger.info("Quarterly CAGR Estimated EPS: "+analyzedInfoDto.getQuarterlyReportAnalysisInfo().getEstimatedEPSCAGR());
     }
 
-    public double calcEstimatedEPS(double ttmEPS,double endingEPS, double startingEPS,int year){
-        double epsCAGR = FundamentalAnalysisUtil.cagr(endingEPS, startingEPS,year);
-        logger.info("Quarterly EPS Growth Rate: "+epsCAGR);
-        double estimatedEPS = ((ttmEPS*epsCAGR)/100)+ttmEPS;
+    /**
+     * There could be chances that one quarter result shows EPS as 0 or negative or too high.
+     * Now if we calculate in CAGR way, and starting or ending quarter result shows such high or low eps, that will give
+     * wrong impression in estimated eps. Thats why we are taking avg eps instead of cagr.
+     * @param quarterlyReportDTOS
+     * @param qtr
+     * @return
+     */
+    public double calcEstimatedEPS(double ttmEPS, List<QuarterlyReportDTO> quarterlyReportDTOS, int qtr){
+        double epsGrowth = 0;
+        Iterator<QuarterlyReportDTO> it = quarterlyReportDTOS.iterator();
+        QuarterlyReportDTO currenYearReport = null;
+        while(it.hasNext()){
+            if(currenYearReport==null){
+                currenYearReport = it.next();
+            }
+            else{
+                QuarterlyReportDTO prevYear = it.next();
+                double tmpGrowth = (currenYearReport.getEps()-prevYear.getEps())/prevYear.getEps()*100;
+                epsGrowth = epsGrowth+tmpGrowth;
+                currenYearReport = prevYear;
+            }
+        }
+        double avgEPS = epsGrowth/(qtr-1);
+        double estimatedEPS = ((ttmEPS*avgEPS)/100)+ttmEPS;
         logger.info("[Quarterly] Calculated Estimated EPS: "+estimatedEPS);
+        return estimatedEPS;
+    }
+
+    public double calcEstimatedEPS(double ttmEPS,double endingEPS, double startingEPS,int qtr){
+        double epsCAGR = FundamentalAnalysisUtil.cagr(endingEPS, startingEPS,qtr);
+        logger.info("Quarterly EPS Growth Rate CAGR: "+epsCAGR);
+        double estimatedEPS = ((ttmEPS*epsCAGR)/100)+ttmEPS;
+        logger.info("[Quarterly] Calculated Estimated EPS [CAGR]: "+estimatedEPS);
         return estimatedEPS;
     }
 //    private void calcQtlIntrinsicValue(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){

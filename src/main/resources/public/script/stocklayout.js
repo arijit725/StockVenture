@@ -429,60 +429,16 @@ function quarterReprtDataPoints(){
 
 function createQuarterlyReportHeaders(){
     var header = new Array();
-
+    header.push("DataPoints");
     var today = new Date();
     var currentYear = today.getFullYear();
-    var startYear = currentYear-3;
     var month = today.getMonth();
-    var years = 4;
-    var datapoint = 12; //we are taking 12 quarters datapoint
-    if(month>8)
-       header.push("Sep-"+currentYear);
-    if(month>5)
-        header.push("Jun-"+currentYear);
-    if(month>2)
-        header.push("Mar-"+currentYear);
-
-    for(var i=1;i<years;i++){
-        currentYear = currentYear-1;
-        header.push("Dec-"+currentYear);
-        header.push("Sep-"+currentYear);
-        header.push("Jun-"+currentYear);
-        header.push("Mar-"+currentYear);
+    var years = 12;
+    for(var i=0;i<years;i++){
+    header.push("QTR-"+(i+1));
     }
-    slicedArray = header.slice(0, datapoint);
-    slicedArray.push("DataPoints");
-    slicedArray.reverse();
-
-    console.log("Quarterly report headers: "+slicedArray)
-    return slicedArray;
-
+    return header;
 }
-
-//function createQuarterlyReportHeaders(){
-//    var header = new Array();
-//    header.push("DataPoints");
-//    var today = new Date();
-//    var currentYear = today.getFullYear();
-//    var month = today.getMonth();
-//    var years = 2;
-//    if(month>8)
-//       header.push("Sep-"+currentYear);
-//    if(month>5)
-//        header.push("Jun-"+currentYear);
-//    if(month>2)
-//        header.push("Mar-"+currentYear);
-//
-//    for(var i=1;i<years;i++){
-//        currentYear = currentYear-1;
-//        header.push("Dec-"+currentYear);
-//        header.push("Sep-"+currentYear);
-//        header.push("Jun-"+currentYear);
-//        header.push("Mar-"+currentYear);
-//    }
-//    return header;
-//
-//}
 
 function quarterlyReportTable(){
     console.log("creaing quarterly report table");
@@ -492,6 +448,7 @@ function quarterlyReportTable(){
         tableID.remove();
     }
     var headerList =createQuarterlyReportHeaders();
+
     console.log("Generated Headers: "+headerList);
 //    createTable("Quarterly-Report","qrtbl",headerList,datapoints,submitQuarterlyReportDetails);
     createTable2("Quarterly-Report","qrtbl",headerList,datapoints,submitQuarterlyReportDetails);
@@ -508,14 +465,36 @@ function submitQuarterlyReportDetails(){
         var year = headers[y];
         var yearlyReportDto =  new Map();
         yearlyReportDto['date']=headers[y];
+        var dontPush = false;
         for(var i=0;i<datapoints.length;i++){
             id  = getCellID(datapoints[i][1],headers[y]);
+            var ele = document.getElementById(id);
+            var key = datapoints[i][1];
             var value = document.getElementById(id).value.trim();
+            console.log("value: "+value);
+            if(!value){
+                dontPush = true;
+                break;
+              }
             value = value.replace(',','');
             value = value.replace('%','');
-            yearlyReportDto[datapoints[i][1]] = value;
+             if(key=='qrdate'){
+                value = value.replace('\'','');
+                var tmpValue = value.split(" ");
+                console.log("value: "+value+" tmpvalue: "+tmpValue[0]+" "+tmpValue[1]);
+                if(tmpValue[1].trim().length==4)
+                    value =  tmpValue[0].trim() +"-"+tmpValue[1].trim();
+                else
+                    value = tmpValue[0].trim()+"-20"+tmpValue[1];
+               }
+//            console.log("ProfitAndLoss details"+ id+" : "+value);
+            if(key=='qrdate')
+                key='date';
+            yearlyReportDto[key] = value;
             }
-        ratioDtoList.push(yearlyReportDto);
+            if(!dontPush){
+                ratioDtoList.push(yearlyReportDto);
+                }
     }
     console.log("Stored Ratio Details records: "+ratioDtoList.length)
     console.log(ratioDtoList)
@@ -524,6 +503,7 @@ function submitQuarterlyReportDetails(){
     var responseText = postRequest(quarterlyReportDetailUrl,ratioDtoJson);
     tabopen("ratioopen");
 }
+
 
 
 /*======================================Functions for Ratios Handle================================*/

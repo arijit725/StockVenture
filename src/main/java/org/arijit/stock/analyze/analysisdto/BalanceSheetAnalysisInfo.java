@@ -16,6 +16,8 @@ public class BalanceSheetAnalysisInfo {
 
     private List<String> analysisStatement;
 
+    private String balanceSheetScore;
+
     public BalanceSheetAnalysisInfo(){
         debtToReserveRatioMap = new TreeMap<>(new Comparator<String>() {
             @Override
@@ -30,6 +32,14 @@ public class BalanceSheetAnalysisInfo {
                 return 0;
             }
         });
+    }
+
+    public String getBalanceSheetScore() {
+        return balanceSheetScore;
+    }
+
+    public void setBalanceSheetScore(String balanceSheetScore) {
+        this.balanceSheetScore = balanceSheetScore;
     }
 
     public double getTotalShareChangePercentage() {
@@ -76,4 +86,16 @@ public class BalanceSheetAnalysisInfo {
         return debtToReserveRatioMap;
     }
 
+    @Override
+    public String toString() {
+        return "BalanceSheetAnalysisInfo{" +
+                "totalShareChangePercentage=" + totalShareChangePercentage +
+                ", increaseIncidentInTotalShare=" + increaseIncidentInTotalShare +
+                ", reservesChangePercentage=" + reservesChangePercentage +
+                ", debtChangePercentage=" + debtChangePercentage +
+                ", debtToReserveRatioMap=" + debtToReserveRatioMap +
+                ", analysisStatement=" + analysisStatement +
+                ", balanceSheetScore='" + balanceSheetScore + '\'' +
+                '}';
+    }
 }

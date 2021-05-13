@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
+import org.arijit.stock.analyze.analysisdto.QuarterlyReportAnalysisInfo;
 import org.arijit.stock.analyze.analysisdto.RatioAnalysisInfo;
 import org.arijit.stock.analyze.analysisdto.YearlyReportAnalysisInfo;
 import org.arijit.stock.analyze.cache.MemCache;
@@ -33,6 +34,20 @@ public class StockAnalysisService {
             logger.error("Unable to evaluate ",e);
         }
         return analyzedInfoDto.getYearlyReportAnalysisInfo();
+    }
+
+    public QuarterlyReportAnalysisInfo getAnalyzedQuarterlyReport(String stockID, int years) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        try{
+            logger.info("==========================QuarterlyReportEvaluation==================================");
+            QuarterlyReportEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
+        }catch(Exception e){
+            logger.error("Unable to evaluate ",e);
+        }
+        return analyzedInfoDto.getQuarterlyReportAnalysisInfo();
     }
 
     public String quarterlyIntrinsicValuation(String stockID,String requestBody) throws Exception {

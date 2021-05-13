@@ -133,6 +133,7 @@ public class FundamentalService {
             throw new Exception("NO FundamentalInfo found with stock id: "+stockID);
         fundamentalInfoDto.clearQuarterlyReportDtos();
         for(QuarterlyReportDTO quarterlyReportDTO:quarterlyReportDTOS){
+//            if(quarterlyReportDTO.getDate())
             fundamentalInfoDto.addQuarterlyReportDto(quarterlyReportDTO);
         }
         fundamentalInfoDto.build();
@@ -148,6 +149,20 @@ public class FundamentalService {
         fundamentalInfoDto.clearRatiosDtos();
         for(RatiosDto ratiosDto:ratiosDtos){
             fundamentalInfoDto.addRatiosDto(ratiosDto);
+        }
+        fundamentalInfoDto.build();
+    }
+
+    public void updateCashFlowDetails(String stockID, String cashFlowDetails) throws Exception {
+        Gson gson = new Gson();
+        CashFlowDto[] cashFlowDtos = gson.fromJson(cashFlowDetails, CashFlowDto[].class);
+        logger.info(Arrays.toString(cashFlowDtos));
+        if(cashFlowDtos==null || cashFlowDtos.length == 0)
+            throw new Exception("cashFlow data not found");
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        fundamentalInfoDto.clearRatiosDtos();
+        for(CashFlowDto cashFlowDto:cashFlowDtos){
+            fundamentalInfoDto.addCashFlowDto(cashFlowDto);
         }
         fundamentalInfoDto.build();
     }
@@ -229,6 +244,17 @@ public class FundamentalService {
         AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
         YearlyReportEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
         return fundamentalInfoDto.getYearlyReportDtoList().stream().limit(years).collect(Collectors.toList());
+    }
+
+    public List<QuarterlyReportDTO> getQuarterlyReport(String stockID, int qtr) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        if(fundamentalInfoDto.getQuarterlyReportDtoList().size()<qtr)
+            throw new Exception("Quarter excced ProfitAndLossDto list size");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        QuarterlyReportEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,qtr);
+        return fundamentalInfoDto.getQuarterlyReportDtoList().stream().limit(qtr).collect(Collectors.toList());
     }
 
     public BalanceSheetAnalysisInfo getAnalyzedBalanceSheet(String stockID, int years) throws Exception {
