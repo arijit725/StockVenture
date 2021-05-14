@@ -23,13 +23,24 @@ public class YearlyReportEvaluation implements IFundamentalEvaluation {
     private void calcEstimatedEPS(FundamentalInfoDto fundamentalInfoDto,AnalyzedInfoDto analyzedInfoDto, int year){
         List<YearlyReportDto> yearlyReportDtoList = fundamentalInfoDto.getYearlyReportDtoList();
         YearlyReportDto endYearReport =  yearlyReportDtoList.get(0);
-        YearlyReportDto startYearReport = yearlyReportDtoList.get(year-1);// starting from index 0
+        int startYear = year -1;
+        int tmpYear = year;
+        YearlyReportDto startYearReport = null;
+        while(tmpYear>=3) {
+            startYearReport = yearlyReportDtoList.get(startYear);// starting from index 0
+            if(startYearReport.getBasicEPS()>0)
+                break;
+            startYear--;
+            tmpYear--;
+        }
         logger.info("End year YearlyReport: "+endYearReport);
         logger.info("Start year YearlyReport: "+startYearReport);
 
 //        double epsCAGR = FundamentalAnalysisUtil.cagr(endYearReport.getBasicEPS(), startYearReport.getBasicEPS(),year);
 //        double estimatedEPS = ((endYearReport.getBasicEPS()*epsCAGR)/100)+endYearReport.getBasicEPS();
-        double estimatedEPS = calcEstimatedEPS(endYearReport.getBasicEPS(),startYearReport.getBasicEPS(),year);
+        double estimatedEPS = -1;
+        if(tmpYear>=3)
+            estimatedEPS = calcEstimatedEPS(endYearReport.getBasicEPS(),startYearReport.getBasicEPS(),tmpYear);
         analyzedInfoDto.getYearlyReportAnalysisInfo().setEstimatedEPSCAGR(estimatedEPS);
     }
 
@@ -55,7 +66,7 @@ public class YearlyReportEvaluation implements IFundamentalEvaluation {
                 currentYearReport = it.next();
             else{
                 YearlyReportDto prevYearReport = it.next();
-                double epsGrowth = (currentYearReport.getBasicEPS()-prevYearReport.getBasicEPS())/prevYearReport.getBasicEPS();
+                double epsGrowth = (currentYearReport.getBasicEPS()-prevYearReport.getBasicEPS())/Math.abs(prevYearReport.getBasicEPS());
                 epsGrowth = (double) epsGrowth*100;
                 logger.info("CurrentYear EPS: "+currentYearReport.getBasicEPS()+" PrevYear EPS: "+prevYearReport.getBasicEPS()+" gowth Percentage: "+epsGrowth);
 

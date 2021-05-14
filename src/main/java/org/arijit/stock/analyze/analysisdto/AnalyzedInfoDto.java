@@ -11,6 +11,7 @@ public class AnalyzedInfoDto {
     private final TargetPriceEstimationDto targetPriceEstimationDto;
     private final RatioAnalysisInfo ratioAnalysisInfo;
     private final ProfitAndLossAnalysisInfo profitAndLossAnalysisInfo;
+    private final CashFlowAnalysisInfo cashFlowAnalysisInfo;
     private final MisleneousAnalysisInfo misleneousAnalysisInfo;
 
     private AnalyzedInfoDto(){
@@ -20,6 +21,7 @@ public class AnalyzedInfoDto {
         targetPriceEstimationDto = new TargetPriceEstimationDto();
         ratioAnalysisInfo = new RatioAnalysisInfo();
         profitAndLossAnalysisInfo = new ProfitAndLossAnalysisInfo();
+        cashFlowAnalysisInfo = new CashFlowAnalysisInfo();
         misleneousAnalysisInfo = new MisleneousAnalysisInfo();
     }
 
@@ -51,6 +53,10 @@ public class AnalyzedInfoDto {
         return quarterlyReportAnalysisInfo;
     }
 
+    public CashFlowAnalysisInfo getCashFlowAnalysisInfo() {
+        return cashFlowAnalysisInfo;
+    }
+
     public MisleneousAnalysisInfo getMisleneousAnalysisInfo() {
         return misleneousAnalysisInfo;
     }
@@ -65,6 +71,7 @@ public class AnalyzedInfoDto {
                 ", targetPriceEstimationDto=" + targetPriceEstimationDto +
                 ", ratioAnalysisInfo=" + ratioAnalysisInfo +
                 ", profitAndLossAnalysisInfo="+profitAndLossAnalysisInfo+
+                ", cashFlowAnalysisInfo="+cashFlowAnalysisInfo+
                 ", misleneousAnalysisInfo="+misleneousAnalysisInfo+
                 '}';
     }

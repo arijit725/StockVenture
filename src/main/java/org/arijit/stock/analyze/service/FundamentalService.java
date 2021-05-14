@@ -160,9 +160,9 @@ public class FundamentalService {
         if(cashFlowDtos==null || cashFlowDtos.length == 0)
             throw new Exception("cashFlow data not found");
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
-        fundamentalInfoDto.clearRatiosDtos();
+        fundamentalInfoDto.clearCashFlowDtos();
         for(CashFlowDto cashFlowDto:cashFlowDtos){
-            fundamentalInfoDto.addCashFlowDto(cashFlowDto);
+            fundamentalInfoDto.addCashFlowDto(cashFlowDto.build());
         }
         fundamentalInfoDto.build();
     }
@@ -255,6 +255,15 @@ public class FundamentalService {
         AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
         QuarterlyReportEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,qtr);
         return fundamentalInfoDto.getQuarterlyReportDtoList().stream().limit(qtr).collect(Collectors.toList());
+    }
+
+    public List<CashFlowDto> getCashFlow(String stockID, int year) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        if(fundamentalInfoDto.getQuarterlyReportDtoList().size()<year)
+            throw new Exception("CashFlow excced Cashflowdto list size");
+        return fundamentalInfoDto.getCashFlowDtoList().stream().limit(year).collect(Collectors.toList());
     }
 
     public BalanceSheetAnalysisInfo getAnalyzedBalanceSheet(String stockID, int years) throws Exception {

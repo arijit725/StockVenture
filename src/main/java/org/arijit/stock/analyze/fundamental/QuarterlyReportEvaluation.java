@@ -6,6 +6,7 @@ import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.QuarterlyReportDTO;
 import org.arijit.stock.analyze.util.FundamentalAnalysisUtil;
+import org.arijit.stock.analyze.util.StockUtil;
 
 import java.util.Iterator;
 import java.util.List;
@@ -30,12 +31,56 @@ public class QuarterlyReportEvaluation implements IFundamentalEvaluation {
             throw new Exception("FundamentalInfo not found");
         if(analyzedInfoDto==null || analyzedInfoDto.getMisleneousAnalysisInfo()==null)
             throw new Exception("AnalzedInfo not found");
-//        calcQtlIntrinsicValue(fundamentalInfoDto,analyzedInfoDto);
         calcEstimatedEPS(fundamentalInfoDto,analyzedInfoDto);
+        calcGrowth(fundamentalInfoDto,analyzedInfoDto);
+        calcAvgEPsGrowth(fundamentalInfoDto,analyzedInfoDto);
         evaluated = true;
     }
 
 
+    private void calcGrowth(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){
+        List<QuarterlyReportDTO> quarterlyReportDTOList = fundamentalInfoDto.getQuarterlyReportDtoList();
+        Iterator<QuarterlyReportDTO> it = quarterlyReportDTOList.iterator();
+        QuarterlyReportDTO currentQuarterlyReportDto = null;
+        while(it.hasNext()){
+            if(currentQuarterlyReportDto==null)
+                currentQuarterlyReportDto = it.next();
+            else{
+                QuarterlyReportDTO prevQuarterlyReportDto = it.next();
+                double epsGrowth = 0;
+                if(prevQuarterlyReportDto.getEps()!=0){
+                    epsGrowth = (currentQuarterlyReportDto.getEps() - prevQuarterlyReportDto.getEps())/prevQuarterlyReportDto.getEps();
+                    epsGrowth = (double)epsGrowth*100;
+                }
+                analyzedInfoDto.getQuarterlyReportAnalysisInfo().addQuarterlyReportGrowths(currentQuarterlyReportDto.getDate(),"eps", StockUtil.convertDoubleToPrecision(epsGrowth,2));
+                currentQuarterlyReportDto = prevQuarterlyReportDto;
+            }
+        }
+    }
+
+    private void calcAvgEPsGrowth(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){
+        int qtr = 4; //average eps growth will be of always for last 4 quarter.
+        List<QuarterlyReportDTO> quarterlyReportDTOList = fundamentalInfoDto.getQuarterlyReportDtoList().stream().limit(qtr).collect(Collectors.toList());
+        Iterator<QuarterlyReportDTO> it = quarterlyReportDTOList.iterator();
+        QuarterlyReportDTO currentQuarterlyReportDto = null;
+        double avgGrowth = 0;
+        while(it.hasNext()){
+            if(currentQuarterlyReportDto==null)
+                currentQuarterlyReportDto = it.next();
+            else{
+                QuarterlyReportDTO prevQuarterlyReportDto = it.next();
+                double epsGrowth = 0;
+                if(prevQuarterlyReportDto.getEps()!=0){
+                    epsGrowth = (currentQuarterlyReportDto.getEps() - prevQuarterlyReportDto.getEps())/prevQuarterlyReportDto.getEps();
+                    epsGrowth = (double)epsGrowth*100;
+                }
+                avgGrowth = avgGrowth + epsGrowth;
+                currentQuarterlyReportDto = prevQuarterlyReportDto;
+            }
+        }
+        avgGrowth = (double) avgGrowth/qtr;
+        analyzedInfoDto.getQuarterlyReportAnalysisInfo().setAvgEPSGrowth(avgGrowth);
+    }
     private void calcEstimatedEPS(FundamentalInfoDto fundamentalInfoDto,AnalyzedInfoDto analyzedInfoDto){
         int qtr = 4;
         List<QuarterlyReportDTO> quarterlyReportDTOS = fundamentalInfoDto.getQuarterlyReportDtoList().stream().limit(qtr).collect(Collectors.toList());
@@ -46,8 +91,10 @@ public class QuarterlyReportEvaluation implements IFundamentalEvaluation {
         logger.info("Start year QuarterlyReport: "+startQtrReport);
         double ttmEPS = (double) quarterlyReportDTOS.stream().mapToDouble(mapper->mapper.getEps()).sum();
         logger.info("Querterly TTM EPS: "+ttmEPS);
-
-        double estimatedEPS = calcEstimatedEPS(ttmEPS,endQtrReport.getEps(),startQtrReport.getEps(),qtr);
+        double estimatedEPS = 0;
+        if(startQtrReport.getEps()>0) {
+            estimatedEPS = calcEstimatedEPS(ttmEPS, endQtrReport.getEps(), startQtrReport.getEps(), qtr);
+        }
         calcEstimatedEPS(ttmEPS,quarterlyReportDTOS,qtr);
         analyzedInfoDto.getQuarterlyReportAnalysisInfo().setEstimatedEPSCAGR(estimatedEPS);
         analyzedInfoDto.getQuarterlyReportAnalysisInfo().setTtmEPS(ttmEPS);

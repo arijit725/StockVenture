@@ -188,6 +188,35 @@
             </tr>
         </table>
     </div>
+    <div id="CashFlow" class="quarterlyreport">
+        <p class="subject-line">CashFlow Analysis
+            <label for="cfyears" > For Years:</label>
+            <select name="cfyears" id="cfyears" class="year-selection" onclick="onCFYearSelection()">
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+            </select></p>
+        <table>
+            <tr><td>
+                <div id="cf-tbl" class="tableholder">
+                    <!-- this part of code is generated from javascript-->
+                </div>
+            </td>
+                <td>
+                    <div id="cf_analysis_div" class="tableholder">
+                    </div>
+                    <label class="tooltip">
+                        <span id="cfTips" class="tooltiptext">Yearly Report Analysis Fundamental</span>
+                    </label>
+                </td>
+                <!--                <td>-->
+                <!--                    <div id="ql_calc_div" class="tableholder">-->
+
+                <!--                    </div>-->
+                <!--                </td>-->
+            </tr>
+        </table>
+    </div>
 </div>
 <div class="instant-review">
     <div class="reivew-header">Quarterly Intrinsic Valuations</div>

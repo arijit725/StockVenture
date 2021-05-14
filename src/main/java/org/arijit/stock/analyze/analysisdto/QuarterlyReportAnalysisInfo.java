@@ -2,12 +2,31 @@ package org.arijit.stock.analyze.analysisdto;
 
 import org.arijit.stock.analyze.util.StockUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class QuarterlyReportAnalysisInfo {
     private double estimatedEPSCAGR;
     private double ttmEPS;
+    private double avgEPSGrowth; //eps growth for last4 quarter;
+    private Map<String, HashMap<String,String>> quarterlyReportGrowthsDtoMap;
+
+
 
     private String estimatedEPSCAGRStr;
     private String ttmEPSStr;
+
+    public QuarterlyReportAnalysisInfo(){
+        quarterlyReportGrowthsDtoMap = new HashMap<>();
+    }
+
+    public double getAvgEPSGrowth() {
+        return avgEPSGrowth;
+    }
+
+    public void setAvgEPSGrowth(double avgEPSGrowth) {
+        this.avgEPSGrowth = avgEPSGrowth;
+    }
 
     public void setEstimatedEPSCAGR(double estimatedEPSCAGR) {
         this.estimatedEPSCAGR = estimatedEPSCAGR;
@@ -27,6 +46,13 @@ public class QuarterlyReportAnalysisInfo {
         return estimatedEPSCAGR;
     }
 
+
+    public void addQuarterlyReportGrowths(String date, String attribute, String value){
+        if(!quarterlyReportGrowthsDtoMap.containsKey(date)){
+            quarterlyReportGrowthsDtoMap.put(date,new HashMap<>());
+        }
+        quarterlyReportGrowthsDtoMap.get(date).put(attribute,value);
+    }
 
     @Override
     public String toString() {

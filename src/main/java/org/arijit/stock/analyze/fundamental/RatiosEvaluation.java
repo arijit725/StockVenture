@@ -56,17 +56,29 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
                 lastRatiosDto = iterator.next();
             else{
                 RatiosDto prevRatiosDto = iterator.next();
-                double peRatioGrowth = (lastRatiosDto.getPeRatio()-prevRatiosDto.getPeRatio())/prevRatiosDto.getPeRatio();
-                peRatioGrowth = (double) peRatioGrowth*100;
+
+
+                double peRatioGrowth = (lastRatiosDto.getPeRatio()-prevRatiosDto.getPeRatio());
+                if(prevRatiosDto.getPeRatio()!=0) {
+                    peRatioGrowth = (double) peRatioGrowth/prevRatiosDto.getPeRatio();
+                    peRatioGrowth = (double) peRatioGrowth * 100;
+                }
                 ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"peRatio",StockUtil.convertDoubleToPrecision(peRatioGrowth, precision));
 
-                double pbRatioGrowth = (lastRatiosDto.getPbRatio()-prevRatiosDto.getPbRatio())/prevRatiosDto.getPbRatio();
-                pbRatioGrowth = (double) pbRatioGrowth*100;
+
+                double pbRatioGrowth = (lastRatiosDto.getPbRatio()-prevRatiosDto.getPbRatio());
+                if(prevRatiosDto.getPbRatio()!=0) {
+                    pbRatioGrowth = (double) pbRatioGrowth/prevRatiosDto.getPbRatio();
+                    pbRatioGrowth = (double) pbRatioGrowth * 100;
+                }
                 ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"pbRatio",StockUtil.convertDoubleToPrecision(pbRatioGrowth, precision));
 
-                double roeGrowth = (lastRatiosDto.getRoe()-prevRatiosDto.getRoe())/prevRatiosDto.getRoe();
-                roeGrowth = (double) roeGrowth*100;
-                ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"roe",StockUtil.convertDoubleToPrecision(roeGrowth, precision));
+                double roeGrowth = (lastRatiosDto.getRoe() - prevRatiosDto.getRoe());
+                if(prevRatiosDto.getRoe()!=0) {
+                    roeGrowth = (double) roeGrowth/prevRatiosDto.getRoe();
+                    roeGrowth = (double) roeGrowth * 100;
+                }
+                ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(), "roe", StockUtil.convertDoubleToPrecision(roeGrowth, precision));
 
                 double evGrowth = (lastRatiosDto.getEv()-prevRatiosDto.getEv())/prevRatiosDto.getEv();
                 evGrowth = (double) evGrowth*100;
@@ -78,8 +90,8 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
 
 
                 double debtToEquityGrowth = (lastRatiosDto.getDebtToEquityRatio()-prevRatiosDto.getDebtToEquityRatio());
-                if(debtToEquityGrowth==0)
-                    ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"debtToEquityRatio","0");
+                if(prevRatiosDto.getDebtToEquityRatio()==0)
+                    ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"debtToEquityRatio",Double.toString(lastRatiosDto.getDebtToEquityRatio()));
                 else {
                     debtToEquityGrowth = debtToEquityGrowth/prevRatiosDto.getDebtToEquityRatio();
                     debtToEquityGrowth = (double) debtToEquityGrowth*100;
@@ -170,11 +182,21 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
         double currentSharePrice = fundamentalInfoDto.getCompanyDto().getCurrentSharePrice();
         double estimatedEPS = analyzedInfoDto.getYearlyReportAnalysisInfo().getEstimatedEPSCAGR();
         logger.info("currentSharePrice: "+currentSharePrice+" estimatedEPS: "+estimatedEPS);
-        double yearlyforwardPERatio = calcForwardPE(currentSharePrice,estimatedEPS);
+        double yearlyforwardPERatio = 0;
+        if(estimatedEPS!=0) {
+            yearlyforwardPERatio = calcForwardPE(currentSharePrice, estimatedEPS);
+        }
+
         double qtrForwardPERatio = caclQtrForwardPE(fundamentalInfoDto,analyzedInfoDto);
 //        double currentPERatio = fundamentalInfoDto.getRatiosDtoList().get(0).getPeRatio();
         double currentPERatio = fundamentalInfoDto.getCompanyDto().getTtmpe();
-        double forwardPERatio = (double)(qtrForwardPERatio+yearlyforwardPERatio)/2;
+        double forwardPERatio = 0;
+        if(yearlyforwardPERatio!=0 && qtrForwardPERatio!=0) {
+            forwardPERatio = (double) (qtrForwardPERatio + yearlyforwardPERatio) / 2;
+        }
+        else if(yearlyforwardPERatio!=0 && qtrForwardPERatio == 0){
+            forwardPERatio = yearlyforwardPERatio;
+        }
 
         ValuationEnums valuationEnums = analyzeForwardPE(currentPERatio,forwardPERatio);
         logger.info("CurrentPERation: "+currentPERatio+" Yearly ForwardPERatio: "+yearlyforwardPERatio+"  Quarterly ForwardPERatio: "+qtrForwardPERatio+" ForwardPE: "+forwardPERatio+" Valuation: "+valuationEnums);
@@ -194,8 +216,11 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
 //        double currentSharePrice,FundamentalInfoDto fundamentalInfoDto,int year
         double currentSharePrice = fundamentalInfoDto.getCompanyDto().getCurrentSharePrice();
         double estimatedEPS = analyzedInfoDto.getQuarterlyReportAnalysisInfo().getEstimatedEPSCAGR();
+        double forwardPERatio = 0;
+        if(estimatedEPS!=0){
+            forwardPERatio = calcForwardPE(currentSharePrice,estimatedEPS);
+        }
         logger.info("[Quarterly ] estimatedEPS: "+estimatedEPS);
-        double forwardPERatio = calcForwardPE(currentSharePrice,estimatedEPS);
 
         return forwardPERatio;
 

@@ -56,7 +56,7 @@ public class EVEBITDAValuation implements IFundamentalEvaluation{
         double expectedEBITDA = (endingYearEbitda * ebitdaCAGR/100)+endingYearEbitda;
         logger.info("Expected EBITDA: "+expectedEBITDA);
         double endingYearEV = endingYearDto.getEv();
-        double forcastedEV = (endingYearEV/endingYearEbitda)*expectedEBITDA-debtForCurrentFY;
+        double forcastedEV = ((endingYearEV/endingYearEbitda)*expectedEBITDA)-debtForCurrentFY;
         logger.info("Forcasted EV: "+forcastedEV);
         //https://www.sptulsian.com/f/p/what-does-equity-share-capital-mean
         double outstandingShare = equityShareCapital/faceValue;

@@ -19,10 +19,11 @@ var getYearlyReportUrl ='http://localhost:8080/fundamental/yearlyreport/'+stockI
 
 var getQuarerlyReportUrl ='http://localhost:8080/fundamental/quarterlyreport/'+stockID;
 
-
-
 var getRatiosUrl = 'http://localhost:8080/fundamental/ratios/'+stockID;
 var getRatiosAnalysusUrl='http://localhost:8080/fundamental/ratioAnalysis/'+stockID;
+
+var getCashFlowUrl = 'http://localhost:8080/fundamental/cashflow/'+stockID;
+
 var stockValuationUrl = 'http://localhost:8080/fundamental/stockvaluation/'+stockID;
 var getStockValuationUrl='http://localhost:8080/fundamental/getStockValuation/'+stockID;
 
@@ -44,6 +45,8 @@ function onReportLoad(){
     showQuarterlyReportDetails(10);
 
     showRatioDetails(5);
+
+    showCashFlowDetails(12);
 //    ratiosAnalysis(5);
 //    console.log("onReportLoad triggered: url: "+generateReportUrl);
 //    GetRawBookContent(generateReportUrl);
@@ -904,16 +907,16 @@ function ratiosDataPoints(){
      datapoints.push(["PE Ratio","peRatio"," PE Ratio ToolTips PlaceHolder"]);
     datapoints.push(["PB Ratio","pbRatio",PBRatioToolTips()]);
     datapoints.push(["Return On Equity","roe"," PE Ratio ToolTips PlaceHolder"]);
-    datapoints.push(["Enterprise Value","ev"," PE Ratio ToolTips PlaceHolder"]);
-    datapoints.push(["EV/EBITDA","evEbitda"," PE Ratio ToolTips PlaceHolder"]);
+    datapoints.push(["Enterprise Value","ev","EV calculates a company's total value or assessed worth. This includes market capitalization, debt and exclude cash. This gives true value of an enterprise."]);
+    datapoints.push(["EV/EBITDA","evEbitda","EV/EBITDA compares the value of a company—debt included—to the company’s cash earnings less non-cash expenses.<br> EV/EBITDA Range: <0 = avoid.<br> between 0 to 2 = Future Growth uncertain <br> 4 to 5 = Neutral <br> 6 to 10 = Ideal for investment <br> 10 to 16 = Fair Valued <br> >20 = Over Valued<br> Compare with peers for actual valuation"]);
     datapoints.push(["Debt-To-Equity Ratio","debtToEquityRatio"," Debt to equity ratio placeholder"]);
     return datapoints;
 }
 
 function PBRatioToolTips(){
     var toolTips = "PB Ratio Shows how much (X times) premium we are paying for stock value."+"<br>"+
-                    "Low PBRatio =  UnderValued"+"<br>"+
-                    "High PBRatio = OverValued"+"<br>"+
+                    "Low PBRatio =  UnderValued - not much difference between stock price and book value"+"<br>"+
+                    "High PBRatio = OverValued - stock price is much higher than book value"+"<br>"+
                     "For a good company PBRatio ranges 3 to 6"+"<br><br>"+
                     "Compare PBRatio with peers for valuation estimation";
     return toolTips;
@@ -1123,7 +1126,7 @@ function showPEG(jsonResonse){
 
      var tmpdatapoints = new Array();
      tmpdatapoints.push(["PEG Ratio","pegRatio"," PEG Ratio = (PE Ratio)/(Growth in EPS). This helps to understand if growth in EPS justify PE. This is a stock valuation parameter."]);
-     tmpdatapoints.push(["PEG Valuation","pegvaluation","For India Market, PEG <3 considered to be good for investment. PEG<1 is undervalued and could be invested.PEG negative means growth of earning per share (EPS) is negative. One should not consider such stock to invest"]);
+     tmpdatapoints.push(["PEG Valuation","pegvaluation","For India Market, PEG <3 considered to be good for investment. PEG<1 is Ideal investment and could be invested.PEG negative means growth of earning per share (EPS) is negative. One should not consider such stock to invest"]);
 
     var ele = document.getElementById(tableID);
         if(ele!=null){
@@ -1145,6 +1148,137 @@ function onRYearSelection(){
 //   ratiosTable(years);
 //   ratiosAnalysis(years)
     showRatioDetails(years);
+}
+
+/*====================== Get CashFlow Details =========================*/
+function showCashFlowDetails(years){
+        var jsonResonse = getDataFY(getCashFlowUrl,years);
+        console.log("Cashflow Json res: "+jsonResonse);
+        var headerList = createHeaderFromResponse(jsonResonse);
+        console.log("CashFLow HeaderList :" + headerList);
+        var dataFY = createCashFlowDataPoints(jsonResonse);
+        cashFlowTable(headerList,dataFY);
+
+        var url = getAnalysisReport+'/cashflow/'+years;
+        console.log("Getting data from url: "+url);
+        var analyzedjsonResonse = GetRawBookContent(url);
+        console.log("CashFlow Analysis Json response: "+analyzedjsonResonse);
+        cashFlowAnalysis(years,headerList,analyzedjsonResonse);
+}
+
+function cashFlowDataPoints(){
+    var datapoints = new Array();
+     datapoints.push(["Cash From Original Activity","cashFromOperatingActivity","Cash From Original Activity"]);
+     datapoints.push(["Fixed Asset Purchased","fixedAssestsPurchased","Capital Expendeture"]);
+     datapoints.push(["Net/Free CashFlow","netCashFlow","Net CashFlow"]);
+//     datapoints.push(["Free CashFlow","freeCashFlow","Free CashFlow"]);
+    return datapoints;
+}
+
+function createCashFlowDataPoints(dataJson){
+    var dataJsonList = JSON.parse(dataJson);
+    console.log("inside createCashFlowDataPoints: datapoints count: "+dataJsonList.length);
+
+    var plFY = new Map();
+    for(var i =0;i<dataJsonList.length;i++){
+        var data = dataJsonList[i];
+        var datamap = new Map();
+        datamap['cashFromOperatingActivity']=data.cashFromOperatingActivity;
+        datamap['fixedAssestsPurchased']=data.fixedAssestsPurchased;
+        datamap['netCashFlow']=data.netCashFlow;
+        datamap['freeCashFlow']=data.freeCashFlow;
+        plFY[data.date] = datamap;
+    }
+    return plFY;
+}
+
+
+//function quarterlyReportTable(headerList,dataFY){
+//    console.log("creaing yearlyReportTable: ");
+//    var datapoints = quarterlyReportDataPoints();
+//     var tableID="qltbl";
+//        var tableEle = document.getElementById(tableID);
+//        if(tableEle!=null){
+//                tableEle.remove();
+//            }
+//    createTableWithToolTips("quarterly-tbl",tableID,headerList,datapoints,dataFY);
+//}
+function cashFlowTable(headerList,dataFY){
+    console.log("creaing cashFlowTable: ");
+    var datapoints = cashFlowDataPoints();
+     var tableID="cftbl";
+        var tableEle = document.getElementById(tableID);
+        if(tableEle!=null){
+                tableEle.remove();
+            }
+    createTableWithToolTips("cf-tbl",tableID,headerList,datapoints,dataFY);
+}
+function cashFlowAnalysis(years,headerList,analyzedjsonResonse){
+    console.log("analyzing CashFLow: "+analyzedjsonResonse);
+    var analysis = JSON.parse(analyzedjsonResonse);
+    console.log(analysis);
+    showCashFlowGrowthRate(analysis,headerList,years);
+//    highlightedPoints(ratioAnalysis,years);
+//    cashFlowEstmation(analyzedjsonResonse);
+}
+
+
+function showCashFlowGrowthRate(analysis,headerList,years){
+//    console.log("Calculating  QuarterlyGrowthRate:");
+//    epsGrowthRate = analysis.epsGrowthRate;
+////    console.log("Fetched ratioGrowthsDtoMap: ");
+//    console.log(epsGrowthRate);
+////    var headerList =createHeaders(years);
+////    var dataPoints = new Array();
+////    dataPoints.push(["Basic EPS","basicEPS"," PE Ratio ToolTips PlaceHolder"]);
+////    console.log("headerList:" +headerList );
+//        //we can not calculate growth for the very first year. .
+//        for(var j=1;j<headerList.length-1;j++){
+//                   var cellid = "eps-"+headerList[j];
+//                   var growthMap = epsGrowthRate[headerList[j]];
+//                   console.log("growthmap: "+growthMap);
+//                   createGrowthLabel(cellid, growthMap);
+//            }
+    }
+function createCashFLowAnalysisDataPoints(dataJson){
+    var dataJsonList = JSON.parse(dataJson);
+    console.log("inside createQuarterlyReportAnalysisDataPoints: datapoints count: "+dataJsonList.length);
+    console.log(dataJsonList.estimatedEPSCAGR);
+    var plFY = new Map();
+    var datamap = new Map();
+    datamap['qestimatedEPSCAGR'] = dataJsonList.estimatedEPSCAGRStr;
+    datamap['qttmEPS'] = dataJsonList.ttmEPSStr;
+
+    plFY["Value"] = datamap;
+
+    return plFY;
+}
+function cashFlowEstmation(jsonResonse){
+    console.log("inside yearlyReportEstmation:");
+    var parentDivID = "quarterly_analysis_div";
+    var parentDiv = document.getElementById(parentDivID);
+    var tableID = "ql_analysis_tbl";
+    var dataFY = createQuarterlyReportAnalysisDataPoints(jsonResonse);
+    var header = new Array();
+    header.push("Analysis");
+    header.push("Value");
+
+     var tmpdatapoints = new Array();
+     tmpdatapoints.push(["Estimated EPS (CAGR)","qestimatedEPSCAGR"," EPS estimated using CAGR technique."]);
+     tmpdatapoints.push(["TTM EPS","qttmEPS","Average EPS over period of years"]);
+
+    var ele = document.getElementById(tableID);
+        if(ele!=null){
+            ele.remove();
+        }
+
+    createTableWithToolTips(parentDivID,tableID,header,tmpdatapoints,dataFY);
+}
+
+function onCFYearSelection(){
+   var years = document.getElementById("qlyears").value;
+   console.log("Quarters selection : "+years);
+    showQuarterlyReportDetails(years);
 }
 
 /*====================== Quarterly Intrinsic Stock Valuation  =========================*/

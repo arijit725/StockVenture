@@ -23,6 +23,8 @@ public class StockUtil {
     }
 
     public static String convertDoubleToPrecision(double value, int precision){
+        if(value==0)
+            return Double.toString(value);
         BigDecimal tempBig = new BigDecimal(Double.toString(value));
         tempBig = tempBig.setScale(precision, BigDecimal.ROUND_HALF_EVEN);
         String strValue = tempBig.stripTrailingZeros().toPlainString();

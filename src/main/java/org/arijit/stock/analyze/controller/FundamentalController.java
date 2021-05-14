@@ -1,36 +1,28 @@
 package org.arijit.stock.analyze.controller;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.*;
-import org.arijit.stock.analyze.cache.MemCache;
 import org.arijit.stock.analyze.dto.*;
 import org.arijit.stock.analyze.parser.BalanceSheetPDFParser;
-import org.arijit.stock.analyze.parser.ProfitAndLossPDFParser;
 import org.arijit.stock.analyze.service.FundamentalService;
 import org.arijit.stock.analyze.service.StockAnalysisService;
 import org.arijit.stock.analyze.util.StockUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.FileChannel;
-import java.nio.file.*;
-import java.util.Arrays;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 
@@ -380,6 +372,33 @@ public class FundamentalController {
             else{
                 String jsonString = StockUtil.generateJsonString(balanceSheetDtoList);
                 logger.info("Response: Quarterly Report list: size: "+balanceSheetDtoList.size()+" jsonString: "+jsonString);
+                res = ResponseEntity.ok().body(jsonString);
+            }
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
+    @GetMapping(value = "/cashflow/{stockID}/{years}")
+    public Mono<ResponseEntity> getCashFlow(@PathVariable("stockID") String stockID, @PathVariable("years") int years, ServerWebExchange webExchange)throws IOException {
+        logger.info("cashflow Request for: stockID: "+stockID+" years: "+years);
+
+        ResponseEntity<String> res = null;
+        try {
+            List<CashFlowDto> cashFlowDtoList = fundamentalService.getCashFlow(stockID,years);
+            if(cashFlowDtoList == null || cashFlowDtoList.isEmpty())
+                res = ResponseEntity.noContent().build();
+            else{
+                String jsonString = StockUtil.generateJsonString(cashFlowDtoList);
+                logger.info("Response: cashflow list: size: "+cashFlowDtoList.size()+" jsonString: "+jsonString);
                 res = ResponseEntity.ok().body(jsonString);
             }
         }
@@ -783,6 +802,12 @@ public class FundamentalController {
                     QuarterlyReportAnalysisInfo analyzedquarterlyReport = stockAnalysisService.getAnalyzedQuarterlyReport(stockID,year);
                     String analyzedReport = StockUtil.generateJsonString(analyzedquarterlyReport);
                     res = ResponseEntity.ok(analyzedReport);
+                    break;
+                case "cashflow":
+                    logger.info("Accepted Cashflow request: "+stockID+"  "+type+"  "+year);
+                    CashFlowAnalysisInfo cashFlowAnalysisInfo = stockAnalysisService.getAnalyzedCashFlow(stockID,year);
+                    String analyzedCashfloString = StockUtil.generateJsonString(cashFlowAnalysisInfo);
+                    res = ResponseEntity.ok(analyzedCashfloString);
                     break;
                 default:
                     logger.error("Valuation model not found for type: " + type);

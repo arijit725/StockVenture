@@ -66,8 +66,8 @@ public final class FundamentalInfoDto {
         return this;
     }
 
-    public FundamentalInfoDto addCashFlowDto(CashFlowDto cashFlowDto) {
-        this.cashFlowDtoList.add(cashFlowDto);
+    public FundamentalInfoDto addCashFlowDto(CashFlowDto cashFlowDto) throws Exception {
+        this.cashFlowDtoList.add(cashFlowDto.build());
         return this;
     }
 
@@ -81,8 +81,8 @@ public final class FundamentalInfoDto {
         return this;
     }
 
-    public FundamentalInfoDto addQuarterlyReportDto(QuarterlyReportDTO quarterlyReportDto) {
-        this.quarterlyReportDtoList.add(quarterlyReportDto);
+    public FundamentalInfoDto addQuarterlyReportDto(QuarterlyReportDTO quarterlyReportDto) throws Exception {
+        this.quarterlyReportDtoList.add(quarterlyReportDto.build());
         return this;
     }
 
@@ -108,6 +108,14 @@ public final class FundamentalInfoDto {
 
     public List<QuarterlyReportDTO> getQuarterlyReportDtoList() {
         return quarterlyReportDtoList;
+    }
+
+    public List<CashFlowDto> getCashFlowDtoList() {
+        return cashFlowDtoList;
+    }
+
+    public void clearCashFlowDtos(){
+        this.cashFlowDtoList.clear();
     }
 
     public void clearBalancesheetDtos(){
