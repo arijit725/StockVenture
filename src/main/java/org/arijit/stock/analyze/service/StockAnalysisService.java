@@ -91,4 +91,47 @@ public class StockAnalysisService {
 
         return analyzedInfoDto.getTargetPriceEstimationDto().getQuarterlyIntrinsicTargetPrice();
     }
+
+    public EconomicGrowthDCFDto economicDCFValuation(String stockID,String requestBody) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+        try{
+            logger.info("==========================EconomicDCFValuation==================================");
+            Map<String,String> map = new HashMap<>();
+            Gson gson = new Gson();
+            map = gson.fromJson(requestBody, map.getClass());
+
+            double perceptualGrowthRate = Double.parseDouble(map.get("growR"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setPerpertualGrowthRate(perceptualGrowthRate);
+            double discountRate = Double.parseDouble(map.get("disR"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setDiscountRate(discountRate);
+            double cashEQDCF = Double.parseDouble(map.get("cashEQDCF"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setLasFYCashEquivalent(cashEQDCF);
+            double debt = Double.parseDouble(map.get("debtDCF"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setLastFYDebt(debt);
+            double marginOfSafty = Double.parseDouble(map.get("margR"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setMarginOfSafty(marginOfSafty);
+
+            EconomicDCFValuation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,10);
+            return analyzedInfoDto.getEconomicGrowthDCFDto();
+        }catch(Exception e){
+            logger.error("Unable to evaluate ",e);
+        }
+
+        return null;
+    }
+    public EconomicGrowthDCFDto getEconomicDCFValuation(String stockID) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+
+        return analyzedInfoDto.getEconomicGrowthDCFDto();
+    }
 }

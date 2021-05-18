@@ -19,7 +19,7 @@ public class CashFlowDto implements Comparable<CashFlowDto> {
 
     private double netCashFlow;
 
-//    private double freeCashFlow;
+    private double freeCashFlow;
 
     private CashFlowDto(){
 
@@ -61,9 +61,9 @@ public class CashFlowDto implements Comparable<CashFlowDto> {
         return this;
     }
 
-//    public double getFreeCashFlow() {
-//        return freeCashFlow;
-//    }
+    public double getFreeCashFlow() {
+        return freeCashFlow;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -88,7 +88,7 @@ public class CashFlowDto implements Comparable<CashFlowDto> {
                 ", cashFromOperatingActivity=" + cashFromOperatingActivity +
                 ", fixedAssestsPurchased=" + fixedAssestsPurchased +
                 ", netCashFlow=" + netCashFlow +
-//                ", freeCashFlow=" + freeCashFlow +
+                ", freeCashFlow=" + freeCashFlow +
                 '}';
     }
 
@@ -104,7 +104,7 @@ public class CashFlowDto implements Comparable<CashFlowDto> {
 
     private void generateFreeCashFLow(){
 
-//        freeCashFlow = cashFromOperatingActivity-Math.abs(fixedAssestsPurchased);
+        freeCashFlow = cashFromOperatingActivity-Math.abs(fixedAssestsPurchased);
     }
     private void validate() throws Exception {
         if(this.date==null)

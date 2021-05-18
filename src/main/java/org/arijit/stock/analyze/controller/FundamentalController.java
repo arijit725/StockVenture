@@ -738,6 +738,11 @@ public class FundamentalController {
                         String targetPrice = stockAnalysisService.quarterlyIntrinsicValuation(stockID,requestBody);
                         res = ResponseEntity.ok(targetPrice);
                     break;
+                case "economicDCF":
+                    EconomicGrowthDCFDto economicGrowthDCFDto = stockAnalysisService.economicDCFValuation(stockID,requestBody);
+                    String economicGrowthDCFDtoStr = StockUtil.generateJsonString(economicGrowthDCFDto);
+                    res = ResponseEntity.ok(economicGrowthDCFDtoStr);
+                    break;
                 default:
                     logger.error("Valuation model not found for type: "+valuationType);
                     res = ResponseEntity.notFound().build();
@@ -762,6 +767,11 @@ public class FundamentalController {
                 case "quarterlyIntrinsic":
                     String targetPrice = stockAnalysisService.getQuarterlyIntrinsicValuation(stockID);
                     res = ResponseEntity.ok(targetPrice);
+                    break;
+                case "economicDCF":
+                    EconomicGrowthDCFDto economicGrowthDCFDto = stockAnalysisService.getEconomicDCFValuation(stockID);
+                    String economicGrowthDCFDtoStr = StockUtil.generateJsonString(economicGrowthDCFDto);
+                    res = ResponseEntity.ok(economicGrowthDCFDtoStr);
                     break;
                 default:
                     logger.error("Valuation model not found for type: " + valuationType);

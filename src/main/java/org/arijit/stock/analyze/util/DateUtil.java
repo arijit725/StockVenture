@@ -25,4 +25,10 @@ public class DateUtil {
         String newDate = brk[0].trim()+"-20"+brk[1].trim();
         return newDate;
     }
+
+    public static String dateFormatConverter(long epoch) throws ParseException {
+        Date date = new Date(epoch);
+        Date date1 = new SimpleDateFormat("MMM-yyyy").parse(date.toString());
+        return date1.toString();
+    }
 }

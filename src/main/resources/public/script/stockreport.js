@@ -1168,10 +1168,10 @@ function showCashFlowDetails(years){
 
 function cashFlowDataPoints(){
     var datapoints = new Array();
-     datapoints.push(["Cash From Original Activity","cashFromOperatingActivity","Cash From Original Activity"]);
+     datapoints.push(["Cash From Operating Activity","cashFromOperatingActivity","Cash From Original Activity"]);
      datapoints.push(["Fixed Asset Purchased","fixedAssestsPurchased","Capital Expendeture"]);
-     datapoints.push(["Net/Free CashFlow","netCashFlow","Net CashFlow"]);
-//     datapoints.push(["Free CashFlow","freeCashFlow","Free CashFlow"]);
+     datapoints.push(["Net CashFlow","netCashFlow","Net CashFlow"]);
+     datapoints.push(["Free CashFlow","freeCashFlow","Free CashFlow"]);
     return datapoints;
 }
 
@@ -1218,9 +1218,10 @@ function cashFlowAnalysis(years,headerList,analyzedjsonResonse){
     var analysis = JSON.parse(analyzedjsonResonse);
     console.log(analysis);
     showCashFlowGrowthRate(analysis,headerList,years);
-//    highlightedPoints(ratioAnalysis,years);
+    highlightedCashFlowPoints(analysis,years);
 //    cashFlowEstmation(analyzedjsonResonse);
 }
+
 
 
 function showCashFlowGrowthRate(analysis,headerList,years){
@@ -1240,6 +1241,52 @@ function showCashFlowGrowthRate(analysis,headerList,years){
 //                   createGrowthLabel(cellid, growthMap);
 //            }
     }
+
+function highlightedCashFlowPoints(cashFlowAnalysis,years){
+
+    var divID = "cf_analysis_div";
+    var tableID = "cf_analysis-tbl";
+
+    var ele = document.getElementById(tableID);
+    if(ele!=null){
+        ele.remove();
+    }
+
+    var table = document.createElement("TABLE");
+    table.setAttribute('id', tableID);
+    var row0 = table.insertRow();
+
+    createToolTip(row0,profitAndLossTips());
+
+    var row1 = table.insertRow();
+    var grossSellChangeMargin = 5;
+    var cell1 = document.createElement("TD");
+    cell1.innerHTML = cashFlowAnalysis.operatingCashFlowVsNetProficCmp;
+    if(cashFlowAnalysis.operatingCashFlowVsNetProficCmp.includes("Avoid")){
+        cell1.setAttribute("class", "analyzedbad");
+    }
+    else{
+        cell1.setAttribute("class", "analyzedgood");
+    }
+    row1.appendChild(cell1);
+
+     var row2 = table.insertRow();
+        var grossSellChangeMargin = 5;
+        var cell2 = document.createElement("TD");
+        cell2.innerHTML = "CFO/PAt Ratio: "+cashFlowAnalysis.cfoPatRatio;
+        if(cashFlowAnalysis.cfoPatRatio<1){
+            cell2.setAttribute("class", "analyzedbad");
+        }
+        else{
+            cell2.setAttribute("class", "analyzedgood");
+        }
+        row2.appendChild(cell2);
+
+    var dvTable = document.getElementById(divID);
+    dvTable.appendChild(table);
+
+}
+
 function createCashFLowAnalysisDataPoints(dataJson){
     var dataJsonList = JSON.parse(dataJson);
     console.log("inside createQuarterlyReportAnalysisDataPoints: datapoints count: "+dataJsonList.length);
@@ -1306,6 +1353,103 @@ function showQtrIntrinsicStockValue(){
     targetPriceLbl.style.fontSize="large";
      var qtInEval = document.getElementById("qtInEval");
      qtInEval.appendChild(targetPriceLbl);
+}
+
+
+/*====================== Economic DCF Stock Valuation  =========================*/
+
+function requestEconomicDCF(){
+    var growR = document.getElementById("growR").value;
+    console.log("Growth Rate: "+peAvg);
+
+    var disR = document.getElementById("disR").value;
+    console.log("Discount Rate: "+disR);
+
+    var margR = document.getElementById("margR").value;
+    console.log("margR: "+margR);
+
+    var cashEQDCF = document.getElementById("cashEQDCF").value;
+    console.log("cashEQDCF: "+cashEQDCF);
+
+    var debtDCF = document.getElementById("debtDCF").value;
+    console.log("debtDCF: "+debtDCF);
+
+    var request={
+        "growR":growR,
+        "disR":disR,
+        "margR":margR,
+        "cashEQDCF":cashEQDCF,
+        "debtDCF":debtDCF
+    };
+
+    var requestBody = generateJsonString(request);
+    console.log("requestEconomicDCF request body:  "+requestBody);
+    var url = stockValuationUrl+'/economicDCF';
+    console.log("Posting data to url: "+url);
+    var jsonResonse = postRequest(url,requestBody, showEconomicDCFValue);
+}
+
+
+function showEconomicDCFValue(){
+    var url = getStockValuationUrl+'/economicDCF';
+    var jsonResonse = GetRawBookContent(url);
+    console.log("showEconomicDCFValue: response: "+jsonResonse);
+    showEconomicDCFProjection(jsonResonse);
+}
+
+
+function createEconomicDCFDataPoints(dataJson){
+    var dataJsonList = JSON.parse(dataJson);
+//    console.log("inside createForwardPEDataPoints: datapoints count: "+dataJsonList.length);
+//    console.log(dataJsonList.forwardPEAnalysis);
+//    var afwpe = dataJsonList.pegRatioAnalysis;
+    var plFY = new Map();
+    var datamap = new Map();
+    datamap['emdcftargetPrice'] = dataJsonList.targetPrice;
+    datamap['emdcfpriceAfterMarginOfSafty'] = dataJsonList.priceAfterMarginOfSafty;
+    datamap['emdcfupside'] = dataJsonList.upside;
+    datamap['emdcfdecision'] = dataJsonList.decision;
+
+    plFY["Value"] = datamap;
+
+    return plFY;
+}
+
+function showEconomicDCFProjection(jsonResonse){
+       var parentDiv = document.getElementById("ecmDcf");
+       var tableID = "ecm_dcf_tbl";
+       var dataJsonList = createEconomicDCFDataPoints(jsonResonse);
+       console.log(dataJsonList);
+       var header = new Array();
+       header.push("DCF Model Estimation");
+       header.push("Value");
+
+        var tmpdatapoints = new Array();
+        tmpdatapoints.push(["Target Price","emdcftargetPrice"," Target Price after calculating with DCF."]);
+        tmpdatapoints.push(["Target Price After Margin of Safty","emdcfpriceAfterMarginOfSafty","Considering target price after provided margin of safty"]);
+        tmpdatapoints.push(["Upside","emdcfupside","upside = estimatedPricePerShare/currentSharePrice. Consider to invest for DCF calculation years if upside>discount rate"]);
+        tmpdatapoints.push(["Valuation","emdcfdecision","Valuation for buy or no buy for DCF calculation years"]);
+
+       var ele = document.getElementById(tableID);
+           if(ele!=null){
+               ele.remove();
+           }
+
+       createTableWithToolTips("ecmDcf",tableID,header,tmpdatapoints,dataJsonList);
+       var valrow = document.getElementById("emdcfdecision-Value");
+       var value = valrow.innerHTML;
+       if(value=='NO_BUY')
+           valrow.style.color='red';
+       else
+           valrow.style.color='green';
+
+
+}
+function createDCFHeader(nextNYearsFreeCashFlow){
+    var yearcount = nextNYearsFreeCashFlow.length;
+    for(var i=1;i<=yearcount;i++){
+
+    }
 }
 /*====================== Target Price Estimation =========================*/
 

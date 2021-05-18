@@ -7,6 +7,7 @@ import org.arijit.stock.analyze.analysisdto.CashFlowAnalysisInfo;
 import org.arijit.stock.analyze.analysisdto.RatioAnalysisInfo;
 import org.arijit.stock.analyze.dto.CashFlowDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
+import org.arijit.stock.analyze.dto.ProfitAndLossDto;
 import org.arijit.stock.analyze.dto.RatiosDto;
 import org.arijit.stock.analyze.util.StockUtil;
 
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CashFlowEvaluation  implements IFundamentalEvaluation{
 
@@ -35,8 +37,32 @@ public class CashFlowEvaluation  implements IFundamentalEvaluation{
         List<CashFlowDto> cashFlowDtoList = fundamentalInfoDto.getCashFlowDtoList();
 
         calcGrowth(analyzedInfoDto.getCashFlowAnalysisInfo(),cashFlowDtoList);
+        calcCashFlowVsNetProfit(fundamentalInfoDto,analyzedInfoDto,year);
     }
 
+    private void calcCashFlowVsNetProfit(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto,int year){
+        double diffmargin =(double) 3/100; //taking 3% difference margin
+        List<CashFlowDto> cashFlowDtoList = fundamentalInfoDto.getCashFlowDtoList().stream().limit(year).collect(Collectors.toList());
+        List<ProfitAndLossDto> profitAndLossDtoList = fundamentalInfoDto.getProfitAndLossDtoList().stream().limit(year).collect(Collectors.toList());
+
+        double operatingCashFlowSum = cashFlowDtoList.stream().mapToDouble(item->item.getCashFromOperatingActivity()).sum();
+        double netProfitSum = profitAndLossDtoList.stream().mapToDouble(item->item.getNetProfit()).sum();
+        double diff = netProfitSum - operatingCashFlowSum;
+        double diffPercentage = diff/netProfitSum*100;
+        logger.info("[Last "+year+" year analysis] Net Profit Sum : "+netProfitSum+" Cash Flow from Operating Activity: "+operatingCashFlowSum+" Actual Difference: "+diff+" Percentage of Difference: "+diffPercentage);
+        String decision = "Net Profit Sum: "+netProfitSum+" Cash Flow from Operating Activity: "+operatingCashFlowSum+" Difference in Percentage: "+diffPercentage;
+        if(diffPercentage>diffmargin){
+            decision = decision+"<br> Analysis: Markable difference. [Alarm] Avoid Investing";
+        }
+        else{
+            decision = decision+"<br> Analysis: Negligible Difference. No Alarm";
+        }
+        logger.info(decision);
+        double cfoPatRatio = operatingCashFlowSum/netProfitSum;
+        analyzedInfoDto.getCashFlowAnalysisInfo().setCfoPatRatio(StockUtil.convertDoubleToPrecision(cfoPatRatio,2));
+        analyzedInfoDto.getCashFlowAnalysisInfo().setOperatingCashFlowVsNetProficCmp(decision);
+
+    }
 
     private void calcGrowth(CashFlowAnalysisInfo cashFlowAnalysisInfo, List<CashFlowDto> cashFlowDtoList){
         Iterator<CashFlowDto> iterator = cashFlowDtoList.iterator();
@@ -59,9 +85,9 @@ public class CashFlowEvaluation  implements IFundamentalEvaluation{
                 netCashFlowGrowth = (double) netCashFlowGrowth*100;
                 cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"netCashFlow",StockUtil.convertDoubleToPrecision(netCashFlowGrowth, precision));
 
-//                double freeCashFlowGrowth = (lasCashFlowDto.getFreeCashFlow()-prevCashFlowDto.getFreeCashFlow())/prevCashFlowDto.getFreeCashFlow();
-//                freeCashFlowGrowth = (double) freeCashFlowGrowth*100;
-//                cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"freeCashFlow",StockUtil.convertDoubleToPrecision(freeCashFlowGrowth, precision));
+                double freeCashFlowGrowth = (lasCashFlowDto.getFreeCashFlow()-prevCashFlowDto.getFreeCashFlow())/prevCashFlowDto.getFreeCashFlow();
+                freeCashFlowGrowth = (double) freeCashFlowGrowth*100;
+                cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"freeCashFlow",StockUtil.convertDoubleToPrecision(freeCashFlowGrowth, precision));
 
                 lasCashFlowDto = prevCashFlowDto;
             }

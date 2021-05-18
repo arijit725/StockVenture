@@ -49,6 +49,7 @@ public class StockValuation {
         analyzedInfoDto.getTargetPriceEstimationDto().setQuarterlyIntrinsicTargetPrice(targetPriceStr);
     }
 
+    
     public static StockValuation getInstance(){
         return InnerClass.getInstance();
     }

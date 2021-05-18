@@ -4,7 +4,9 @@ public enum ValuationEnums {
     UNDER_VALUED(1),
     FAIR_VALUED(2),
     OVER_VALUED(3),
-    AVOID(-1);
+    AVOID(-1),
+    BUY(4),
+    NO_BUY(-2);
 
     private int code;
     private ValuationEnums(int n){

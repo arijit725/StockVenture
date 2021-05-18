@@ -13,7 +13,7 @@ public class AnalyzedInfoDto {
     private final ProfitAndLossAnalysisInfo profitAndLossAnalysisInfo;
     private final CashFlowAnalysisInfo cashFlowAnalysisInfo;
     private final MisleneousAnalysisInfo misleneousAnalysisInfo;
-
+    private final EconomicGrowthDCFDto economicGrowthDCFDto;
     private AnalyzedInfoDto(){
         balanceSheetAnalysisInfo = new BalanceSheetAnalysisInfo();
         yearlyReportAnalysisInfo = new YearlyReportAnalysisInfo();
@@ -23,6 +23,7 @@ public class AnalyzedInfoDto {
         profitAndLossAnalysisInfo = new ProfitAndLossAnalysisInfo();
         cashFlowAnalysisInfo = new CashFlowAnalysisInfo();
         misleneousAnalysisInfo = new MisleneousAnalysisInfo();
+        economicGrowthDCFDto = new EconomicGrowthDCFDto();
     }
 
     public static AnalyzedInfoDto create(){
@@ -61,6 +62,9 @@ public class AnalyzedInfoDto {
         return misleneousAnalysisInfo;
     }
 
+    public EconomicGrowthDCFDto getEconomicGrowthDCFDto() {
+        return economicGrowthDCFDto;
+    }
 
     @Override
     public String toString() {
