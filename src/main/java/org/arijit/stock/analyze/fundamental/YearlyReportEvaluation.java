@@ -38,10 +38,15 @@ public class YearlyReportEvaluation implements IFundamentalEvaluation {
 
 //        double epsCAGR = FundamentalAnalysisUtil.cagr(endYearReport.getBasicEPS(), startYearReport.getBasicEPS(),year);
 //        double estimatedEPS = ((endYearReport.getBasicEPS()*epsCAGR)/100)+endYearReport.getBasicEPS();
-        double estimatedEPS = -1;
-        if(tmpYear>=3)
-            estimatedEPS = calcEstimatedEPS(endYearReport.getBasicEPS(),startYearReport.getBasicEPS(),tmpYear);
-        analyzedInfoDto.getYearlyReportAnalysisInfo().setEstimatedEPSCAGR(estimatedEPS);
+        try {
+            double estimatedEPS = -1;
+            if(tmpYear>=3)
+                estimatedEPS = calcEstimatedEPS(endYearReport.getBasicEPS(),startYearReport.getBasicEPS(),tmpYear);
+                estimatedEPS=Double.parseDouble(StockUtil.convertDoubleToPrecision(estimatedEPS,2));
+                analyzedInfoDto.getYearlyReportAnalysisInfo().setEstimatedEPSCAGR(estimatedEPS);
+        }catch(Exception e){
+            logger.error("unable to calculate estimated EPS",e);
+        }
     }
 
     public double calcEstimatedEPS(double endingEPS, double startingEPS,int year){

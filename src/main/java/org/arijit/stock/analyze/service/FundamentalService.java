@@ -213,7 +213,7 @@ public class FundamentalService {
         if(fundamentalInfoDto==null)
             throw new Exception("could not find stock");
 //        fundamentalInfoDto.getBalanceSheetDtoList().stream().forEach(balanceSheetDto -> map.put(balanceSheetDto.getDate(),balanceSheetDto));
-
+        fundamentalInfoDto.updatePBIT();
         return fundamentalInfoDto.getProfitAndLossDtoList().stream().collect(Collectors.toMap(ProfitAndLossDto::getDate, profitAndLossDto -> profitAndLossDto));
     }
 
@@ -232,6 +232,7 @@ public class FundamentalService {
             throw new Exception("could not find stock");
         if(fundamentalInfoDto.getProfitAndLossDtoList().size()<years)
             throw new Exception("Years excced ProfitAndLossDto list size");
+        fundamentalInfoDto.updatePBIT();
         return fundamentalInfoDto.getProfitAndLossDtoList().stream().limit(years).collect(Collectors.toList());
     }
 

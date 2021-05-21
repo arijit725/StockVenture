@@ -47,6 +47,7 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
         if(prevCashFlowList.size()<10)
             throw new Exception("DCF Model Can not be built with out 10 years data;");
 
+        calcWACC(fundamentalInfoDto,analyzedInfoDto);
         EconomicGrowthDCFDto dcfDto = analyzedInfoDto.getEconomicGrowthDCFDto();
         prevCashFlowList.stream().forEach(cashFlowDto -> {dcfDto.addPastNYearsFreeCashFlow(cashFlowDto.getDate(), StockUtil.convertDoubleToPrecision(cashFlowDto.getFreeCashFlow(),2));});
 
@@ -132,6 +133,45 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
 
         logger.info(dcfDto);
 
+    }
+
+    /**
+     * Calculating weighted average cost of capital
+     * @param fundamentalInfoDto
+     * @param analyzedInfoDto
+     */
+    private void calcWACC(FundamentalInfoDto fundamentalInfoDto,AnalyzedInfoDto analyzedInfoDto){
+        double interestExpense = analyzedInfoDto.getEconomicGrowthDCFDto().getIefy();
+        double totalDebt = fundamentalInfoDto.getBalanceSheetDtoList().get(0).getDebt();
+        double incomeTaxExpense = analyzedInfoDto.getEconomicGrowthDCFDto().getItefy();
+        double incomeBeforeTax = analyzedInfoDto.getEconomicGrowthDCFDto().getIbtfy();
+        double riskFreeRate = analyzedInfoDto.getEconomicGrowthDCFDto().getRfr();
+        double companyBeta = analyzedInfoDto.getEconomicGrowthDCFDto().getCbeta();
+
+        double marketReturn = 10; ///making this constant for time being. This should be any index average return over last 10 years.
+        double marketCapital = fundamentalInfoDto.getCompanyDto().getMarketCap();
+
+        double costOfDebt = 0;
+        if(totalDebt>0){
+            costOfDebt = (double)(interestExpense/totalDebt)*100;
+        }
+        double effectiveTaxRate =(double) (incomeTaxExpense/incomeBeforeTax)*100;
+        logger.info("Cost of Debt: "+costOfDebt+ " Effective Tax Rate: "+effectiveTaxRate);
+
+        double costOfEquity = riskFreeRate +(companyBeta *(marketReturn-riskFreeRate));
+        double total = totalDebt + marketCapital;
+
+        double weightOfDebt = (totalDebt/total)*100;
+        double weightOfEquity = (marketCapital/total)*100;
+
+        logger.info("Weight of Debt : "+weightOfDebt+" Weight of Equity: "+weightOfEquity);
+
+        double wacc = ( weightOfDebt*costOfDebt*(1-effectiveTaxRate))+(weightOfEquity*costOfEquity);
+
+        double tmp = Double.parseDouble(StockUtil.convertDoubleToPrecision(wacc,2));
+        analyzedInfoDto.getEconomicGrowthDCFDto().setDiscountRate(tmp);
+
+        logger.info("Calculated WACC (Discout Rate): "+tmp);
     }
 
     private Map<Integer, Double> calcPVofProjectedFCF(Map<Integer,Double> projectedFCFMap, double discountRate){

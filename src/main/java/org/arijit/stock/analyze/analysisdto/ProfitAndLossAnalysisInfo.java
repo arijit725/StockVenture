@@ -15,6 +15,10 @@ public class ProfitAndLossAnalysisInfo {
     private double PBITGrowthPercentage;
     private double interestDecreasePercentage;
     private double netProfitGrowthPercentage;
+    private String profiAndLossScore;
+    private String netSalesScore;
+    private String netProfitScore;
+    private String interestScore;
 
     private Map<String,String> netProfitVsSalesRatio;
 
@@ -84,5 +88,37 @@ public class ProfitAndLossAnalysisInfo {
 
     public void setNetProfitGrowthPercentage(double netProfitGrowthPercentage) {
         this.netProfitGrowthPercentage = netProfitGrowthPercentage;
+    }
+
+    public String getProfiAndLossScore() {
+        return profiAndLossScore;
+    }
+
+    public void setProfiAndLossScore(String profiAndLossScore) {
+        this.profiAndLossScore = profiAndLossScore;
+    }
+
+    public void setInterestScore(String interestScore) {
+        this.interestScore = interestScore;
+    }
+
+    public void setNetProfitScore(String netProfitScore) {
+        this.netProfitScore = netProfitScore;
+    }
+
+    public void setNetSalesScore(String netSalesScore) {
+        this.netSalesScore = netSalesScore;
+    }
+
+    public String getInterestScore() {
+        return interestScore;
+    }
+
+    public String getNetProfitScore() {
+        return netProfitScore;
+    }
+
+    public String getNetSalesScore() {
+        return netSalesScore;
     }
 }

@@ -81,10 +81,18 @@
                     </label>
                 </td>
                 <td>
-                    <div id="pl_calc_div" class="tableholder">
-
-                    </div>
+                    <table>
+                        <tr>
+                            <td><div id="pl_calc_div" class="tableholder"></div></td>
+                        </tr>
+                        <tr>
+                            <td><div id="pl_score_div" class="tableholder"></div></td>
+                            <td></td>
+                        </tr>
+                    </table>
                 </td>
+            </tr>
+
             </tr>
         </table>
     </div>
@@ -229,7 +237,14 @@
     <table>
         <tr>
             <td><label for="growR">Perpertual Growth Rate %: </label></td><td><input type="text" id="growR" name="growR"></td>
-            <td><label for="disR">Discount Rate %: </label></td><td><input type="text" id="disR" name="disR"></td>
+<!--            <td><label for="disR">Discount Rate %: </label></td><td><input type="text" id="disR" name="disR"></td>-->
+            <td><label for="iefy">Interest Expense(Last FY): </label></td><td><input type="text" id="iefy" name="iefy"></td>
+            <td><label for="itefy">Income Tax Expense(Last FY): </label></td><td><input type="text" id="itefy" name="itefy"></td>
+        </tr>
+        <tr>
+            <td><label for="ibtfy">Income Before Tax (Last FY): </label></td><td><input type="text" id="ibtfy" name="ibtfy"></td>
+            <td><label for="rfr">Risk Free Rate: </label></td><td><input type="text" id="rfr" name="rfr"></td>
+            <td><label for="cbeta">Company Beta: </label></td><td><input type="text" id="cbeta" name="cbeta"></td>
             <td><label for="margR">Margin of Safty %: </label></td><td><input type="text" id="margR" name="margR"></td>
         </tr>
         <tr>

@@ -411,12 +411,12 @@ function onBLYearSelection(){
 /*====================== Get Profit And Loss Details =========================*/
 function plDataPoints(){
     var datapoints = new Array();
-    datapoints.push(["Net Sales","netSales"]);
-    datapoints.push(["Consumption Of Raw Material","consumptionRawMaterial"]);
-    datapoints.push(["Employee Cost","employeeCost"]);
-    datapoints.push(["PBIT","pbit"]);
-    datapoints.push(["Interest","interest"]);
-    datapoints.push(["Net Profit","netProfit"]);
+    datapoints.push(["Net Sales","netSales"," Net Sales"]);
+    datapoints.push(["Consumption Of Raw Material","consumptionRawMaterial"," Increasing Raw Material cost with increasing sales means company has a vison to grow"]);
+    datapoints.push(["Employee Cost","employeeCost"," Increasing Employee cost with increasing sales means company has a vison to grow"]);
+    datapoints.push(["PBIT","pbit","PBIT measures an enterprise’s profitability by subtracting operating expenses from profit, while excluding tax and interest costs"]);
+    datapoints.push(["Interest","interest",". It represents interest payable on any borrowings – bonds, loans, convertible debt or lines of credit"]);
+    datapoints.push(["Net Profit","netProfit","Net Profit Reported for the financial Year. For an Ideal company Net Profit should be <= Cash Flow from Operating Activity."]);
     return datapoints;
 }
 
@@ -463,7 +463,8 @@ function profitAndLossTable(headerList,dataFY){
         if(tableEle!=null){
                 tableEle.remove();
             }
-    createTable("pl-tbl",tableID,headerList,datapoints,dataFY);
+//    createTable("pl-tbl",tableID,headerList,datapoints,dataFY);
+    createTableWithToolTips("pl-tbl",tableID,headerList,datapoints,dataFY);
 }
 
 
@@ -652,8 +653,77 @@ function profitAndLossCalcAnalysis(plAnal){
     }
     var dvTable = document.getElementById(divID);
     dvTable.appendChild(table);
+    showPLScore(plAnal);
+//    var scoreLbl = document.getElementById("pl_score_val");
+//    scoreLbl.innerHTML = plAnal.profiAndLossScore;
 
 }
+
+function createPLScroreDataPoints(dataJson){
+//    var dataJsonList = JSON.parse(dataJson);
+    console.log(dataJson);
+    var plFY = new Map();
+    var datamap = new Map();
+    datamap['netProfitScore'] = dataJson.netProfitScore;
+    datamap['netSalesScore'] = dataJson.netSalesScore;
+    datamap['interestScore'] = dataJson.interestScore;
+    datamap['profiAndLossScore'] = dataJson.profiAndLossScore;
+
+    plFY["Value"] = datamap;
+
+    return plFY;
+}
+
+
+function showPLScore(jsonResonse){
+    var parentDiv = document.getElementById("pl_score_div");
+    var tableID = "pl_score_tbl";
+    var dataFY = createPLScroreDataPoints(jsonResonse);
+    var header = new Array();
+    header.push("Score");
+    header.push("Value");
+
+     var tmpdatapoints = new Array();
+     tmpdatapoints.push(["Net Profit Score","netProfitScore"," This score is calcualted based on last N years performance. More recent year more impact, More previous year less impact"]);
+     tmpdatapoints.push(["Net Sales Score","netSalesScore","This score is calcualted based on last N years performance. More recent year more impact, More previous year less impact"]);
+     tmpdatapoints.push(["Interest Score","interestScore","This score is calcualted based on last N years performance. More recent year more impact, More previous year less impact. Positive value means overall interest is reduced. This is a good sign"]);
+     tmpdatapoints.push(["Total Profit And Loss Score","profiAndLossScore","This score is calcualted based on last N years performance. Score importance order Net Profit Score>Net Sales Score>Interest Score"]);
+
+    var ele = document.getElementById(tableID);
+        if(ele!=null){
+            ele.remove();
+        }
+
+    createTableWithToolTips("pl_score_div",tableID,header,tmpdatapoints,dataFY);
+    var valrow1 = document.getElementById("netProfitScore-Value");
+    var value1 = valrow1.innerHTML;
+    if(value1>0)
+        valrow1.style.color='green';
+    else
+        valrow1.style.color='red';
+
+    var valrow2 = document.getElementById("netSalesScore-Value");
+    var value2 = valrow2.innerHTML;
+    if(value2>0)
+        valrow2.style.color='green';
+    else
+        valrow2.style.color='red';
+
+    var valrow3 = document.getElementById("interestScore-Value");
+    var value3 = valrow3.innerHTML;
+    if(value3>0)
+        valrow3.style.color='green';
+    else
+        valrow3.style.color='red';
+
+    var valrow4 = document.getElementById("profiAndLossScore-Value");
+    var value4 = valrow4.innerHTML;
+    if(value4>0)
+        valrow4.style.color='green';
+    else
+        valrow4.style.color='red';
+}
+
 
 function onPLYearSelection(){
    var years = document.getElementById("plyears").value;
@@ -661,6 +731,7 @@ function onPLYearSelection(){
 //   profitAndLossTable(years);
 //   profitAndLossAnalysis(years);
     showProfitAndLossDetails(years);
+
 }
 
 
@@ -1362,8 +1433,20 @@ function requestEconomicDCF(){
     var growR = document.getElementById("growR").value;
     console.log("Growth Rate: "+peAvg);
 
-    var disR = document.getElementById("disR").value;
-    console.log("Discount Rate: "+disR);
+    var iefy = document.getElementById("iefy").value;
+    console.log("Interest Expense(Last FY): "+iefy);
+
+    var itefy = document.getElementById("itefy").value;
+    console.log("Income Tax Expense(Last FY): "+itefy);
+
+    var ibtfy = document.getElementById("ibtfy").value;
+    console.log("Income Before Tax (Last FY): "+ibtfy);
+
+    var rfr = document.getElementById("rfr").value;
+    console.log("Risk Free Rate: "+rfr);
+
+    var cbeta = document.getElementById("cbeta").value;
+    console.log("Company Beta: "+cbeta);
 
     var margR = document.getElementById("margR").value;
     console.log("margR: "+margR);
@@ -1376,7 +1459,11 @@ function requestEconomicDCF(){
 
     var request={
         "growR":growR,
-        "disR":disR,
+        "iefy":iefy,
+        "itefy":itefy,
+        "ibtfy":ibtfy,
+        "rfr":rfr,
+        "cbeta":cbeta,
         "margR":margR,
         "cashEQDCF":cashEQDCF,
         "debtDCF":debtDCF
@@ -1405,6 +1492,7 @@ function createEconomicDCFDataPoints(dataJson){
 //    var afwpe = dataJsonList.pegRatioAnalysis;
     var plFY = new Map();
     var datamap = new Map();
+    datamap['emdcfdiscountrate'] = dataJsonList.discountRate;
     datamap['emdcftargetPrice'] = dataJsonList.targetPrice;
     datamap['emdcfpriceAfterMarginOfSafty'] = dataJsonList.priceAfterMarginOfSafty;
     datamap['emdcfupside'] = dataJsonList.upside;
@@ -1425,6 +1513,7 @@ function showEconomicDCFProjection(jsonResonse){
        header.push("Value");
 
         var tmpdatapoints = new Array();
+        tmpdatapoints.push(["Discount Rate (WACC)","emdcfdiscountrate","The weighted average cost of capital (WACC) is a financial metric that shows what the total cost of capital (the interest rate paid on funds used for financing operations) is for a firm."]);
         tmpdatapoints.push(["Target Price","emdcftargetPrice"," Target Price after calculating with DCF."]);
         tmpdatapoints.push(["Target Price After Margin of Safty","emdcfpriceAfterMarginOfSafty","Considering target price after provided margin of safty"]);
         tmpdatapoints.push(["Upside","emdcfupside","upside = estimatedPricePerShare/currentSharePrice. Consider to invest for DCF calculation years if upside>discount rate"]);

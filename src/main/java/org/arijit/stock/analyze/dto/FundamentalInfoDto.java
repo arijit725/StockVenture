@@ -139,6 +139,7 @@ public final class FundamentalInfoDto {
     }
 
     public FundamentalInfoDto build(){
+        updatePBIT();
         Collections.sort(this.balanceSheetDtoList,Collections.reverseOrder());
         Collections.sort(this.ratiosDtoList,Collections.reverseOrder());
         Collections.sort(this.yearlyReportDtoList,Collections.reverseOrder());
@@ -146,6 +147,17 @@ public final class FundamentalInfoDto {
         Collections.sort(this.quarterlyReportDtoList,Collections.reverseOrder());
         Collections.sort(this.cashFlowDtoList,Collections.reverseOrder());
         return this;
+    }
+
+    public void updatePBIT(){
+        List<ProfitAndLossDto> profitAndLossDtoList = this.getProfitAndLossDtoList();
+        List<YearlyReportDto> yearlyReportDtoList = this.getYearlyReportDtoList();
+        for(YearlyReportDto yearlyReportDto:yearlyReportDtoList){
+            for(ProfitAndLossDto profitAndLossDto:profitAndLossDtoList){
+                if(profitAndLossDto.getDate().equals(yearlyReportDto.getDate()))
+                    profitAndLossDto.setPbit(yearlyReportDto.getPbit());
+            }
+        }
     }
 
     @Override

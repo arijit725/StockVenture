@@ -107,8 +107,21 @@ public class StockAnalysisService {
 
             double perceptualGrowthRate = Double.parseDouble(map.get("growR"));
             analyzedInfoDto.getEconomicGrowthDCFDto().setPerpertualGrowthRate(perceptualGrowthRate);
-            double discountRate = Double.parseDouble(map.get("disR"));
-            analyzedInfoDto.getEconomicGrowthDCFDto().setDiscountRate(discountRate);
+            double iefy = Double.parseDouble(map.get("iefy"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setIefy(iefy);
+
+            double itefy = Double.parseDouble(map.get("itefy"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setItefy(itefy);
+
+            double ibtfy = Double.parseDouble(map.get("ibtfy"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setIbtfy(ibtfy);
+
+            double rfr = Double.parseDouble(map.get("rfr"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setRfr(rfr);
+
+            double cbeta = Double.parseDouble(map.get("cbeta"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setCbeta(cbeta);
+
             double cashEQDCF = Double.parseDouble(map.get("cashEQDCF"));
             analyzedInfoDto.getEconomicGrowthDCFDto().setLasFYCashEquivalent(cashEQDCF);
             double debt = Double.parseDouble(map.get("debtDCF"));

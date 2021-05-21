@@ -25,68 +25,78 @@ public class BalancesheetScore implements IScore{
 
     @Override
     public void score(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int years) {
-        int RSVGROW = years;
-        int EQSAME = years;
-        int DEBTDOWN = years;
-        List<BalanceSheetDto> balanceSheetDtoList = fundamentalInfoDto.getBalanceSheetDtoList().stream().limit(years).collect(Collectors.toList());
-        Iterator<BalanceSheetDto> it = balanceSheetDtoList.iterator();
-        double equityShareCapitalGrowth=0;
-        double reserveGrowth = 0;
+        try {
+            int RSVGROW = years;
+            int EQSAME = years;
+            int DEBTDOWN = years;
+            List<BalanceSheetDto> balanceSheetDtoList = fundamentalInfoDto.getBalanceSheetDtoList().stream().limit(years).collect(Collectors.toList());
+            Iterator<BalanceSheetDto> it = balanceSheetDtoList.iterator();
+            double equityShareCapitalGrowth = 0;
+            double reserveGrowth = 0;
 
-        double debtGrowth = 0;
+            double debtGrowth = 0;
 
-        BalanceSheetDto currentYearBalancesheet = null;
-        while(it.hasNext()){
-            if(currentYearBalancesheet==null)
-                currentYearBalancesheet = it.next();
-            else{
-                BalanceSheetDto lastYearBalancesheet = it.next();
+            BalanceSheetDto currentYearBalancesheet = null;
+            int i = 0;
+            while (it.hasNext()) {
+                if (currentYearBalancesheet == null)
+                    currentYearBalancesheet = it.next();
+                else {
+                    double pow = (double) 1 / i;
+                    BalanceSheetDto lastYearBalancesheet = it.next();
 
-                //here equity growth can be 0, so to signify equity weightage adding 1 to calcualted value.
-                // also subtracting from 1 as if equity share capital is decreased, it would be a good sign and for increase, its a bad sign.
-                double tmpGrowth = 1-calcEquityShareCapitalGrowth(currentYearBalancesheet.getEquityShareCapital(), lastYearBalancesheet.getEquityShareCapital());
-                logger.info("Current Year equity share capital: "+currentYearBalancesheet.getEquityShareCapital()+" last year equity share capital: "+lastYearBalancesheet.getEquityShareCapital()+" growth: "+tmpGrowth);
-                equityShareCapitalGrowth = equityShareCapitalGrowth+tmpGrowth;
+                    //here equity growth can be 0, so to signify equity weightage adding 1 to calcualted value.
+                    // also subtracting from 1 as if equity share capital is decreased, it would be a good sign and for increase, its a bad sign.
+                    double tmpGrowth = 1 - calcEquityShareCapitalGrowth(currentYearBalancesheet.getEquityShareCapital(), lastYearBalancesheet.getEquityShareCapital());
+                    tmpGrowth = Math.pow(tmpGrowth, pow); //the more recent year, importance is more, more older year importance is less.
+                    logger.info("Current Year equity share capital: " + currentYearBalancesheet.getEquityShareCapital() + " last year equity share capital: " + lastYearBalancesheet.getEquityShareCapital() + " growth: " + tmpGrowth);
+                    equityShareCapitalGrowth = equityShareCapitalGrowth + tmpGrowth;
 
 
-                double tmpRGrowth = calcReserveGrowth(currentYearBalancesheet.getReserves(), lastYearBalancesheet.getReserves());
-                logger.info("Current Year Reserve: "+currentYearBalancesheet.getReserves()+" last year Reserve: "+lastYearBalancesheet.getReserves()+" growth: "+tmpRGrowth);
-                reserveGrowth = reserveGrowth + tmpRGrowth;
+                    double tmpRGrowth = calcReserveGrowth(currentYearBalancesheet.getReserves(), lastYearBalancesheet.getReserves());
+                    logger.info("Current Year Reserve: " + currentYearBalancesheet.getReserves() + " last year Reserve: " + lastYearBalancesheet.getReserves() + " growth: " + tmpRGrowth);
+                    tmpRGrowth = Math.pow(tmpRGrowth, pow); // the more recent year, importance is more, more older year imortance is less
+                    reserveGrowth = reserveGrowth + tmpRGrowth;
 
-                // if debt is not growing that is a positive indication. So to get that sign default debt growth is marked as 1.
-                double tmpDGrowth = 1-calcDebtGrowth(currentYearBalancesheet.getDebt(), lastYearBalancesheet.getDebt());
-                logger.info("Current Year Debt: "+currentYearBalancesheet.getDebt()+" last year Debt: "+lastYearBalancesheet.getDebt()+" growth: "+tmpDGrowth);
-                debtGrowth = debtGrowth + tmpDGrowth;
+                    // if debt is not growing that is a positive indication. So to get that sign default debt growth is marked as 1.
+                    double tmpDGrowth = 1 - calcDebtGrowth(currentYearBalancesheet.getDebt(), lastYearBalancesheet.getDebt());
+                    tmpDGrowth = Math.pow(tmpDGrowth, pow);
+                    logger.info("Current Year Debt: " + currentYearBalancesheet.getDebt() + " last year Debt: " + lastYearBalancesheet.getDebt() + " growth: " + tmpDGrowth);
+                    debtGrowth = debtGrowth + tmpDGrowth;
 
-                currentYearBalancesheet = lastYearBalancesheet;
+                    currentYearBalancesheet = lastYearBalancesheet;
+                }
+                i++;
             }
+
+            logger.info("equityShareCapitalScore: " + equityShareCapitalGrowth + " reserveScore: " + reserveGrowth + " debtScore: " + debtGrowth);
+            equityShareCapitalGrowth = EQW * equityShareCapitalGrowth;
+            reserveGrowth = RSRVW * reserveGrowth;
+            debtGrowth = DW * debtGrowth;
+            logger.info("[Weighted] equityShareCapitalScore: " + equityShareCapitalGrowth + " reserveScore: " + reserveGrowth + " debtScore: " + debtGrowth);
+
+            double score = equityShareCapitalGrowth + reserveGrowth + debtGrowth;
+            if (isReserveGrowContinuously(balanceSheetDtoList)) {
+                logger.info("Reserve is growing continuously=> Positive Sign");
+                score = score + RSVGROW; //this is a definitly plus sign that reserve is growing continuously
+            }
+
+            if (isEquityShareDecreaseOrSame(balanceSheetDtoList)) {
+                logger.info("Equity Share is same or reducing continuously=> Positive Sign");
+                score = score + EQSAME; //if total equity share is not growing this is positive sign.
+            }
+
+            if (isDebtSameOrReducing(balanceSheetDtoList)) {
+                logger.info("Debt is same or reducing continuously=> Positive Sign");
+                score = score + DEBTDOWN;
+            }
+
+            logger.info("Calculated score: " + score);
+
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().setBalanceSheetScore(StockUtil.convertDoubleToPrecision(score, 3));
+        }catch(Exception e){
+            logger.error("Unable to score Balancesheet: ",e);
         }
-
-        logger.info("equityShareCapitalScore: "+equityShareCapitalGrowth+" reserveScore: "+reserveGrowth+" debtScore: "+debtGrowth);
-        equityShareCapitalGrowth = EQW * equityShareCapitalGrowth;
-        reserveGrowth = RSRVW * reserveGrowth;
-        debtGrowth = DW * debtGrowth;
-        logger.info("[Weighted] equityShareCapitalScore: "+equityShareCapitalGrowth+" reserveScore: "+reserveGrowth+" debtScore: "+debtGrowth);
-
-        double score = equityShareCapitalGrowth+reserveGrowth+debtGrowth;
-        if(isReserveGrowContinuously(balanceSheetDtoList)){
-            logger.info("Reserve is growing continuously=> Positive Sign");
-            score = score+RSVGROW; //this is a definitly plus sign that reserve is growing continuously
-        }
-
-        if(isEquityShareDecreaseOrSame(balanceSheetDtoList)){
-            logger.info("Equity Share is same or reducing continuously=> Positive Sign");
-            score = score+EQSAME; //if total equity share is not growing this is positive sign.
-        }
-
-        if(isDebtSameOrReducing(balanceSheetDtoList)){
-            logger.info("Debt is same or reducing continuously=> Positive Sign");
-            score = score+DEBTDOWN;
-        }
-
-        logger.info("Calculated score: "+score);
-
-        analyzedInfoDto.getBalanceSheetAnalysisInfo().setBalanceSheetScore(StockUtil.convertDoubleToPrecision(score,3));
     }
 
     /**

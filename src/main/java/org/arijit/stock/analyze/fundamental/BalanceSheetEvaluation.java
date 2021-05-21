@@ -57,8 +57,11 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
         double endYearDebt = endingYearBalancesheetDto.getDebt();
         double startingYearDebt = startingYearBalancesheetDto.getDebt();
 
-        double debtChangeRatio = (endYearDebt-startingYearDebt)/startingYearDebt;
-        debtChangeRatio = (double) debtChangeRatio*100;
+        double debtChangeRatio = endYearDebt;
+        if(startingYearDebt>0) {
+            debtChangeRatio = (endYearDebt - startingYearDebt) / startingYearDebt;
+            debtChangeRatio = (double) debtChangeRatio * 100;
+        }
 
         logger.info("Percentage Change in Debt: "+debtChangeRatio);
         analyzedInfoDto.getBalanceSheetAnalysisInfo().setDebtChangePercentage(debtChangeRatio);
@@ -82,12 +85,6 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
                 balanceSheetAnalysisInfo.getDebtToReserveRatioMap().put(date,changeRatioStr);
             }
         }
-    }
-
-    private void scoreBalanceSheet(BalanceSheetAnalysisInfo balanceSheetAnalysisInfo){
-        double grossTotalSharePercentageChangeMargin = 5;
-        double reservePercentageChangeMargin = 1;
-
     }
 
     private int growthInShareCapital(List<BalanceSheetDto> balanceSheetDtoList ){

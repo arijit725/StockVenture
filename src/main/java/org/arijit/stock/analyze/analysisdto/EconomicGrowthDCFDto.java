@@ -13,8 +13,14 @@ public class EconomicGrowthDCFDto {
     /*This is mainly economy growth rate.*/
     private double perpertualGrowthRate;
 
-    /*Return of investment in percentage*/
+    /*WACC*/
     private double discountRate;
+
+    private double iefy;
+    private double itefy;
+    private double ibtfy;
+    private double rfr;
+    private double cbeta;
 
     /*Terminal Value*/
     private double tv;
@@ -111,8 +117,29 @@ public class EconomicGrowthDCFDto {
         this.priceAfterMarginOfSafty = priceAfterMarginOfSafty;
     }
 
+
     public void setDecision(ValuationEnums decision) {
         this.decision = decision;
+    }
+
+    public void setIefy(double iefy) {
+        this.iefy = iefy;
+    }
+
+    public void setItefy(double itefy) {
+        this.itefy = itefy;
+    }
+
+    public void setIbtfy(double ibtfy) {
+        this.ibtfy = ibtfy;
+    }
+
+    public void setRfr(double rfr) {
+        this.rfr = rfr;
+    }
+
+    public void setCbeta(double cbeta) {
+        this.cbeta = cbeta;
     }
 
     public Map<String, String> getPastNYearsFreeCashFlow() {
@@ -139,7 +166,26 @@ public class EconomicGrowthDCFDto {
         return perpertualGrowthRate;
     }
 
-    public double getDiscountRate() {
+    public double getIefy() {
+        return iefy;
+    }
+
+    public double getItefy() {
+        return itefy;
+    }
+
+    public double getIbtfy() {
+        return ibtfy;
+    }
+
+    public double getRfr() {
+        return rfr;
+    }
+
+    public double getCbeta() {
+        return cbeta;
+    }
+        public double getDiscountRate() {
         return discountRate;
     }
 
@@ -190,15 +236,22 @@ public class EconomicGrowthDCFDto {
                 "pastNYearsFreeCashFlow=" + pastNYearsFreeCashFlow +
                 ", nextNYearsFreeCashFlow=" + nextNYearsFreeCashFlow +
                 ", nextNYearsFCFPV=" + nextNYearsFCFPV +
-                ", perpecualGrowthRate=" + perpertualGrowthRate +
-                ", discountRate=" + discountRate +
+                ", perpertualGrowthRate=" + perpertualGrowthRate +
+                ", iefy=" + iefy +
+                ", itefy=" + itefy +
+                ", ibtfy=" + ibtfy +
+                ", rfr=" + rfr +
+                ", cbeta=" + cbeta +
                 ", tv=" + tv +
                 ", tvPv=" + tvPv +
+                ", sumOfFcF=" + sumOfFcF +
                 ", lasFYCashEquivalent=" + lasFYCashEquivalent +
                 ", lastFYDebt=" + lastFYDebt +
                 ", equityValue=" + equityValue +
                 ", shareOutStanding=" + shareOutStanding +
                 ", targetPrice=" + targetPrice +
+                ", marginOfSafty=" + marginOfSafty +
+                ", priceAfterMarginOfSafty=" + priceAfterMarginOfSafty +
                 ", upside=" + upside +
                 ", decision=" + decision +
                 '}';

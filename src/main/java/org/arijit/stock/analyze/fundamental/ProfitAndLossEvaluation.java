@@ -3,6 +3,8 @@ package org.arijit.stock.analyze.fundamental;
 import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.ProfitAndLossDto;
+import org.arijit.stock.analyze.dto.YearlyReportDto;
+import org.arijit.stock.analyze.score.ScorService;
 import org.arijit.stock.analyze.util.StockUtil;
 
 import java.util.Iterator;
@@ -32,6 +34,8 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
         netProfitGrowthPercnentage(analyzedInfoDto,endingYearProfitAndLossDto,startingYearProfitAndLossDto);
         interestDecreasePercentage(analyzedInfoDto,endingYearProfitAndLossDto,startingYearProfitAndLossDto);
         netSalesVsProfitRatio(analyzedInfoDto,profitAndLossDtoList);
+
+        ScorService.getInstance().getProfitAndLossScore().score(fundamentalInfoDto,analyzedInfoDto,year);
         evaluated = true;
     }
 
@@ -89,22 +93,22 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
 
     private void isContinuousNetSalesGrowth(AnalyzedInfoDto analyzedInfoDto, List<ProfitAndLossDto> profitAndLossDtoList){
         Iterator<ProfitAndLossDto> iterator = profitAndLossDtoList.iterator();
-        ProfitAndLossDto lastProfitAndLossDto = null;
         boolean isContinuousChange = true;
+        ProfitAndLossDto currentProfitAndLossDto = null;
         while(iterator.hasNext()){
-            ProfitAndLossDto profitAndLossDto = iterator.next();
-            if(lastProfitAndLossDto==null){
-                lastProfitAndLossDto = profitAndLossDto;
-            }
-            else{
+            if(currentProfitAndLossDto==null)
+                currentProfitAndLossDto = iterator.next();
+            else {
+                ProfitAndLossDto lastProfitAndLossDto = iterator.next();
 
-                if(profitAndLossDto.getNetSales()> lastProfitAndLossDto.getNetSales()){
-                    // previous year sale is more than current year sale
-                    isContinuousChange = false;
-                    break;
-                }
+                    if (currentProfitAndLossDto.getNetSales() < lastProfitAndLossDto.getNetSales()) {
+                        // previous year sale is more than current year sale
+                        analyzedInfoDto.getProfitAndLossAnalysisInfo().setSalesGrowthContinuous(false);
+                        return;
+                    }
+                currentProfitAndLossDto = lastProfitAndLossDto;
             }
-        }
+            }
         analyzedInfoDto.getProfitAndLossAnalysisInfo().setSalesGrowthContinuous(isContinuousChange);
     }
 
