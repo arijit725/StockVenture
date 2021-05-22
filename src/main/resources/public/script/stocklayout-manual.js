@@ -151,51 +151,10 @@ function balancesheetDatPoints(){
     datapoints.push(["Total Share Capital","total_share_capital"]);
     datapoints.push(["Equity Share Capital","equity_share_capital"]);
     datapoints.push(["Reserves","reserves"]);
+    datapoints.push(["TOTAL SHAREHOLDERS FUNDS","total_shareholder_funds"]);
     datapoints.push(["Debt","debt"]);
     return datapoints;
 }
-
-//function submitBalancesheetPDF(){
-//    var filePath = document.getElementById("ubl").value;
-//    console.log("Submitting Balancesheet PDF from:"+filePath);
-//    var fileUpload = document.getElementById("ubl");
-//        if (typeof (FileReader) != "undefined") {
-//            var reader = new FileReader();
-//            console.log(reader);
-//            reader.onload = function (e) {
-//                console.log(e.target.result);
-//            }
-//            var file  = fileUpload.files[0];
-////            var responseText =  postFile(blUploadlUrl,file,'balancesheet');
-//               var responseText =  postFile(uploadPDFuRL,file,'balancesheet',getBalancesheetData);
-//               console.log("File Upload Response: "+responseText);
-//
-////            tabopen("plopen");
-//        } else {
-//            alert("This browser does not support HTML5.");
-//        }
-//}
-
-//function uploadBalancesheetPDF(parentid,id){
-//    uploadFile(parentid,id,"ublsubmit",submitBalancesheetPDF);
-//}
-
-//function getBalancesheetData(){
-//    var url = getDataUrl+'/balancesheet/'+stockID;
-//    console.log("Getting data from url: "+url);
-//    var jsonResonse = getContent(url);
-//    console.log("BalanceSheet Json res: "+jsonResonse);
-//    var balancesheetMap = JSON.parse(jsonResonse);
-//    console.log("creaing Balancesheet table");
-//    var datapoints = balancesheetDatPoints();
-//    var bltbl = document.getElementById("bltbl");
-//    if(bltbl!=null){
-//        bltbl.remove();
-//    }
-//    var headerList =createHeaders();
-//    console.log("Generated Headers: "+headerList);
-//    createTable1("Balance-Sheet","bltbl",headerList,datapoints,submitBalancesheetDetails,balancesheetMap);
-//}
 
 function balancesheetTable(){
     console.log("creaing Balancesheet table");

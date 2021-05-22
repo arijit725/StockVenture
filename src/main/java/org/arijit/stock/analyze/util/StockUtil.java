@@ -1,6 +1,7 @@
 package org.arijit.stock.analyze.util;
 
 import com.google.gson.Gson;
+import org.arijit.stock.analyze.enums.AnalysisEnums;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -30,5 +31,17 @@ public class StockUtil {
         String strValue = tempBig.stripTrailingZeros().toPlainString();
         return strValue;
 
+    }
+
+    public static String createAnalysisStatement(String statementStr, AnalysisEnums analysisEnums){
+        Statement statement = new Statement();
+        statement.statement = statementStr;
+        statement.style = analysisEnums.getValue();
+        return generateJsonString(statement);
+    }
+
+    private static class Statement{
+        private String statement;
+        private String style;
     }
 }

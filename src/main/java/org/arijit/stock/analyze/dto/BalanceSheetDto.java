@@ -50,6 +50,13 @@ public final class BalanceSheetDto implements Comparable<BalanceSheetDto> {
     Will be found in old format
     * */
     private double reserves;
+
+    /**
+     * Total shareholders fund is equivalent to total shareholders equity. This value is used to calculate roe.
+     * ROE = (Net Proft After Tax)/(Total Shreholder's Fund)
+     */
+    @SerializedName(value = "total_shareholder_funds")
+    private double totalShareHoldersFunds;
     /* For a good company debt should always decrease. Will be found in old format
     * In new format Debt  = Long Term Borrowings + Short Term Borrowings
     */
@@ -72,6 +79,7 @@ public final class BalanceSheetDto implements Comparable<BalanceSheetDto> {
         return totalShareCapital;
     }
 
+
     public BalanceSheetDto setTotalShareCapital(double totalShareCapital) {
         this.totalShareCapital = totalShareCapital;
         return this;
@@ -84,6 +92,14 @@ public final class BalanceSheetDto implements Comparable<BalanceSheetDto> {
     public BalanceSheetDto setReserves(double reserves) {
         this.reserves = reserves;
         return this;
+    }
+
+    public double getTotalShareHoldersFunds() {
+        return totalShareHoldersFunds;
+    }
+
+    public void setTotalShareHoldersFunds(double totalShareHoldersFunds) {
+        this.totalShareHoldersFunds = totalShareHoldersFunds;
     }
 
     public double getDebt() {
@@ -147,11 +163,13 @@ public final class BalanceSheetDto implements Comparable<BalanceSheetDto> {
 
     @Override
     public String toString() {
-        return "BalanceSheetDto[" +
+        return "BalanceSheetDto{" +
                 "date='" + date + '\'' +
                 ", totalShareCapital=" + totalShareCapital +
+                ", equityShareCapital=" + equityShareCapital +
                 ", reserves=" + reserves +
+                ", totalShareHoldersFunds=" + totalShareHoldersFunds +
                 ", debt=" + debt +
-                ']';
+                '}';
     }
 }

@@ -1,6 +1,8 @@
 package org.arijit.stock.analyze.analysisdto;
 
+import org.arijit.stock.analyze.enums.AnalysisEnums;
 import org.arijit.stock.analyze.util.DateUtil;
+import org.arijit.stock.analyze.util.StockUtil;
 
 import java.text.ParseException;
 import java.util.*;
@@ -16,6 +18,11 @@ public class BalanceSheetAnalysisInfo {
 
     private List<String> analysisStatement;
 
+    private Map<String, HashMap<String,String>> balancesheetGrowthsDtoMap;
+
+    private String equityCapitalScore;
+    private String reserveScore;
+    private String debtScore;
     private String balanceSheetScore;
 
     public BalanceSheetAnalysisInfo(){
@@ -32,6 +39,9 @@ public class BalanceSheetAnalysisInfo {
                 return 0;
             }
         });
+
+        this.analysisStatement = new ArrayList<>();
+        balancesheetGrowthsDtoMap = new HashMap<>();
     }
 
     public String getBalanceSheetScore() {
@@ -40,6 +50,30 @@ public class BalanceSheetAnalysisInfo {
 
     public void setBalanceSheetScore(String balanceSheetScore) {
         this.balanceSheetScore = balanceSheetScore;
+    }
+
+    public String getDebtScore() {
+        return debtScore;
+    }
+
+    public void setDebtScore(String debtScore) {
+        this.debtScore = debtScore;
+    }
+
+    public String getReserveScore() {
+        return reserveScore;
+    }
+
+    public void setReserveScore(String reserveScore) {
+        this.reserveScore = reserveScore;
+    }
+
+    public String getEquityCapitalScore() {
+        return equityCapitalScore;
+    }
+
+    public void setEquityCapitalScore(String equityCapitalScore) {
+        this.equityCapitalScore = equityCapitalScore;
     }
 
     public double getTotalShareChangePercentage() {
@@ -70,16 +104,27 @@ public class BalanceSheetAnalysisInfo {
         return analysisStatement;
     }
 
-    public void setAnalysisStatement(List<String> analysisStatement) {
-        this.analysisStatement = analysisStatement;
+    public void clearAnalysisStatement(){
+        this.analysisStatement.clear();
     }
 
+    public void addAnalysisStatement(String statement, AnalysisEnums analysisEnums){
+        String stmt = StockUtil.createAnalysisStatement(statement,analysisEnums);
+        this.analysisStatement.add(stmt);
+    }
     public double getDebtChangePercentage() {
         return debtChangePercentage;
     }
 
     public void setDebtChangePercentage(double debtChangePercentage) {
         this.debtChangePercentage = debtChangePercentage;
+    }
+
+    public void addBalanceSheetGrowths(String date, String attribute, String value){
+        if(!balancesheetGrowthsDtoMap.containsKey(date)){
+            balancesheetGrowthsDtoMap.put(date,new HashMap<>());
+        }
+        balancesheetGrowthsDtoMap.get(date).put(attribute,value);
     }
 
     public Map<String, String> getDebtToReserveRatioMap() {

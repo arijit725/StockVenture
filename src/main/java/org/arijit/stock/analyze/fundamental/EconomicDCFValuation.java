@@ -151,20 +151,24 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
         double marketReturn = 10; ///making this constant for time being. This should be any index average return over last 10 years.
         double marketCapital = fundamentalInfoDto.getCompanyDto().getMarketCap();
 
+
         double costOfDebt = 0;
         if(totalDebt>0){
             costOfDebt = (double)(interestExpense/totalDebt)*100;
         }
+        logger.info("Interest Expense: "+incomeTaxExpense+" Total Debt: "+0+" cost of debt: "+costOfDebt);
+
         double effectiveTaxRate =(double) (incomeTaxExpense/incomeBeforeTax)*100;
-        logger.info("Cost of Debt: "+costOfDebt+ " Effective Tax Rate: "+effectiveTaxRate);
+        logger.info("Income Tax Expense: "+incomeTaxExpense+" Income Before Tax: "+incomeBeforeTax+ " Effective Tax Rate: "+effectiveTaxRate);
 
         double costOfEquity = riskFreeRate +(companyBeta *(marketReturn-riskFreeRate));
+        logger.info(" Risk Free Rate: "+riskFreeRate+" company Beta: "+companyBeta+" Market Return: "+marketReturn+" cost of Equity: "+costOfEquity);
         double total = totalDebt + marketCapital;
 
         double weightOfDebt = (totalDebt/total)*100;
         double weightOfEquity = (marketCapital/total)*100;
 
-        logger.info("Weight of Debt : "+weightOfDebt+" Weight of Equity: "+weightOfEquity);
+        logger.info("Market Capital: "+marketCapital+" weight Of Debt: "+weightOfDebt+" weight Of Equity: "+weightOfEquity);
 
         double wacc = ( weightOfDebt*costOfDebt*(1-effectiveTaxRate))+(weightOfEquity*costOfEquity);
 

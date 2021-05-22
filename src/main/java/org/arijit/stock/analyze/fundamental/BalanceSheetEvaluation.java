@@ -6,6 +6,8 @@ import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.analysisdto.BalanceSheetAnalysisInfo;
 import org.arijit.stock.analyze.dto.BalanceSheetDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
+import org.arijit.stock.analyze.enums.AnalysisEnums;
+import org.arijit.stock.analyze.enums.ColorEnums;
 import org.arijit.stock.analyze.score.ScorService;
 import org.arijit.stock.analyze.util.StockUtil;
 
@@ -28,11 +30,16 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
         List<BalanceSheetDto> balanceSheetDtoList = fundamentalInfoDto.getBalanceSheetDtoList();
         if(balanceSheetDtoList.isEmpty()||balanceSheetDtoList.size()<year)
             throw new Exception("Number of year exceeds BalancesSheetDto list");
+        /*When analyzing each time, we should clear analysis statement*/
+        analyzedInfoDto.getBalanceSheetAnalysisInfo().clearAnalysisStatement();
+
         balanceSheetDtoList = fundamentalInfoDto.getBalanceSheetDtoList().stream().limit(year).collect(Collectors.toList());
         BalanceSheetDto endingYearBalancesheetDto = balanceSheetDtoList.get(0);
         BalanceSheetDto startingYearBalancesheetDto = balanceSheetDtoList.get(year-1);
         logger.info("Starting Year Balancesheet Dto: "+startingYearBalancesheetDto);
         logger.info("Ending Year Balancesheet Dto: "+endingYearBalancesheetDto);
+
+        calcAvgGrowth(fundamentalInfoDto,analyzedInfoDto,year);
 
         double endYearTotalShareCapital = endingYearBalancesheetDto.getTotalShareCapital();
         double startYearTotalShareCapital = startingYearBalancesheetDto.getTotalShareCapital();
@@ -104,6 +111,119 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
             lastBalanceSheetDto = tmpBalancesheetDto;
         }
         return changeCount;
+    }
+
+    private void calcAvgGrowth(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int years){
+        List<BalanceSheetDto> balanceSheetDtoList = fundamentalInfoDto.getBalanceSheetDtoList().stream().limit(years).collect(Collectors.toList());
+        BalanceSheetDto currentBalanceSheetDto = null;
+
+        Iterator<BalanceSheetDto> it = balanceSheetDtoList.iterator();
+        double totalGrowth = 0;
+        double eqAvgGrowth = 0;
+        double reserveAvgGrowth = 0;
+        double debtAvgGrowth = 0;
+
+        while(it.hasNext()){
+            if(currentBalanceSheetDto==null)
+                currentBalanceSheetDto = it.next();
+            else{
+                BalanceSheetDto prevBalanceSheetDto = it.next();
+
+                try {
+                    double totalShareCapitalGrowth = 0;
+                    if (prevBalanceSheetDto.getTotalShareCapital() > 0) {
+                        totalShareCapitalGrowth = (currentBalanceSheetDto.getTotalShareCapital() - prevBalanceSheetDto.getTotalShareCapital());
+                        totalShareCapitalGrowth = (double) totalShareCapitalGrowth / prevBalanceSheetDto.getTotalShareCapital() * 100;
+                        totalGrowth = totalGrowth + totalShareCapitalGrowth;
+                    }
+                    String totalShareCapitalGrowthString = StockUtil.convertDoubleToPrecision(totalShareCapitalGrowth, 2);
+                    analyzedInfoDto.getBalanceSheetAnalysisInfo().addBalanceSheetGrowths(currentBalanceSheetDto.getDate(), "total_share_capital", totalShareCapitalGrowthString);
+                }catch(Exception e){
+                    logger.error("unable to calculate total share capital growth",e);
+                }
+
+                try {
+                    double equityShareCapitalGrowth = 0;
+                    if (prevBalanceSheetDto.getEquityShareCapital() > 0) {
+                        equityShareCapitalGrowth = (currentBalanceSheetDto.getEquityShareCapital() - prevBalanceSheetDto.getEquityShareCapital());
+                        equityShareCapitalGrowth = (double) equityShareCapitalGrowth / prevBalanceSheetDto.getEquityShareCapital() * 100;
+                        eqAvgGrowth = eqAvgGrowth + equityShareCapitalGrowth;
+                    }
+                    String growthString = StockUtil.convertDoubleToPrecision(equityShareCapitalGrowth, 2);
+                    analyzedInfoDto.getBalanceSheetAnalysisInfo().addBalanceSheetGrowths(currentBalanceSheetDto.getDate(), "equity_share_capital", growthString);
+                }catch(Exception e){
+                    logger.error("unable to calculate total share capital growth",e);
+                }
+
+
+                try {
+                    double reservesGrowth = 0;
+                    if (prevBalanceSheetDto.getReserves() > 0) {
+                        reservesGrowth = (currentBalanceSheetDto.getReserves() - prevBalanceSheetDto.getReserves());
+                        reservesGrowth = (double) reservesGrowth / prevBalanceSheetDto.getReserves() * 100;
+                        reserveAvgGrowth = reserveAvgGrowth + reservesGrowth;
+                    }
+                    String growthString = StockUtil.convertDoubleToPrecision(reservesGrowth, 2);
+                    analyzedInfoDto.getBalanceSheetAnalysisInfo().addBalanceSheetGrowths(currentBalanceSheetDto.getDate(), "reserves", growthString);
+                }catch(Exception e){
+                    logger.error("unable to calculate total share capital growth",e);
+                }
+
+
+                try {
+                    double debtsGrowth = 0;
+                    if (prevBalanceSheetDto.getDebt() > 0) {
+                        debtsGrowth = (currentBalanceSheetDto.getDebt() - prevBalanceSheetDto.getDebt());
+                        debtsGrowth = (double) debtsGrowth / prevBalanceSheetDto.getDebt() * 100;
+                        debtAvgGrowth = debtAvgGrowth + debtsGrowth;
+                    }
+                    String growthString = StockUtil.convertDoubleToPrecision(debtsGrowth, 2);
+                    analyzedInfoDto.getBalanceSheetAnalysisInfo().addBalanceSheetGrowths(currentBalanceSheetDto.getDate(), "debt", growthString);
+                }catch(Exception e){
+                    logger.error("unable to calculate growth in Debt",e);
+                }
+
+
+                currentBalanceSheetDto = prevBalanceSheetDto;
+            }
+        }
+        /*from 5 years data we can get 4 years growth data point, hence decrementing years by 1*/
+        int growthYear = years-1;
+
+        totalGrowth =(double) totalGrowth/growthYear;
+        String totalAvgGrowthStatement = " Average Dilution in Total Share Capital: "+StockUtil.convertDoubleToPrecision(totalGrowth,2);
+        if(totalGrowth<=0)
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(totalAvgGrowthStatement, AnalysisEnums.ANALYZED_GOOD);
+        else
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(totalAvgGrowthStatement,AnalysisEnums.ANALYZED_BAD);
+
+        eqAvgGrowth =(double) eqAvgGrowth/(growthYear);
+        String eqAvgGrowthStatement = " Average Dilution in Equity Share Capital: "+StockUtil.convertDoubleToPrecision(eqAvgGrowth,2);
+        if(eqAvgGrowth<=0)
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(eqAvgGrowthStatement,AnalysisEnums.ANALYZED_GOOD);
+        else
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(eqAvgGrowthStatement,AnalysisEnums.ANALYZED_BAD);
+
+
+        reserveAvgGrowth = (double) reserveAvgGrowth / growthYear;
+        String reserveAvgGrowthStatement = " Average Reserve Increase: "+StockUtil.convertDoubleToPrecision(reserveAvgGrowth,2);
+        if(reserveAvgGrowth>0)
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(reserveAvgGrowthStatement,AnalysisEnums.ANALYZED_GOOD);
+        else if(reserveAvgGrowth == 0)
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(reserveAvgGrowthStatement,AnalysisEnums.ANALYZED_NEUTRAL);
+        else
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(reserveAvgGrowthStatement,AnalysisEnums.ANALYZED_BAD);
+
+        debtAvgGrowth = (double) debtAvgGrowth / growthYear;
+
+        if(debtAvgGrowth<=0) {
+            String debtAvgGrowthStatement = " Average Debt Decreased: " + StockUtil.convertDoubleToPrecision(debtAvgGrowth, 2);
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(debtAvgGrowthStatement, AnalysisEnums.ANALYZED_GOOD);
+        }
+        else {
+            String debtAvgGrowthStatement = " Average Debt Increased: " + StockUtil.convertDoubleToPrecision(debtAvgGrowth, 2);
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(debtAvgGrowthStatement, AnalysisEnums.ANALYZED_BAD);
+        }
     }
 
     public static BalanceSheetEvaluation getInstance(){

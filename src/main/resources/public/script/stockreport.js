@@ -141,10 +141,10 @@ function getCompanyDetails(){
 /*====================== Get Balance Sheet Details =========================*/
 function balancesheetDataPoints(){
     var datapoints = new Array();
-    datapoints.push(["Total Share Capital","total_share_capital"]);
-    datapoints.push(["Equity Share Capital","equity_share_capital"]);
-    datapoints.push(["Reserves and Surplus","reserves"]);
-    datapoints.push(["Long Term Borrowings(Debt)","debt"]);
+    datapoints.push(["Total Share Capital","total_share_capital","Continuous Dilution of Total Share Capital is a bad sign, as it will reduce earning per share which would play a role to reduce stock price."]);
+    datapoints.push(["Equity Share Capital","equity_share_capital","Continuous Dilution of Equity Share Capital is a bad sign, as it will reduce earning per share which would play a role to reduce stock price."]);
+    datapoints.push(["Reserves and Surplus","reserves","Total amount of reserve and slurplus"]);
+    datapoints.push(["Total Debt","debt","Total debts "]);
     return datapoints;
 }
 
@@ -187,7 +187,8 @@ function balancesheetTable(headerList, balancesheetFY){
     if(tableEle!=null){
             tableEle.remove();
         }
-    createTable("balancesheet-tbl",tableID,headerList,datapoints,balancesheetFY);
+//    createTable("balancesheet-tbl",tableID,headerList,datapoints,balancesheetFY);
+    createTableWithToolTips("balancesheet-tbl",tableID,headerList,datapoints,balancesheetFY);
 }
 
 //function balancesheetTable(years){
@@ -322,7 +323,32 @@ function balancesheetAnalysis(years){
     dvTable.appendChild(table);
 
     balancesheetCalcAnalysis(balAnal);
+    showBalancesheetGrowthRate(balAnal,years);
+
+    showAnalysisStatement(divID,balAnal);
+
 }
+
+
+function showBalancesheetGrowthRate(balAnal,years){
+    console.log("Calculating  Balancesheet GrowthRate:");
+    balancesheetGrowthsDtoMap = balAnal.balancesheetGrowthsDtoMap;
+    headerList = Object.keys(balancesheetGrowthsDtoMap);
+//    console.log("Fetched ratioGrowthsDtoMap: ");
+    console.log(balancesheetGrowthsDtoMap);
+    var dataPoints = balancesheetDataPoints();
+    console.log("showGrowthRate datapoints: "+dataPoints);
+    console.log("headerList:" +headerList );
+    for(var i=0;i<dataPoints.length;i++){
+        //we can not calculate growth for the very first year. .
+        for(var j=0;j<headerList.length-1;j++){
+                   var cellid = dataPoints[i][1]+"-"+headerList[j];
+//                   console.log(cellid);
+                   var growthMap = balancesheetGrowthsDtoMap[headerList[j]];
+                   createGrowthLabel(cellid, growthMap[dataPoints[i][1]]);
+            }
+    }
+   }
 
 function balancesheetCalcAnalysis(balAnal){
     console.log("balancesheet score: "+balAnal.balanceSheetScore);
@@ -393,8 +419,76 @@ function balancesheetCalcAnalysis(balAnal){
     var dvTable = document.getElementById(divID);
     dvTable.appendChild(table);
 
-    var scoreLbl = document.getElementById("bl_score_val");
-    scoreLbl.innerHTML = balAnal.balanceSheetScore;
+//    var scoreLbl = document.getElementById("bl_score_val");
+//    scoreLbl.innerHTML = balAnal.balanceSheetScore;
+
+    showBLScore(balAnal);
+}
+
+
+function createBLScroreDataPoints(dataJson){
+//    var dataJsonList = JSON.parse(dataJson);
+    console.log(dataJson);
+    var plFY = new Map();
+    var datamap = new Map();
+    datamap['equityCapitalScore'] = dataJson.equityCapitalScore;
+    datamap['reserveScore'] = dataJson.reserveScore;
+    datamap['debtScore'] = dataJson.debtScore;
+    datamap['balanceSheetScore'] = dataJson.balanceSheetScore;
+//    console.log(datamap);
+    plFY["Value"] = datamap;
+
+    return plFY;
+}
+
+
+function showBLScore(jsonResonse){
+    var parentDiv = document.getElementById("bl_score_div");
+    var tableID = "bl_score_tbl";
+    var dataFY = createBLScroreDataPoints(jsonResonse);
+    var header = new Array();
+    header.push("Score");
+    header.push("Value");
+
+     var tmpdatapoints = new Array();
+     tmpdatapoints.push(["Equity Share Capital Score","equityCapitalScore"," This score is calcualted based on last N years performance. More recent year more impact, More previous year less impact. Higher value means less Diluton of share"]);
+     tmpdatapoints.push(["Reserve Score","reserveScore","This score is calcualted based on last N years performance. More recent year more impact, More previous year less impact. More reserve is a good sign"]);
+     tmpdatapoints.push(["Debt Score","debtScore","This score is calcualted based on last N years performance. More recent year more impact, More previous year less impact. Positive value means overall debt is reduced. This is a good sign"]);
+     tmpdatapoints.push(["Total Balancesheet Score","balanceSheetScore","This score is calcualted based on last N years performance. "]);
+
+    var ele = document.getElementById(tableID);
+        if(ele!=null){
+            ele.remove();
+        }
+
+    createTableWithToolTips("bl_score_div",tableID,header,tmpdatapoints,dataFY);
+    var valrow1 = document.getElementById("equityCapitalScore-Value");
+    var value1 = valrow1.innerHTML;
+    if(value1>0)
+        valrow1.style.color='green';
+    else
+        valrow1.style.color='red';
+
+    var valrow2 = document.getElementById("reserveScore-Value");
+    var value2 = valrow2.innerHTML;
+    if(value2>0)
+        valrow2.style.color='green';
+    else
+        valrow2.style.color='red';
+
+    var valrow3 = document.getElementById("debtScore-Value");
+    var value3 = valrow3.innerHTML;
+    if(value3>0)
+        valrow3.style.color='green';
+    else
+        valrow3.style.color='red';
+
+    var valrow4 = document.getElementById("balanceSheetScore-Value");
+    var value4 = valrow4.innerHTML;
+    if(value4>0)
+        valrow4.style.color='green';
+    else
+        valrow4.style.color='red';
 }
 
 function onBLYearSelection(){
@@ -975,7 +1069,7 @@ function onQLYearSelection(){
 
 function ratiosDataPoints(){
     var datapoints = new Array();
-     datapoints.push(["PE Ratio","peRatio"," PE Ratio ToolTips PlaceHolder"]);
+     datapoints.push(["PE Ratio","peRatio","PE ratio = (Current Share price/EPS). This ratio determine how much X times we are paying for a share. Higer PE ratio means price of share is high compare to earning per share(EPS). Though we should avoid stock with high PE ratio but if its peers are also trading in high PE ratio, there are chance that this industry has growth opportunity."]);
     datapoints.push(["PB Ratio","pbRatio",PBRatioToolTips()]);
     datapoints.push(["Return On Equity","roe"," PE Ratio ToolTips PlaceHolder"]);
     datapoints.push(["Enterprise Value","ev","EV calculates a company's total value or assessed worth. This includes market capitalization, debt and exclude cash. This gives true value of an enterprise."]);
@@ -1648,10 +1742,12 @@ function postRequest(url, requestBody,onloadfunc){
 
 
 
+
 function generateJsonString(obj){
     var jsonStr = JSON.stringify(obj);
     return jsonStr
 }
+
 
 function createGrowthLabel(cellid, growthVal){
     var parent = document.getElementById(cellid);
@@ -1661,7 +1757,8 @@ function createGrowthLabel(cellid, growthVal){
         label.style.color='green';
     else if(growthVal<0)
         label.style.color='red';
-
+    else
+        label.style.color='blue';
     parent.appendChild(label);
 }
 
@@ -1734,6 +1831,46 @@ function getTableHeader(tableID){
     }
     console.log("getTableHeader:: headers: "+headerList);
     return headerList;
+}
+
+
+
+/**
+"analysisStatement":["{\"statement\":\" Average Dilution in Equity Share Capital: 0.0\",\"color\":\"greeen\"}","{\"statement\":\" Average Dilution in Equity Share Capital: 0.0\",\"color\":\"green\"}","{\"statement\":\" Average Reserve Growth: 51.14\",\"color\":\"green\"}","{\"statement\":\" Average Reserve Growth: 0.0\",\"color\":\"green\"}"]
+**/
+function showAnalysisStatement(parentDiv, balAnal){
+    analysisStatementList = balAnal.analysisStatement;
+    console.log("Showing analysis statement: "+analysisStatementList.length);
+    var parentDivEle = document.getElementById(parentDiv);
+    var tableID = parentDiv+"_stmt_tbl";
+    var children = parentDivEle.childNodes;
+    console.log("children:" +children);
+    console.log(children);
+    var tableEle = document.getElementById(tableID);
+    console.log(tableEle);
+    if(tableEle!=null){
+        console.log("removing: "+tableID);
+        tableEle.remove();
+        parentDivEle.removeChild(tableEle);
+    }
+
+    var table = document.createElement("TABLE");
+    table.setAttribute("id",tableID);
+    for(var i=0;i<analysisStatementList.length;i++){
+        var row = table.insertRow();
+        var cell = document.createElement("TD");
+        var jsonString = analysisStatementList[i];
+        console.log(jsonString);
+        var parsedObj = JSON.parse(jsonString);
+        console.log(parsedObj);
+        cell.innerHTML = parsedObj.statement;
+        cell.setAttribute("class", parsedObj.style);
+
+        row.appendChild(cell);
+    }
+
+    parentDivEle.appendChild(table);
+
 }
 
 function createTableWithToolTips(divID,tableID,headerList,datapoints,dataFY){

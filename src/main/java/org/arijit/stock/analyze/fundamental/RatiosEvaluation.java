@@ -167,7 +167,7 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
 
 
         ValuationEnums pegValuation = ValuationEnums.FAIR_VALUED;
-        if(pegRatio<0)
+        if(pegRatio<=0)
             pegValuation = ValuationEnums.AVOID;
         else if(pegRatio>=4)
             pegValuation = ValuationEnums.OVER_VALUED;

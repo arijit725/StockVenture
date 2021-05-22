@@ -47,20 +47,39 @@ public class BalancesheetScore implements IScore{
 
                     //here equity growth can be 0, so to signify equity weightage adding 1 to calcualted value.
                     // also subtracting from 1 as if equity share capital is decreased, it would be a good sign and for increase, its a bad sign.
+
+                    //the more recent year, importance is more, more older year importance is less.
                     double tmpGrowth = 1 - calcEquityShareCapitalGrowth(currentYearBalancesheet.getEquityShareCapital(), lastYearBalancesheet.getEquityShareCapital());
-                    tmpGrowth = Math.pow(tmpGrowth, pow); //the more recent year, importance is more, more older year importance is less.
+                    if(tmpGrowth<0){
+                        double d = Math.abs(tmpGrowth);
+                        tmpGrowth = -1*Math.pow(d,pow);
+                    }else{
+                        tmpGrowth = Math.pow(tmpGrowth, pow);
+                    }
+
                     logger.info("Current Year equity share capital: " + currentYearBalancesheet.getEquityShareCapital() + " last year equity share capital: " + lastYearBalancesheet.getEquityShareCapital() + " growth: " + tmpGrowth);
                     equityShareCapitalGrowth = equityShareCapitalGrowth + tmpGrowth;
 
-
                     double tmpRGrowth = calcReserveGrowth(currentYearBalancesheet.getReserves(), lastYearBalancesheet.getReserves());
+                    // the more recent year, importance is more, more older year imortance is less
+                    if(tmpRGrowth<0){
+                        double d = Math.abs(tmpRGrowth);
+                        tmpRGrowth = -1*Math.pow(d,pow);
+                    }
+                    else {
+                        tmpRGrowth = Math.pow(tmpRGrowth, pow);
+                    }
                     logger.info("Current Year Reserve: " + currentYearBalancesheet.getReserves() + " last year Reserve: " + lastYearBalancesheet.getReserves() + " growth: " + tmpRGrowth);
-                    tmpRGrowth = Math.pow(tmpRGrowth, pow); // the more recent year, importance is more, more older year imortance is less
                     reserveGrowth = reserveGrowth + tmpRGrowth;
 
                     // if debt is not growing that is a positive indication. So to get that sign default debt growth is marked as 1.
                     double tmpDGrowth = 1 - calcDebtGrowth(currentYearBalancesheet.getDebt(), lastYearBalancesheet.getDebt());
-                    tmpDGrowth = Math.pow(tmpDGrowth, pow);
+                    if(tmpDGrowth<0){
+                        double d = Math.abs(tmpDGrowth);
+                        tmpDGrowth = -1*Math.pow(d,pow);
+                    }else {
+                        tmpDGrowth = Math.pow(tmpDGrowth, pow);
+                    }
                     logger.info("Current Year Debt: " + currentYearBalancesheet.getDebt() + " last year Debt: " + lastYearBalancesheet.getDebt() + " growth: " + tmpDGrowth);
                     debtGrowth = debtGrowth + tmpDGrowth;
 
@@ -74,6 +93,11 @@ public class BalancesheetScore implements IScore{
             reserveGrowth = RSRVW * reserveGrowth;
             debtGrowth = DW * debtGrowth;
             logger.info("[Weighted] equityShareCapitalScore: " + equityShareCapitalGrowth + " reserveScore: " + reserveGrowth + " debtScore: " + debtGrowth);
+
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().setEquityCapitalScore(StockUtil.convertDoubleToPrecision(equityShareCapitalGrowth,2));
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().setDebtScore(StockUtil.convertDoubleToPrecision(debtGrowth,2));
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().setReserveScore(StockUtil.convertDoubleToPrecision(reserveGrowth,2));
+
 
             double score = equityShareCapitalGrowth + reserveGrowth + debtGrowth;
             if (isReserveGrowContinuously(balanceSheetDtoList)) {
