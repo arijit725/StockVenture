@@ -2,10 +2,13 @@ package org.arijit.stock.analyze.analysisdto;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.arijit.stock.analyze.enums.AnalysisEnums;
 import org.arijit.stock.analyze.enums.ValuationEnums;
 import org.arijit.stock.analyze.util.DateUtil;
+import org.arijit.stock.analyze.util.StockUtil;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,15 +24,16 @@ public class RatioAnalysisInfo {
 
     private String ttmPEAnalysis;
 
-    private boolean isROEIncreasingContinuously;
-    private boolean isPBDecreasingConinuously;
+    private List<String> analysisStatement;
 
     private Map<String, HashMap<String,String>> ratioGrowthsDtoMap;
+
 
     public RatioAnalysisInfo(){
         ratioGrowthsDtoMap = new HashMap<>();
         forwardPEAnalysis = new ForwardPEAnalysis();
         pegRatioAnalysis = new PEGRatioAnalysis();
+        analysisStatement = new ArrayList<>();
     }
 
     public void setPEGRatio(String pegRatio){
@@ -84,6 +88,15 @@ public class RatioAnalysisInfo {
         this.possibilityOfMultiBagger = possibilityOfMultiBagger;
     }
 
+    public void clear(){
+        this.analysisStatement.clear();
+    }
+
+    public void addAnalysisStatement(String statement, AnalysisEnums analysisEnums){
+        String stmt = StockUtil.createAnalysisStatement(statement,analysisEnums);
+        this.analysisStatement.add(stmt);
+    }
+
     public boolean isPossibilityOfMultiBagger() {
         return possibilityOfMultiBagger;
     }
@@ -92,13 +105,17 @@ public class RatioAnalysisInfo {
         this.ttmPEAnalysis = ttmPEAnalysis;
     }
 
+
     @Override
     public String toString() {
         return "RatioAnalysisInfo{" +
                 "forwardPEAnalysis=" + forwardPEAnalysis +
+                ", pegRatioAnalysis=" + pegRatioAnalysis +
+                ", possibilityOfMultiBagger=" + possibilityOfMultiBagger +
+                ", ttmPEAnalysis='" + ttmPEAnalysis + '\'' +
+                ", ratioGrowthsDtoMap=" + ratioGrowthsDtoMap +
                 '}';
     }
-
 
     public static class PEGRatioAnalysis{
         private String pegRatio;
@@ -155,6 +172,9 @@ public class RatioAnalysisInfo {
             this.valuation = valuation;
         }
 
+        public double getForwardPE(){
+            return Double.parseDouble(forwardPE);
+        }
         @Override
         public String toString() {
             return "ForwardPEAnalysis{" +

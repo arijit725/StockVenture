@@ -40,6 +40,7 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
 
     @Override
     public void evaluate(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year) throws Exception {
+        calcWACC(fundamentalInfoDto,analyzedInfoDto);
         int fcfavgYear = year;
         if(year<10)
             throw new Exception("DCF Model Can not be built with out 10 years data;");
@@ -47,7 +48,7 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
         if(prevCashFlowList.size()<10)
             throw new Exception("DCF Model Can not be built with out 10 years data;");
 
-        calcWACC(fundamentalInfoDto,analyzedInfoDto);
+
         EconomicGrowthDCFDto dcfDto = analyzedInfoDto.getEconomicGrowthDCFDto();
         prevCashFlowList.stream().forEach(cashFlowDto -> {dcfDto.addPastNYearsFreeCashFlow(cashFlowDto.getDate(), StockUtil.convertDoubleToPrecision(cashFlowDto.getFreeCashFlow(),2));});
 
@@ -141,14 +142,16 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
      * @param analyzedInfoDto
      */
     private void calcWACC(FundamentalInfoDto fundamentalInfoDto,AnalyzedInfoDto analyzedInfoDto){
-        double interestExpense = analyzedInfoDto.getEconomicGrowthDCFDto().getIefy();
+//        double interestExpense = analyzedInfoDto.getEconomicGrowthDCFDto().getIefy();
+        double interestExpense = fundamentalInfoDto.getProfitAndLossDtoList().get(0).getInterest();
         double totalDebt = fundamentalInfoDto.getBalanceSheetDtoList().get(0).getDebt();
         double incomeTaxExpense = analyzedInfoDto.getEconomicGrowthDCFDto().getItefy();
         double incomeBeforeTax = analyzedInfoDto.getEconomicGrowthDCFDto().getIbtfy();
         double riskFreeRate = analyzedInfoDto.getEconomicGrowthDCFDto().getRfr();
         double companyBeta = analyzedInfoDto.getEconomicGrowthDCFDto().getCbeta();
 
-        double marketReturn = 10; ///making this constant for time being. This should be any index average return over last 10 years.
+//        double marketReturn = 10; ///making this constant for time being. This should be any index average return over last 10 years.
+        double marketReturn = analyzedInfoDto.getEconomicGrowthDCFDto().getMktret();
         double marketCapital = fundamentalInfoDto.getCompanyDto().getMarketCap();
 
 
@@ -156,7 +159,7 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
         if(totalDebt>0){
             costOfDebt = (double)(interestExpense/totalDebt)*100;
         }
-        logger.info("Interest Expense: "+incomeTaxExpense+" Total Debt: "+0+" cost of debt: "+costOfDebt);
+        logger.info("Interest Expense: "+incomeTaxExpense+" Total Debt: "+totalDebt +" cost of debt: "+costOfDebt);
 
         double effectiveTaxRate =(double) (incomeTaxExpense/incomeBeforeTax)*100;
         logger.info("Income Tax Expense: "+incomeTaxExpense+" Income Before Tax: "+incomeBeforeTax+ " Effective Tax Rate: "+effectiveTaxRate);
@@ -170,8 +173,11 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
 
         logger.info("Market Capital: "+marketCapital+" weight Of Debt: "+weightOfDebt+" weight Of Equity: "+weightOfEquity);
 
-        double wacc = ( weightOfDebt*costOfDebt*(1-effectiveTaxRate))+(weightOfEquity*costOfEquity);
+        double codE = costOfDebt*(1-(effectiveTaxRate/100));
+        logger.info("Weight of Debt: "+weightOfDebt+" cost Of Debt: "+costOfDebt+" effectiveTaxRate: "+effectiveTaxRate+"codE: "+codE+ " weight of equity: "+weightOfEquity+" Cost of Equity: "+costOfEquity);
 
+        double wacc = ( weightOfDebt*codE)+(weightOfEquity*costOfEquity);
+        wacc = (double)wacc/100; //converting to percentage
         double tmp = Double.parseDouble(StockUtil.convertDoubleToPrecision(wacc,2));
         analyzedInfoDto.getEconomicGrowthDCFDto().setDiscountRate(tmp);
 

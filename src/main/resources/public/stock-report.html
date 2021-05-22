@@ -247,24 +247,36 @@
     <div class="reivew-header">Economic DCF Valuations</div>
     <table>
         <tr>
-            <td><label for="growR">Perpertual Growth Rate %: </label></td><td><input type="text" id="growR" name="growR"></td>
-<!--            <td><label for="disR">Discount Rate %: </label></td><td><input type="text" id="disR" name="disR"></td>-->
-            <td><label for="iefy">Interest Expense(Last FY): </label></td><td><input type="text" id="iefy" name="iefy"></td>
-            <td><label for="itefy">Income Tax Expense(Last FY): </label></td><td><input type="text" id="itefy" name="itefy"></td>
+            <td>
+                <table>
+                    <tr>
+                        <td><label for="growR">Perpertual Growth Rate %: </label></td><td><input type="text" id="growR" name="growR"></td>
+                        <!--            <td><label for="disR">Discount Rate %: </label></td><td><input type="text" id="disR" name="disR"></td>-->
+                        <!--            <td><label for="iefy">Interest Expense(Last FY): </label></td><td><input type="text" id="iefy" name="iefy"></td>-->
+                        <td><label for="itefy">Income Tax Expense(Last FY): </label></td><td><input type="text" id="itefy" name="itefy"></td>
+                        <td><label for="ibtfy">Income Before Tax (Last FY): </label></td><td><input type="text" id="ibtfy" name="ibtfy"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="rfr">Risk Free Rate: </label></td><td><input type="text" id="rfr" name="rfr"></td>
+                        <td><label for="cbeta">Company Beta: </label></td><td><input type="text" id="cbeta" name="cbeta"></td>
+                        <td><label for="mktret">Market Return: </label></td><td><input type="text" id="mktret" name="mktret"></td>
+
+                    </tr>
+                    <tr>
+                        <td><label for="cashEQDCF">Last FY Cash or Cash Equivalent: </label></td><td><input type="text" id="cashEQDCF" name="cashEQDCF"></td>
+                        <!--            <td><label for="debtDCF">Last FY Total Debt: </label></td><td><input type="text" id="debtDCF" name="debtDCF"></td>-->
+                        <td><label for="margR">Margin of Safty %: </label></td><td><input type="text" id="margR" name="margR"></td>
+                    </tr>
+                    <tr><td colspan="3"><input type="submit" value="Calculate" onclick="requestEconomicDCF()"></td></tr>
+                </table>
+            </td>
+            <td>
+                <div id="ecmDcf" class="tableholder">
+            </td>
         </tr>
-        <tr>
-            <td><label for="ibtfy">Income Before Tax (Last FY): </label></td><td><input type="text" id="ibtfy" name="ibtfy"></td>
-            <td><label for="rfr">Risk Free Rate: </label></td><td><input type="text" id="rfr" name="rfr"></td>
-            <td><label for="cbeta">Company Beta: </label></td><td><input type="text" id="cbeta" name="cbeta"></td>
-            <td><label for="margR">Margin of Safty %: </label></td><td><input type="text" id="margR" name="margR"></td>
-        </tr>
-        <tr>
-            <td><label for="cashEQDCF">Last FY Cash or Cash Equivalent: </label></td><td><input type="text" id="cashEQDCF" name="cashEQDCF"></td>
-            <td><label for="debtDCF">Last FY Total Debt: </label></td><td><input type="text" id="debtDCF" name="debtDCF"></td>
-        </tr>
-        <tr><td colspan="3"><input type="submit" value="Calculate" onclick="requestEconomicDCF()"></td></tr>
     </table>
-    <div id="ecmDcf" class="tableholder">
+
+
     </div>
 </div>
 <div id="targetPrice" class="targetPrice">

@@ -81,10 +81,14 @@ public class CashFlowEvaluation  implements IFundamentalEvaluation{
                 fixedAssestsPurchasedGrowth = (double) fixedAssestsPurchasedGrowth*100;
                 cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"fixedAssestsPurchased",StockUtil.convertDoubleToPrecision(fixedAssestsPurchasedGrowth, precision));
 
-                double netCashFlowGrowth = (lasCashFlowDto.getNetCashFlow()-prevCashFlowDto.getNetCashFlow())/prevCashFlowDto.getNetCashFlow();
-                netCashFlowGrowth = (double) netCashFlowGrowth*100;
-                cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"netCashFlow",StockUtil.convertDoubleToPrecision(netCashFlowGrowth, precision));
-
+                try {
+                    double netCashFlowGrowth = (lasCashFlowDto.getNetCashFlow() - prevCashFlowDto.getNetCashFlow()) / prevCashFlowDto.getNetCashFlow();
+                    netCashFlowGrowth = (double) netCashFlowGrowth * 100;
+                    logger.info(" current Net Cash Flow : " + lasCashFlowDto.getNetCashFlow() + " prev Net CashFlow: " + prevCashFlowDto.getNetCashFlow() + " growth: " + netCashFlowGrowth);
+                    cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(), "netCashFlow", StockUtil.convertDoubleToPrecision(netCashFlowGrowth, precision));
+                }catch(Exception e){
+                    logger.error("Unable to calculate netCashFlow Growth: current cashflow: "+lasCashFlowDto.getNetCashFlow()+" prev cash flow: "+prevCashFlowDto.getNetCashFlow(),e);
+                }
                 double freeCashFlowGrowth = (lasCashFlowDto.getFreeCashFlow()-prevCashFlowDto.getFreeCashFlow())/prevCashFlowDto.getFreeCashFlow();
                 freeCashFlowGrowth = (double) freeCashFlowGrowth*100;
                 cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"freeCashFlow",StockUtil.convertDoubleToPrecision(freeCashFlowGrowth, precision));

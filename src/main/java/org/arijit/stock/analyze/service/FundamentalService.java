@@ -322,6 +322,7 @@ public class FundamentalService {
             QuarterlyReportEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
             logger.info("==========================RatioEvaluation==================================");
             RatiosEvaluation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
+            logger.info("[Analyzed Ratios: "+analyzedInfoDto.getRatioAnalysisInfo());
         }catch(Exception e){
             logger.error("Unable to evaluate ",e);
         }

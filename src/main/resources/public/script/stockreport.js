@@ -341,10 +341,11 @@ function showBalancesheetGrowthRate(balAnal,years){
     console.log("headerList:" +headerList );
     for(var i=0;i<dataPoints.length;i++){
         //we can not calculate growth for the very first year. .
-        for(var j=0;j<headerList.length-1;j++){
+        for(var j=0;j<headerList.length;j++){
                    var cellid = dataPoints[i][1]+"-"+headerList[j];
 //                   console.log(cellid);
                    var growthMap = balancesheetGrowthsDtoMap[headerList[j]];
+//                   console.log("cellid: "+cellid+" growthMap: "+growthMap );
                    createGrowthLabel(cellid, growthMap[dataPoints[i][1]]);
             }
     }
@@ -1071,7 +1072,7 @@ function ratiosDataPoints(){
     var datapoints = new Array();
      datapoints.push(["PE Ratio","peRatio","PE ratio = (Current Share price/EPS). This ratio determine how much X times we are paying for a share. Higer PE ratio means price of share is high compare to earning per share(EPS). Though we should avoid stock with high PE ratio but if its peers are also trading in high PE ratio, there are chance that this industry has growth opportunity."]);
     datapoints.push(["PB Ratio","pbRatio",PBRatioToolTips()]);
-    datapoints.push(["Return On Equity","roe"," PE Ratio ToolTips PlaceHolder"]);
+    datapoints.push(["Return On Equity","roe",ROEToolTips()]);
     datapoints.push(["Enterprise Value","ev","EV calculates a company's total value or assessed worth. This includes market capitalization, debt and exclude cash. This gives true value of an enterprise."]);
     datapoints.push(["EV/EBITDA","evEbitda","EV/EBITDA compares the value of a company—debt included—to the company’s cash earnings less non-cash expenses.<br> EV/EBITDA Range: <0 = avoid.<br> between 0 to 2 = Future Growth uncertain <br> 4 to 5 = Neutral <br> 6 to 10 = Ideal for investment <br> 10 to 16 = Fair Valued <br> >20 = Over Valued<br> Compare with peers for actual valuation"]);
     datapoints.push(["Debt-To-Equity Ratio","debtToEquityRatio"," Debt to equity ratio placeholder"]);
@@ -1089,7 +1090,11 @@ function PBRatioToolTips(){
 }
 
 function ROEToolTips(){
- var toolTips = "ROE is same as RONE"
+ var toolTips = "ROE = (net profit after tax)/(total shareholder's fund)."+"<br>"+
+  "A rising ROE suggests that a company is increasing its profit generation without needing as much capital."+"<br>"+
+   "It also indicates how well a company's management deploys shareholder capital."+"<br>"+
+    "A higher ROE is usually better while a falling ROE may indicate a less efficient usage of equity capital. Company with Continuous rising ROE is a parameter of potential multibagger."
+ return toolTips;
 }
 
 function createRatiosDataPoints(dataJson){
@@ -1213,6 +1218,8 @@ function highlightedPoints(ratioAnalysis,years){
     var dvTable = document.getElementById(divID);
     dvTable.appendChild(table);
 
+    console.log(ratioAnalysis);
+    showAnalysisStatement(divID,ratioAnalysis);
 }
 
 function createForwardPEDataPoints(dataJson){
@@ -1527,8 +1534,8 @@ function requestEconomicDCF(){
     var growR = document.getElementById("growR").value;
     console.log("Growth Rate: "+peAvg);
 
-    var iefy = document.getElementById("iefy").value;
-    console.log("Interest Expense(Last FY): "+iefy);
+//    var iefy = document.getElementById("iefy").value;
+//    console.log("Interest Expense(Last FY): "+iefy);
 
     var itefy = document.getElementById("itefy").value;
     console.log("Income Tax Expense(Last FY): "+itefy);
@@ -1542,25 +1549,30 @@ function requestEconomicDCF(){
     var cbeta = document.getElementById("cbeta").value;
     console.log("Company Beta: "+cbeta);
 
+    var mktret = document.getElementById("mktret").value;
+    console.log("Market Return: "+mktret);
+
+
     var margR = document.getElementById("margR").value;
     console.log("margR: "+margR);
 
     var cashEQDCF = document.getElementById("cashEQDCF").value;
     console.log("cashEQDCF: "+cashEQDCF);
 
-    var debtDCF = document.getElementById("debtDCF").value;
-    console.log("debtDCF: "+debtDCF);
+//    var debtDCF = document.getElementById("debtDCF").value;
+//    console.log("debtDCF: "+debtDCF);
 
     var request={
         "growR":growR,
-        "iefy":iefy,
+//        "iefy":iefy,
         "itefy":itefy,
         "ibtfy":ibtfy,
         "rfr":rfr,
         "cbeta":cbeta,
+        "mktret":mktret,
         "margR":margR,
         "cashEQDCF":cashEQDCF,
-        "debtDCF":debtDCF
+//        "debtDCF":debtDCF
     };
 
     var requestBody = generateJsonString(request);

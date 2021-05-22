@@ -103,12 +103,13 @@ public class StockAnalysisService {
             logger.info("==========================EconomicDCFValuation==================================");
             Map<String,String> map = new HashMap<>();
             Gson gson = new Gson();
+            logger.info("request body: "+requestBody);
             map = gson.fromJson(requestBody, map.getClass());
 
             double perceptualGrowthRate = Double.parseDouble(map.get("growR"));
             analyzedInfoDto.getEconomicGrowthDCFDto().setPerpertualGrowthRate(perceptualGrowthRate);
-            double iefy = Double.parseDouble(map.get("iefy"));
-            analyzedInfoDto.getEconomicGrowthDCFDto().setIefy(iefy);
+//            double iefy = Double.parseDouble(map.get("iefy"));
+//            analyzedInfoDto.getEconomicGrowthDCFDto().setIefy(iefy);
 
             double itefy = Double.parseDouble(map.get("itefy"));
             analyzedInfoDto.getEconomicGrowthDCFDto().setItefy(itefy);
@@ -122,14 +123,21 @@ public class StockAnalysisService {
             double cbeta = Double.parseDouble(map.get("cbeta"));
             analyzedInfoDto.getEconomicGrowthDCFDto().setCbeta(cbeta);
 
+            double mktret = Double.parseDouble(map.get("mktret"));
+            analyzedInfoDto.getEconomicGrowthDCFDto().setMktret(mktret);
+
             double cashEQDCF = Double.parseDouble(map.get("cashEQDCF"));
             analyzedInfoDto.getEconomicGrowthDCFDto().setLasFYCashEquivalent(cashEQDCF);
-            double debt = Double.parseDouble(map.get("debtDCF"));
-            analyzedInfoDto.getEconomicGrowthDCFDto().setLastFYDebt(debt);
+//            double debt = Double.parseDouble(map.get("debtDCF"));
+//            analyzedInfoDto.getEconomicGrowthDCFDto().setLastFYDebt(debt);
             double marginOfSafty = Double.parseDouble(map.get("margR"));
             analyzedInfoDto.getEconomicGrowthDCFDto().setMarginOfSafty(marginOfSafty);
-
-            EconomicDCFValuation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,10);
+            try {
+                EconomicDCFValuation.getInstance().evaluate(fundamentalInfoDto, analyzedInfoDto, 10);
+            }catch (Exception e){
+                logger.error(e);
+            }
+            EPSMultiplierValuation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,5);
             return analyzedInfoDto.getEconomicGrowthDCFDto();
         }catch(Exception e){
             logger.error("Unable to evaluate ",e);

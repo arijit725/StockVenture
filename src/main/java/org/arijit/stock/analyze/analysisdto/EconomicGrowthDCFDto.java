@@ -22,6 +22,8 @@ public class EconomicGrowthDCFDto {
     private double rfr;
     private double cbeta;
 
+    private double mktret;
+
     /*Terminal Value*/
     private double tv;
 
@@ -138,6 +140,14 @@ public class EconomicGrowthDCFDto {
         this.rfr = rfr;
     }
 
+    public double getMktret() {
+        return mktret;
+    }
+
+    public void setMktret(double mktret) {
+        this.mktret = mktret;
+    }
+
     public void setCbeta(double cbeta) {
         this.cbeta = cbeta;
     }
@@ -185,6 +195,8 @@ public class EconomicGrowthDCFDto {
     public double getCbeta() {
         return cbeta;
     }
+
+
         public double getDiscountRate() {
         return discountRate;
     }

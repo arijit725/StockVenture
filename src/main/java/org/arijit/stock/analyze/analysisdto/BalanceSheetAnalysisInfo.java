@@ -41,7 +41,7 @@ public class BalanceSheetAnalysisInfo {
         });
 
         this.analysisStatement = new ArrayList<>();
-        balancesheetGrowthsDtoMap = new HashMap<>();
+        balancesheetGrowthsDtoMap = new LinkedHashMap<>();
     }
 
     public String getBalanceSheetScore() {

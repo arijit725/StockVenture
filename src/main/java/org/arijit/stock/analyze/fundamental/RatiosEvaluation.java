@@ -4,10 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.analysisdto.RatioAnalysisInfo;
-import org.arijit.stock.analyze.dto.CompanyDto;
-import org.arijit.stock.analyze.dto.FundamentalInfoDto;
-import org.arijit.stock.analyze.dto.RatiosDto;
-import org.arijit.stock.analyze.dto.YearlyReportDto;
+import org.arijit.stock.analyze.dto.*;
+import org.arijit.stock.analyze.enums.AnalysisEnums;
 import org.arijit.stock.analyze.enums.ValuationEnums;
 import org.arijit.stock.analyze.util.StockUtil;
 
@@ -36,13 +34,99 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
         List<RatiosDto> ratioDtoList  = fundamentalInfoDto.getRatiosDtoList();
         if(ratioDtoList.isEmpty()||ratioDtoList.size()<year)
             throw new Exception("Number of year exceeds RatioDtoList list");
+        analyzedInfoDto.getRatioAnalysisInfo().clear();
         calcForwardPE(fundamentalInfoDto,analyzedInfoDto,year);
         calcGrowth(analyzedInfoDto.getRatioAnalysisInfo(),ratioDtoList);
         calcPEGRatio(fundamentalInfoDto,analyzedInfoDto,year);
         evaluateMultiBagger(analyzedInfoDto,ratioDtoList);
         evaluatePE(analyzedInfoDto,fundamentalInfoDto.getCompanyDto());
-
+        generateAnalysisStatement(fundamentalInfoDto, analyzedInfoDto, year);
         evaluated = true;
+    }
+
+
+    private void generateAnalysisStatement(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto,int years){
+        List<RatiosDto>  ratiosDtoList = fundamentalInfoDto.getRatiosDtoList().stream().limit(years).collect(Collectors.toList());
+        RatiosDto currentRatiosDto = null;
+
+        int roeReduceCount = 0;
+        int roeIncreaseCount = 0;
+
+        int pbReduceCount = 0;
+        int pbIncreaseCount = 0;
+
+        int debtToEquityReduceCount = 0;
+        int debtToEquityIncreaseCount = 0;
+
+        Iterator<RatiosDto> it = ratiosDtoList.iterator();
+        while(it.hasNext()){
+            if(currentRatiosDto==null){
+                currentRatiosDto = it.next();
+            }
+            else{
+                RatiosDto lastRatiosDto = it.next();
+
+                if(currentRatiosDto.getRoe()<lastRatiosDto.getRoe()){
+                    roeReduceCount++;
+                }
+                else if(currentRatiosDto.getRoe()>lastRatiosDto.getRoe()){
+                    roeIncreaseCount++;
+                }
+
+                if(currentRatiosDto.getPbRatio()<lastRatiosDto.getPbRatio()){
+                    pbReduceCount++;
+                }
+                else if(currentRatiosDto.getPbRatio()>lastRatiosDto.getPbRatio()){
+                    pbIncreaseCount++;
+                }
+
+                if(currentRatiosDto.getDebtToEquityRatio()<lastRatiosDto.getDebtToEquityRatio()){
+                    debtToEquityReduceCount++;
+                }
+                else if(currentRatiosDto.getDebtToEquityRatio()>lastRatiosDto.getDebtToEquityRatio()){
+                    debtToEquityIncreaseCount++;
+                }
+
+                currentRatiosDto = lastRatiosDto;
+            }
+        }
+        int continuousCOunt = years-1;
+
+        if(pbIncreaseCount==continuousCOunt){
+            String statement = "PB ratio is continuously increasing over years. This is a very BAD sign";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_BAD);
+        }
+        else if(pbReduceCount==continuousCOunt){
+            String statement = "PB ratio is continuously decreasing over years. This is a very GOOD sign";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_GOOD);
+        }
+
+        if(roeReduceCount==continuousCOunt){
+            String statement = "ROE is continuously decreasing over years. This is a very BAD sign";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_BAD);
+        }
+        else if(roeIncreaseCount==continuousCOunt){
+            String statement = "ROE is continuously increasing over years. This is a very GOOD sign.";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_GOOD);
+        }
+//        else{
+//            String statement = "ROE trends is not conclusive";
+//            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement,AnalysisEnums.ANALYZED_NEUTRAL);
+//        }
+
+
+        if(debtToEquityReduceCount==continuousCOunt){
+            String statement = "Debt-To-Equity ratio is continuously decreasing over years. This is a very GOOD sign";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_GOOD);
+        }
+        else if(debtToEquityIncreaseCount==continuousCOunt){
+            String statement = "Debt-To-Equity ratio is continuously increasing over years. This is a very BAD sign.";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_BAD);
+        }
+        else if(debtToEquityIncreaseCount==0 && debtToEquityReduceCount==0 && ratiosDtoList.get(0).getDebtToEquityRatio()==0){
+            String statement = "Debt-To-Equity ratio is consistently 0. This is a very GOOD sign.";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_GOOD);
+        }
     }
 
 
@@ -175,7 +259,6 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
         analyzedInfoDto.getRatioAnalysisInfo().setPEGValuation(pegValuation);
         logger.info("PEG Valuation: "+analyzedInfoDto.getRatioAnalysisInfo().getPegRatioAnalysis());
     }
-
 
     private void calcForwardPE(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year){
 //        double currentSharePrice,FundamentalInfoDto fundamentalInfoDto,int year
