@@ -14,6 +14,7 @@ public class AnalyzedInfoDto {
     private final CashFlowAnalysisInfo cashFlowAnalysisInfo;
     private final MisleneousAnalysisInfo misleneousAnalysisInfo;
     private final EconomicGrowthDCFDto economicGrowthDCFDto;
+    private final EVEBITDAValuationModelDto evebitdaValuationModelDto;
     private AnalyzedInfoDto(){
         balanceSheetAnalysisInfo = new BalanceSheetAnalysisInfo();
         yearlyReportAnalysisInfo = new YearlyReportAnalysisInfo();
@@ -24,6 +25,7 @@ public class AnalyzedInfoDto {
         cashFlowAnalysisInfo = new CashFlowAnalysisInfo();
         misleneousAnalysisInfo = new MisleneousAnalysisInfo();
         economicGrowthDCFDto = new EconomicGrowthDCFDto();
+        evebitdaValuationModelDto = new EVEBITDAValuationModelDto();
     }
 
     public static AnalyzedInfoDto create(){
@@ -64,6 +66,10 @@ public class AnalyzedInfoDto {
 
     public EconomicGrowthDCFDto getEconomicGrowthDCFDto() {
         return economicGrowthDCFDto;
+    }
+
+    public EVEBITDAValuationModelDto getEvebitdaValuationModelDto() {
+        return evebitdaValuationModelDto;
     }
 
     @Override

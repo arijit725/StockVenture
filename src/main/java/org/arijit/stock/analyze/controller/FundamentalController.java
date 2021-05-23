@@ -732,8 +732,6 @@ public class FundamentalController {
         ResponseEntity<String> res = null;
         try {
             switch (valuationType){
-                case "evebitda":
-                    break;
                 case "quarterlyIntrinsic":
                         String targetPrice = stockAnalysisService.quarterlyIntrinsicValuation(stockID,requestBody);
                         res = ResponseEntity.ok(targetPrice);
@@ -743,6 +741,8 @@ public class FundamentalController {
                     String economicGrowthDCFDtoStr = StockUtil.generateJsonString(economicGrowthDCFDto);
                     res = ResponseEntity.ok(economicGrowthDCFDtoStr);
                     break;
+                case "evebitda":
+
                 default:
                     logger.error("Valuation model not found for type: "+valuationType);
                     res = ResponseEntity.notFound().build();
@@ -763,6 +763,9 @@ public class FundamentalController {
         try {
             switch (valuationType) {
                 case "evebitda":
+                    EVEBITDAValuationModelDto evebitdaValuationModelDto = stockAnalysisService.getEVEbitdaValuation(stockID,5);
+                    String evebitdaValuationModelDtoStr = StockUtil.generateJsonString(evebitdaValuationModelDto);
+                    res = ResponseEntity.ok(evebitdaValuationModelDtoStr);
                     break;
                 case "quarterlyIntrinsic":
                     String targetPrice = stockAnalysisService.getQuarterlyIntrinsicValuation(stockID);
@@ -790,8 +793,37 @@ public class FundamentalController {
         return Mono.just(res);
     }
 
+    @GetMapping(value = "/getStockValuation/{stockid}/{type}/{year}")
+    public Mono<ResponseEntity> getValuationWithYear(@PathVariable("stockid") String stockID, @PathVariable("type") String valuationType, @PathVariable("year") int year, ServerWebExchange webExchange)throws IOException {
+        logger.info(" Request for: stockID: "+stockID+" type: "+valuationType);
+
+        ResponseEntity<String> res = null;
+        try {
+            switch (valuationType) {
+                case "evebitda":
+                    EVEBITDAValuationModelDto evebitdaValuationModelDto = stockAnalysisService.getEVEbitdaValuation(stockID,year);
+                    String evebitdaValuationModelDtoStr = StockUtil.generateJsonString(evebitdaValuationModelDto);
+                    res = ResponseEntity.ok(evebitdaValuationModelDtoStr);
+                    break;
+                default:
+                    logger.error("Valuation model not found for type: " + valuationType);
+                    res = ResponseEntity.notFound().build();
+            }
+        }
+        catch (NullPointerException e){
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.notFound().build();
+        }
+        catch (Exception e) {
+            logger.error("Unable to analyze stock: ",e);
+            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Mono.just(res);
+    }
+
     @GetMapping(value = "/analysis/{stockid}/{type}/{year}")
-    public Mono<ResponseEntity> getValuation(@PathVariable("stockid") String stockID, @PathVariable("type") String type, @PathVariable("year") int year, ServerWebExchange webExchange)throws IOException {
+    public Mono<ResponseEntity> getAnalysis(@PathVariable("stockid") String stockID, @PathVariable("type") String type, @PathVariable("year") int year, ServerWebExchange webExchange)throws IOException {
         logger.info(" Request for: stockID: "+stockID+" type: "+type);
 
         ResponseEntity<String> res = null;

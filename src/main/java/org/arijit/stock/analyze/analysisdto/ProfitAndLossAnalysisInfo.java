@@ -1,11 +1,11 @@
 package org.arijit.stock.analyze.analysisdto;
 
+import org.arijit.stock.analyze.enums.AnalysisEnums;
 import org.arijit.stock.analyze.util.DateUtil;
+import org.arijit.stock.analyze.util.StockUtil;
 
 import java.text.ParseException;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class ProfitAndLossAnalysisInfo {
 
@@ -22,6 +22,9 @@ public class ProfitAndLossAnalysisInfo {
 
     private Map<String,String> netProfitVsSalesRatio;
 
+    private Map<String, HashMap<String,String>> growthsDtoMap;
+    private List<String> analysisStatement;
+
     public ProfitAndLossAnalysisInfo(){
         this.netProfitVsSalesRatio = new TreeMap<>(new Comparator<String>() {
             @Override
@@ -36,6 +39,9 @@ public class ProfitAndLossAnalysisInfo {
                 return 0;
             }
         });
+
+        growthsDtoMap = new HashMap<>();
+        analysisStatement = new ArrayList<>();
     }
 
     public Map<String, String> getNetProfitVsSalesRatio() {
@@ -121,4 +127,21 @@ public class ProfitAndLossAnalysisInfo {
     public String getNetSalesScore() {
         return netSalesScore;
     }
+
+    public void addGrowths(String date, String attribute, String value){
+        if(!growthsDtoMap.containsKey(date)){
+            growthsDtoMap.put(date,new HashMap<>());
+        }
+        growthsDtoMap.get(date).put(attribute,value);
+    }
+
+    public void clearAnalysisStatement(){
+        this.analysisStatement.clear();
+    }
+
+    public void addAnalysisStatement(String statement, AnalysisEnums analysisEnums){
+        String stmt = StockUtil.createAnalysisStatement(statement,analysisEnums);
+        this.analysisStatement.add(stmt);
+    }
+
 }

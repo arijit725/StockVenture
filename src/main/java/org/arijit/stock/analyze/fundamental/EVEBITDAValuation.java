@@ -34,10 +34,11 @@ public class EVEBITDAValuation implements IFundamentalEvaluation{
     public void evaluate(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year) throws Exception {
         double debtForCurrentFY = fundamentalInfoDto.getBalanceSheetDtoList().get(0).getDebt();
         double equityShareCapital = fundamentalInfoDto.getBalanceSheetDtoList().get(0).getEquityShareCapital();
-        calculateEVEBITDAValuation(fundamentalInfoDto.getRatiosDtoList(),debtForCurrentFY,equityShareCapital, fundamentalInfoDto.getCompanyDto().getFaceValue(),analyzedInfoDto,year);
+        double curentSharePrice = fundamentalInfoDto.getCompanyDto().getCurrentSharePrice();
+        calculateEVEBITDAValuation(curentSharePrice,fundamentalInfoDto.getRatiosDtoList(),debtForCurrentFY,equityShareCapital, fundamentalInfoDto.getCompanyDto().getFaceValue(),analyzedInfoDto,year);
     }
 
-    private void calculateEVEBITDAValuation(List<RatiosDto> ratiosDtoList, double debtForCurrentFY, double equityShareCapital, double faceValue, AnalyzedInfoDto analyzedInfoDto,int year) throws Exception {
+    private void calculateEVEBITDAValuation(double currentSharePrice, List<RatiosDto> ratiosDtoList, double debtForCurrentFY, double equityShareCapital, double faceValue, AnalyzedInfoDto analyzedInfoDto,int year) throws Exception {
         if(ratiosDtoList==null || ratiosDtoList.isEmpty())
             throw new Exception("RatioDtoList is empty. No ratio present");
         if(ratiosDtoList.size()<year)
@@ -58,6 +59,7 @@ public class EVEBITDAValuation implements IFundamentalEvaluation{
         double endingYearEV = endingYearDto.getEv();
         double forcastedEV = ((endingYearEV/endingYearEbitda)*expectedEBITDA)-debtForCurrentFY;
         logger.info("Forcasted EV: "+forcastedEV);
+
         //https://www.sptulsian.com/f/p/what-does-equity-share-capital-mean
         double outstandingShare = equityShareCapital/faceValue;
         double targetPrice = forcastedEV/outstandingShare;
@@ -66,8 +68,23 @@ public class EVEBITDAValuation implements IFundamentalEvaluation{
         logger.info("EV/EBDIT valuation model outcome: targetPrice: "+Math.ceil(targetPrice)+" EntryPrice: "+Math.ceil(entryPrice));
         EVEBITDAValuationModelDto evebitdaValuationModelDto = new EVEBITDAValuationModelDto();
         int precision = 2;
-        evebitdaValuationModelDto.setEntryPrice(StockUtil.convertDoubleToPrecision(entryPrice,precision));
+        evebitdaValuationModelDto.setForcastedEV(StockUtil.convertDoubleToPrecision(forcastedEV,precision));
+        evebitdaValuationModelDto.setExpectedEBITDA(StockUtil.convertDoubleToPrecision(expectedEBITDA,precision));
         evebitdaValuationModelDto.setTargetPrice(StockUtil.convertDoubleToPrecision(targetPrice,precision));
+
+        double marginOfSafty = 20;
+        double targetPriceAfterMarginOfSafty = targetPrice-(targetPrice*marginOfSafty/100);
+        evebitdaValuationModelDto.setTargetPriceAfterMarginOfSafty(StockUtil.convertDoubleToPrecision(targetPriceAfterMarginOfSafty,precision));
+
+        double upside = (targetPriceAfterMarginOfSafty-currentSharePrice)/currentSharePrice*100;
+        evebitdaValuationModelDto.setUpside(StockUtil.convertDoubleToPrecision(upside,precision));
+
+        analyzedInfoDto.getEvebitdaValuationModelDto().setForcastedEV(StockUtil.convertDoubleToPrecision(forcastedEV,precision));
+        analyzedInfoDto.getEvebitdaValuationModelDto().setExpectedEBITDA(StockUtil.convertDoubleToPrecision(expectedEBITDA,precision));
+        analyzedInfoDto.getEvebitdaValuationModelDto().setTargetPrice(StockUtil.convertDoubleToPrecision(targetPrice,precision));
+        analyzedInfoDto.getEvebitdaValuationModelDto().setTargetPriceAfterMarginOfSafty(StockUtil.convertDoubleToPrecision(targetPriceAfterMarginOfSafty,precision));
+        analyzedInfoDto.getEvebitdaValuationModelDto().setUpside(StockUtil.convertDoubleToPrecision(upside,precision));
+
         analyzedInfoDto.getTargetPriceEstimationDto().setEvebitdaValuationModelDto(evebitdaValuationModelDto);
         evaluated = true;
     }

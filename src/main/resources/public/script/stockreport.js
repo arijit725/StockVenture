@@ -50,6 +50,8 @@ function onReportLoad(){
 //    ratiosAnalysis(5);
 //    console.log("onReportLoad triggered: url: "+generateReportUrl);
 //    GetRawBookContent(generateReportUrl);
+
+    showEVEbitdaValue(5);
     targetPriceValuation(5);
 
 }
@@ -190,21 +192,6 @@ function balancesheetTable(headerList, balancesheetFY){
 //    createTable("balancesheet-tbl",tableID,headerList,datapoints,balancesheetFY);
     createTableWithToolTips("balancesheet-tbl",tableID,headerList,datapoints,balancesheetFY);
 }
-
-//function balancesheetTable(years){
-//     var balancesheetFY = getBalancesheetData(years);
-//    console.log("creaing Balancesheet table: ");
-//    var datapoints = balancesheetDataPoints();
-////    var headerList =createHeaders(years);
-//    var headerList = createHeaderFromResponse()
-//    console.log("Generated Headers: "+headerList);
-//    var tableID="bltbl";
-//    var tableEle = document.getElementById(tableID);
-//    if(tableEle!=null){
-//            tableEle.remove();
-//        }
-//    createTable("balancesheet-tbl",tableID,headerList,datapoints,balancesheetFY);
-//}
 
 
 function getBalancesheetData(years){
@@ -596,89 +583,34 @@ function profitAndLossAnalysis(years){
     var divID = "profitAndLoss_analysis_div";
     var tableID = "profitAndLoss-analysis-tbl";
 
-    var ele = document.getElementById(tableID);
-    if(ele!=null){
-        ele.remove();
-    }
+    showPLGrowthRate(plAnal);
 
-    var table = document.createElement("TABLE");
-    table.setAttribute('id', tableID);
-    var row0 = table.insertRow();
+    showAnalysisStatement(divID,plAnal);
 
-    createToolTip(row0,profitAndLossTips());
-
-    var row1 = table.insertRow();
-    var grossSellChangeMargin = 5;
-    var cell1 = document.createElement("TD");
-    cell1.innerHTML = "Growth in Net Sales Percentage: "+ plAnal.netSalesGrowthPercentage;
-    if(plAnal.netSalesGrowthPercentage>grossSellChangeMargin){
-        cell1.setAttribute("class", "analyzedgood");
-    }
-    else if(plAnal.netSalesGrowthPercentage<0){
-        cell1.setAttribute("class", "analyzedbad");
-    }
-    row1.appendChild(cell1);
-
-    var row2 = table.insertRow();
-    var grossincidentmargin = 5;
-    var cell2 = document.createElement("TD");
-    cell2.innerHTML = "Net Sales Growth Continuous?: "+ plAnal.isSalesGrowthContinuous;
-    if(plAnal.isSalesGrowthContinuous){
-        cell2.setAttribute("class", "analyzedgood");
-    }
-
-    row2.appendChild(cell2);
-
-    var row3 = table.insertRow();
-    var grossRawMaterialChangeMargin = 5;
-    var cell3 = document.createElement("TD");
-    cell3.innerHTML = "Change Percentage in Raw Material Consumption: "+ plAnal.rawMaterialGrowthPercentage;
-    if(plAnal.rawMaterialGrowthPercentage>grossRawMaterialChangeMargin){
-        cell3.setAttribute("class", "analyzedgood");
-    }
-    row3.appendChild(cell3);
-
-
-    var row4 = table.insertRow();
-    var grossPBITChangeMargin = 1;
-    var cell4 = document.createElement("TD");
-    cell4.innerHTML = "Growth in PBIt: "+ plAnal.PBITGrowthPercentage;
-    if(plAnal.PBITGrowthPercentage>grossPBITChangeMargin){
-        console.log("Setting className: analyzedgood");
-        cell4.setAttribute("class", "analyzedbad");
-    }
-    row4.appendChild(cell4);
-
-
-    var row5 = table.insertRow();
-    var grossInterestChangeMargin = 0;
-    var cell5 = document.createElement("TD");
-    cell5.innerHTML = "Decrease in Debt Interest : "+ plAnal.interestDecreasePercentage;
-    if(plAnal.interestDecreasePercentage<=grossInterestChangeMargin){
-        cell5.setAttribute("class", "analyzedgood");
-    }
-    else{
-        cell5.setAttribute("class", "analyzedbad");
-    }
-    row5.appendChild(cell5);
-
-      var row6 = table.insertRow();
-        var grossProfitChangeMargin = 1;
-        var cell6 = document.createElement("TD");
-        cell6.innerHTML = "Growth in Net Profit: "+ plAnal.netProfitGrowthPercentage;
-        if(plAnal.netProfitGrowthPercentage>grossProfitChangeMargin){
-            console.log("Setting className: analyzedbad");
-            cell6.setAttribute("class", "analyzedgood");
-        }
-        else if(plAnal.netProfitGrowthPercentage<0){
-            cell6.setAttribute("class", "analyzedbad");
-        }
-        row6.appendChild(cell6);
-
-    var dvTable = document.getElementById(divID);
-    dvTable.appendChild(table);
     profitAndLossCalcAnalysis(plAnal);
 }
+
+
+function showPLGrowthRate(plAnal){
+    console.log("Calculating  ProfitAndLoss GrowthRate:");
+    growthsDtoMap = plAnal.growthsDtoMap;
+    headerList = Object.keys(growthsDtoMap);
+//    console.log("Fetched ratioGrowthsDtoMap: ");
+    console.log(growthsDtoMap);
+    var dataPoints = plDataPoints();
+    console.log("showGrowthRate datapoints: "+dataPoints);
+    console.log("headerList:" +headerList );
+    for(var i=0;i<dataPoints.length;i++){
+        //we can not calculate growth for the very first year. .
+        for(var j=0;j<headerList.length;j++){
+                   var cellid = dataPoints[i][1]+"-"+headerList[j];
+//                   console.log(cellid);
+                   var growthMap = growthsDtoMap[headerList[j]];
+//                   console.log("cellid: "+cellid+" growthMap: "+growthMap );
+                   createGrowthLabel(cellid, growthMap[dataPoints[i][1]]);
+            }
+    }
+   }
 
 function profitAndLossCalcAnalysis(plAnal){
     console.log("netProfitVsSalesRatio: "+plAnal.netProfitVsSalesRatio);
@@ -1620,10 +1552,10 @@ function showEconomicDCFProjection(jsonResonse){
 
         var tmpdatapoints = new Array();
         tmpdatapoints.push(["Discount Rate (WACC)","emdcfdiscountrate","The weighted average cost of capital (WACC) is a financial metric that shows what the total cost of capital (the interest rate paid on funds used for financing operations) is for a firm."]);
-        tmpdatapoints.push(["Target Price","emdcftargetPrice"," Target Price after calculating with DCF."]);
-        tmpdatapoints.push(["Target Price After Margin of Safty","emdcfpriceAfterMarginOfSafty","Considering target price after provided margin of safty"]);
+        tmpdatapoints.push(["Intrinsic Value","emdcftargetPrice"," True value of company based on free cash flow. For good investment Projected Intrinsic value should be higher than current Market value."]);
+        tmpdatapoints.push(["Intrinsic Value After Margin of Safty","emdcfpriceAfterMarginOfSafty","Considering target price after provided margin of safty"]);
         tmpdatapoints.push(["Upside","emdcfupside","upside = estimatedPricePerShare/currentSharePrice. Consider to invest for DCF calculation years if upside>discount rate"]);
-        tmpdatapoints.push(["Valuation","emdcfdecision","Valuation for buy or no buy for DCF calculation years"]);
+        tmpdatapoints.push(["Valuation","emdcfdecision","Valuation for buy or no buy for DCF calculation years. Again Market value runs with sentiment while intrinsic value runs with actual assets and free cashflow of company. If company is not generating cashflow in a stable manner, DCF might not give proper intrinsic valuation."]);
 
        var ele = document.getElementById(tableID);
            if(ele!=null){
@@ -1646,7 +1578,70 @@ function createDCFHeader(nextNYearsFreeCashFlow){
 
     }
 }
+
+/*====================== EV/EBITDA Valuation =========================*/
+
+function createEVEBITDADataPoints(dataJson){
+    var dataJsonList = JSON.parse(dataJson);
+    console.log(dataJsonList);
+    console.log(dataJsonList.forcastedEV+" "+dataJsonList.expectedEBITDA+" "+dataJsonList.targetPrice);
+    var plFY = new Map();
+    var datamap = new Map();
+    datamap['forcastedEV'] = dataJsonList.forcastedEV;
+    datamap['expectedEBITDA'] = dataJsonList.expectedEBITDA;
+    datamap['targetPrice'] = dataJsonList.targetPrice;
+    datamap['targetPriceAfterMarginOfSafty'] = dataJsonList.targetPriceAfterMarginOfSafty;
+    datamap['evebitdaupside'] = dataJsonList.upside;
+    plFY["Value"] = datamap;
+    console.log(datamap);
+    return plFY;
+}
+
+function showEVEBITDAProjection(jsonResonse){
+        console.log("inside showEVEBITDAProjection: ")
+       var parentDiv = document.getElementById("ev_ebitda_div");
+       var tableID = "ev_ebitda_div_tbl";
+       var dataJsonList = createEVEBITDADataPoints(jsonResonse);
+       console.log(dataJsonList);
+       var header = new Array();
+       header.push("EV/EBITDA Model Estimation");
+       header.push("Value");
+
+        var tmpdatapoints = new Array();
+        tmpdatapoints.push(["Expected EBITDA","expectedEBITDA","Expected EBITDA over next 1 year forward"]);
+        tmpdatapoints.push(["Forcasted EV","forcastedEV","Forcasted Enterprise value over next 1 year forward"]);
+        tmpdatapoints.push(["Target Price ","targetPrice","Calculated Target Price"]);
+        tmpdatapoints.push(["Target Price After Margin of Safty","targetPriceAfterMarginOfSafty","Target price after margin of safty"]);
+        tmpdatapoints.push(["Upside","evebitdaupside","Upside"]);
+
+       var ele = document.getElementById(tableID);
+           if(ele!=null){
+               ele.remove();
+           }
+
+       createTableWithToolTips("ev_ebitda_div",tableID,header,tmpdatapoints,dataJsonList);
+       var valrow = document.getElementById("evebitdaupside-Value");
+       var value = valrow.innerHTML;
+       if(value>1)
+           valrow.style.color='green';
+       else
+           valrow.style.color='red';
+
+
+}
+
+function showEVEbitdaValue(years){
+    var url = getStockValuationUrl+'/evebitda/'+years;
+//    var url = targetPriceUrl+'/'+years;
+    var jsonResonse = GetRawBookContent(url);
+
+    console.log("showEVEbitdaValue: response: "+jsonResonse);
+    showEVEBITDAProjection(jsonResonse);
+}
+
 /*====================== Target Price Estimation =========================*/
+
+
 
 
 function targetPriceHeaders(){
@@ -1727,7 +1722,9 @@ function createTargetPriceTable(headers,datapoints,targetPriceEstimation){
 function onTYearSelection(){
     var years = document.getElementById("tyears").value;
    console.log("Years selection : "+years);
-   targetPriceValuation(years);
+//   targetPriceValuation(years);
+    showEVEbitdaValue(years);
+
 }
 
 /*====================== Http Request Utility =========================*/

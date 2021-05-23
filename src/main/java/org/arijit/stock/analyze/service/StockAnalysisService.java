@@ -92,6 +92,17 @@ public class StockAnalysisService {
         return analyzedInfoDto.getTargetPriceEstimationDto().getQuarterlyIntrinsicTargetPrice();
     }
 
+    public EVEBITDAValuationModelDto getEVEbitdaValuation(String stockID, int years) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+        EVEBITDAValuation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,years);
+        return analyzedInfoDto.getEvebitdaValuationModelDto();
+    }
+
     public EconomicGrowthDCFDto economicDCFValuation(String stockID,String requestBody) throws Exception {
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
         if(fundamentalInfoDto==null)

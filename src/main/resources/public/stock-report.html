@@ -237,13 +237,26 @@
         </table>
     </div>
 </div>
+<div class="reivew-header">Valuations</div>
 <div class="instant-review">
-    <div class="reivew-header">Quarterly Intrinsic Valuations</div>
+    <div class="subject-line">Quarterly Intrinsic Valuations</div>
         <table>
             <tr><td><label for="peAvg">Last 3 Months Average PE Ratio:</label></td><td><input type="text" id="peAvg" name="peAvg"></td><td><input type="submit" value="Submit" onclick="requestQtrIntriscStockValuation()"></td></tr>
         </table>
-        <div id="qtInEval">
+        <div id="qtInEval" class="tableholder">
         </div>
+
+    <p class="subject-line">Ev/EBITDA Valuations
+        <label for="tyears" > For Years:</label>
+        <select name="tyears" id="tyears" class="year-selection" onclick="onTYearSelection()">
+            <option value="3">3</option>
+            <option value="5" selected>5</option>
+            <option value="7">7</option>
+        </select>
+    </p>
+    <div id="ev_ebitda_div" class="tableholder"></div>
+
+<!--    <div id="ev_ebitda_div" class="tableholder"></div>-->
     <div class="reivew-header">Economic DCF Valuations</div>
     <table>
         <tr>
@@ -271,35 +284,36 @@
                 </table>
             </td>
             <td>
-                <div id="ecmDcf" class="tableholder">
+                <div id="ecmDcf" class="tableholder"></div>
             </td>
         </tr>
     </table>
 
-
+<!--    <div class="reivew-header">Ev/EBITDA Valuations</div>-->
+<!--    <div id="ev_ebitda_div" class="tableholder"></div>-->
     </div>
 </div>
-<div id="targetPrice" class="targetPrice">
-    <p class="subject-line">Target Price Estimation(1 year forward)
-        <label for="tyears" > Based of previous Years:</label>
-        <select name="tyears" id="tyears" class="year-selection" onclick="onTYearSelection()">
-            <option value="3">3</option>
-            <option value="5" selected>5</option>
-            <option value="7">7</option>
-        </select>
-    </p>
-    <table>
-        <tr><td>
-            <div id="targetprice-tbl-div" class="tableholder">
-                <!-- this part of code is generated from javascript-->
-            </div>
-        </td>
-            <td>
-                <div id="targetprice_choice_div" class="analysisholder">
-                </div>
-            </td>
-           </tr>
-    </table>
-</div>
+<!--<div id="targetPrice" class="targetPrice">-->
+<!--    <p class="subject-line">Target Price Estimation(1 year forward)-->
+<!--        <label for="tyears" > Based of previous Years:</label>-->
+<!--        <select name="tyears" id="tyears" class="year-selection" onclick="onTYearSelection()">-->
+<!--            <option value="3">3</option>-->
+<!--            <option value="5" selected>5</option>-->
+<!--            <option value="7">7</option>-->
+<!--        </select>-->
+<!--    </p>-->
+<!--    <table>-->
+<!--        <tr><td>-->
+<!--            <div id="targetprice-tbl-div" class="tableholder">-->
+<!--                &lt;!&ndash; this part of code is generated from javascript&ndash;&gt;-->
+<!--            </div>-->
+<!--        </td>-->
+<!--            <td>-->
+<!--                <div id="targetprice_choice_div" class="analysisholder">-->
+<!--                </div>-->
+<!--            </td>-->
+<!--           </tr>-->
+<!--    </table>-->
+<!--</div>-->
 </body>
 </html>

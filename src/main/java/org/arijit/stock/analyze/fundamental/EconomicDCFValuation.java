@@ -41,12 +41,22 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
     @Override
     public void evaluate(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year) throws Exception {
         calcWACC(fundamentalInfoDto,analyzedInfoDto);
-        int fcfavgYear = year;
+
         if(year<10)
             throw new Exception("DCF Model Can not be built with out 10 years data;");
+        int fcfavgYear = 10;
         List<CashFlowDto> prevCashFlowList = fundamentalInfoDto.getCashFlowDtoList().stream().limit(year).collect(Collectors.toList());
-        if(prevCashFlowList.size()<10)
-            throw new Exception("DCF Model Can not be built with out 10 years data;");
+        if(prevCashFlowList.size()<10) {
+//            throw new Exception("DCF Model Can not be built with out 10 years data;");
+            if(prevCashFlowList.size()<5){
+                throw new Exception("DCF Model Can not be built with out 5 years data;");
+            }
+            else{
+                fcfavgYear = 5;
+            }
+            logger.info("10 years data is not available, calculating with 5 years data");
+        }
+
 
 
         EconomicGrowthDCFDto dcfDto = analyzedInfoDto.getEconomicGrowthDCFDto();
