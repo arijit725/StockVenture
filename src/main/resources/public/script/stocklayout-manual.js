@@ -76,8 +76,9 @@ function submitCompanyDetails(){
     var ttmeps = document.getElementById("ttmeps").value;
     var years = document.getElementById("years").value;
     var seasonal = document.getElementById("snl").value;
-//    var cars = document.getElementById("cars").value;
-    console.log("CompanyName: "+companyName+" marketCap: "+marketCap+" industry: "+industry+" currentSharePrice: "+currentSharePrice+" industryPE: "+industryPE+" faceValue: "+faceValue+" ttmeps: "+ttmeps+" years: "+years+" seasonal: "+seasonal);
+    var currentpv = document.getElementById("currentpv").value;
+    var cmpBeta = document.getElementById("cmpBeta").value;
+    console.log("CompanyName: "+companyName+" marketCap: "+marketCap+" industry: "+industry+" currentSharePrice: "+currentSharePrice+" industryPE: "+industryPE+" faceValue: "+faceValue+" ttmeps: "+ttmeps+" years: "+years+" seasonal: "+seasonal+" currentpv: "+currentpv+" cmpBeta: "+cmpBeta);
 
 //    localStorage.setItem("companyName", companyName);
     var companyDetails={
@@ -90,6 +91,8 @@ function submitCompanyDetails(){
         "ttmpe":ttmpe,
         "ttmeps":ttmeps,
         "years":years,
+        "currentpv":currentpv,
+        "cmpBeta":cmpBeta,
 //        "cars":cars,
         "seasonal":seasonal
     };
@@ -290,8 +293,9 @@ function submitPofitAndLossDetails(){
 function yearlyReportsDataPoints(){
     var datapoints = new Array();
     datapoints.push(["FY Date","yldate"]);
-    datapoints.push(["Basic EPS","basicEPS"]);
     datapoints.push(["PBIT","pbit"]);
+    datapoints.push(["Basic EPS","basicEPS"]);
+
     return datapoints;
 }
 
@@ -693,6 +697,7 @@ function fragmentLines(datapointid, headers, data){
 //    for(var i=0;i<datapoints.length;i++){
         console.log("fragmentLines: datapoint: "+datapointid+" data: "+data);
         datapoint = datapointid.split('-')[0];
+
         var tmpdata = data.split('\t');
         if(tmpdata.length>1){
             var tmpI = 0;

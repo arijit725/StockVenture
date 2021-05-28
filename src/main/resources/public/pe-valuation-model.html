@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>proofassistance</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="css/stockreport.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script  src="script/pe-valuation-model.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://www.myersdaily.org/joseph/javascript/md5.js"></script>
+
+    <!--    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>-->
+</head>
+
+<body onload="onReportLoad()">
+<div class="header">
+    <label id="companyName"></label> | <label id="industry"></label>
+</div>
+<div id="Company-Details" class="company-details">
+</div>
+<div class="financial-details">
+    <div id="datafeed" class="reivew-header">PE Valuation Model</div>
+    <div><input type="button" value="Generate-Report" class="report-generate" onclick="generateReport()"></div>
+    <div id="yrDiv">
+        <div  class="tableholder">
+        <table>
+            <tr>
+                <td>
+                    <table cellspacing="0" cellpadding="0">
+                        <tr>
+                            <th>DataPoints</th>
+                            <th>Year-1</th>
+                            <th>Year-2</th>
+                            <th>Year-3</th>
+                            <th>Year-4</th>
+                            <th>Year-5</th>
+                            <th>Year-6</th>
+                            <th>Year-7</th>
+                        </tr>
+                        <tr>
+                            <td>FY Date</td>
+                            <td><input type="text" id="yrdate-1" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrdate-2" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrdate-3" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrdate-4" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrdate-5" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrdate-6" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrdate-7" size="7" oninput="splitAndFill(this)"></td>
+                        </tr>
+                        <tr>
+                            <td>Basic EPS</td>
+                            <td><input type="text" id="yrbasiceps-1" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrbasiceps-2" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrbasiceps-3" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrbasiceps-4" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrbasiceps-5" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrbasiceps-6" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="yrbasiceps-7" size="7" oninput="splitAndFill(this)"></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <label for="cmg">Current Market Growth : </label>
+                    <select name="cmg" id="cmg" class="year-selection" onchange="onMarketGrowthSelection()">
+                        <option value="Good" selected>Good</option>
+                        <option value="Average">Average</option>
+                        <option value="Poor">Poor</option>
+                    </select>
+                </td>
+                <td style="vertical-align:top">
+                    <div id="avgHistPE" class="tableholder">
+                        <table id="avgHistPeTable">
+                            <tr>
+                                <th>DataPoints</th>
+                                <th>7 Years</th>
+                                <th>4 Years</th>
+                            </tr>
+                            <tr>
+                                <td>Average Historical PE Ratio</td>
+                                <td id="avgHistPeTable-7yrs">--</td>
+                                <td id="avgHistPeTable-4yrs">--</td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        </div>
+        <table>
+            <tr>
+                <td>
+                    <div id="hisinput" class="tableholder" style="vertical-align:top; overflow: scroll">
+                        <table>
+                            <tr><a href="https://www.moneycontrol.com/stocks/hist_stock_result.php">Find Historical Pricez</a></tr>
+                            <tr><td><label>Insert Historical Data</label></td></tr>
+                            <tr><td><input type="text" id="rawHsit" name="rawHsit" oninput="prepareStockPriceTable()"></td></tr>
+                            <!--                    <tr><td colspan="3"><input type="submit" value="prepare" onclick="prepareStockPriceTable()"></tr>-->
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td style="vertical-align:top">
+
+                    <div id="histD" class="tableholder"></div>
+                </td>
+                <td style="vertical-align:top">
+                    <div id="epsGrowthRate" class="tableholder">
+                        <table id="epsGrowthRateTable">
+                            <tr>
+                                <th>DataPoints</th>
+                                <th>Estimated Growth</th>
+                                <th>Estimated Average Growth</th>
+                                <th>Estimated Poor Growth</th>
+                            </tr>
+                            <tr>
+                                <td>EPS Growth Rate</td>
+                                <td id="estEpsGrowth">--</td>
+                                <td id="estEpsGrowthAvg">--</td>
+                                <td id="estEpsGrowthPoor">--</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div>
+                        <table>
+                            <tr>
+                                <td>
+                                <div id="valuation" class="tableholder">
+
+                                    <table id="valuationTable">
+                                        <tr>
+                                            <th>DataPoints</th>
+                                            <th>Using 7 Years PE Ratio</th>
+                                            <th>Using 4 Years PE Ratio</th>
+                                        </tr>
+<!--                                        <tr>-->
+<!--                                            <td>Estimated EPS</td>-->
+<!--                                            <td id="estEps7yrs">&#45;&#45;</td>-->
+<!--                                            <td id="estEps4yrs">&#45;&#45;</td>-->
+<!--                                        </tr>-->
+                                        <tr>
+                                            <td>Estimated Target Price</td>
+                                            <td id="trgtprice7yrs">--</td>
+                                            <td id="trgtprice4yrs">--</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="align:right">
+                                                Fair Valued Target Price: <label id="fvtrgprice">XXXX</label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="align:right">
+                                                Target Price After Margin of safty <input type="text" id="tpmargin" size="3" oninput="marginofsafty(this)">(%): <label id="mgmtp"></label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="align:right">
+                                                Upside:<label id="upside"></label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td style="vertical-align:top">
+                <div id="finalVal" class="tableholder">
+                    <table>
+                        <tr><th>Estimated EPS</th></tr>
+                        <tr><td id="estEps"></td></tr>
+                    </table>
+                </div>
+
+
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+</body>
+</html>

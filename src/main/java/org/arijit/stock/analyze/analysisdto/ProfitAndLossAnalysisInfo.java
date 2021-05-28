@@ -144,4 +144,21 @@ public class ProfitAndLossAnalysisInfo {
         this.analysisStatement.add(stmt);
     }
 
+    @Override
+    public String toString() {
+        return "ProfitAndLossAnalysisInfo{" +
+                "netSalesGrowthPercentage=" + netSalesGrowthPercentage +
+                ", isSalesGrowthContinuous=" + isSalesGrowthContinuous +
+                ", rawMaterialGrowthPercentage=" + rawMaterialGrowthPercentage +
+                ", PBITGrowthPercentage=" + PBITGrowthPercentage +
+                ", interestDecreasePercentage=" + interestDecreasePercentage +
+                ", netProfitGrowthPercentage=" + netProfitGrowthPercentage +
+                ", profiAndLossScore='" + profiAndLossScore + '\'' +
+                ", netSalesScore='" + netSalesScore + '\'' +
+                ", netProfitScore='" + netProfitScore + '\'' +
+                ", interestScore='" + interestScore + '\'' +
+                ", netProfitVsSalesRatio=" + netProfitVsSalesRatio +
+                ", growthsDtoMap=" + growthsDtoMap +
+                '}';
+    }
 }

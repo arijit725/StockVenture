@@ -166,4 +166,46 @@ public class StockAnalysisService {
 
         return analyzedInfoDto.getEconomicGrowthDCFDto();
     }
+
+
+    public PEValuationModelDto peValuation(String stockID,String requestBody) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+        try{
+            logger.info("==========================PEValuation==================================");
+            Gson gson = new Gson();
+            logger.info("request body: "+requestBody);
+            PEValuationModelDto peValuationModelDto = gson.fromJson(requestBody, PEValuationModelDto.class);
+            logger.info("PEValuationModelDto: "+peValuationModelDto);
+            analyzedInfoDto.getPeValuationModelDto().setStockPriceList(peValuationModelDto.getStockPriceList());
+            analyzedInfoDto.getPeValuationModelDto().setEpsMap(peValuationModelDto.getEpsMap());
+            analyzedInfoDto.getPeValuationModelDto().setMarketGrowth(peValuationModelDto.getMarketGrowth());
+
+            try {
+                PEValuation.getInstance().evaluate(fundamentalInfoDto, analyzedInfoDto, 7);
+            }catch (Exception e){
+                logger.error(e);
+            }
+            return analyzedInfoDto.getPeValuationModelDto();
+        }catch(Exception e){
+            logger.error("Unable to evaluate ",e);
+        }
+
+        return null;
+    }
+
+    public PEValuationModelDto getPEValuation(String stockID) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+
+        return analyzedInfoDto.getPeValuationModelDto();
+    }
 }

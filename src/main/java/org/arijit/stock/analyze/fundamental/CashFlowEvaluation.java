@@ -82,8 +82,11 @@ public class CashFlowEvaluation  implements IFundamentalEvaluation{
                 cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"fixedAssestsPurchased",StockUtil.convertDoubleToPrecision(fixedAssestsPurchasedGrowth, precision));
 
                 try {
-                    double netCashFlowGrowth = (lasCashFlowDto.getNetCashFlow() - prevCashFlowDto.getNetCashFlow()) / prevCashFlowDto.getNetCashFlow();
-                    netCashFlowGrowth = (double) netCashFlowGrowth * 100;
+                    double netCashFlowGrowth = lasCashFlowDto.getNetCashFlow();
+                    if(prevCashFlowDto.getNetCashFlow()>0) {
+                        netCashFlowGrowth = (lasCashFlowDto.getNetCashFlow() - prevCashFlowDto.getNetCashFlow()) / prevCashFlowDto.getNetCashFlow();
+                        netCashFlowGrowth = (double) netCashFlowGrowth * 100;
+                    }
                     logger.info(" current Net Cash Flow : " + lasCashFlowDto.getNetCashFlow() + " prev Net CashFlow: " + prevCashFlowDto.getNetCashFlow() + " growth: " + netCashFlowGrowth);
                     cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(), "netCashFlow", StockUtil.convertDoubleToPrecision(netCashFlowGrowth, precision));
                 }catch(Exception e){

@@ -4,3 +4,5 @@ Net Profit latest quarter  > 1 AND
 Current price <100 AND
 Market Capitalization >1000
 
+
+

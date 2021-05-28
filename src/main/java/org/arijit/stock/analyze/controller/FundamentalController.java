@@ -315,6 +315,7 @@ public class FundamentalController {
             if(profitAndLossAnalysisInfo == null)
                 res = ResponseEntity.noContent().build();
             else{
+                logger.info("profitAndLossAnalysisInfo: "+profitAndLossAnalysisInfo);
                 String jsonString = StockUtil.generateJsonString(profitAndLossAnalysisInfo);
                 logger.info("Response: balanceSheetAnalysisInfo : "+jsonString);
                 res = ResponseEntity.ok().body(jsonString);
@@ -741,8 +742,13 @@ public class FundamentalController {
                     String economicGrowthDCFDtoStr = StockUtil.generateJsonString(economicGrowthDCFDto);
                     res = ResponseEntity.ok(economicGrowthDCFDtoStr);
                     break;
+                case "pevaluation":
+                    PEValuationModelDto peValuationDto = stockAnalysisService.peValuation(stockID,requestBody);
+                    String peValuationDtoStr = StockUtil.generateJsonString(peValuationDto);
+                    res = ResponseEntity.ok(peValuationDtoStr);
+                    break;
                 case "evebitda":
-
+                    break;
                 default:
                     logger.error("Valuation model not found for type: "+valuationType);
                     res = ResponseEntity.notFound().build();
@@ -775,6 +781,11 @@ public class FundamentalController {
                     EconomicGrowthDCFDto economicGrowthDCFDto = stockAnalysisService.getEconomicDCFValuation(stockID);
                     String economicGrowthDCFDtoStr = StockUtil.generateJsonString(economicGrowthDCFDto);
                     res = ResponseEntity.ok(economicGrowthDCFDtoStr);
+                    break;
+                case "pevaluation":
+                    PEValuationModelDto peValuationDto = stockAnalysisService.getPEValuation(stockID);
+                    String peValuationDtoStr = StockUtil.generateJsonString(peValuationDto);
+                    res = ResponseEntity.ok(peValuationDtoStr);
                     break;
                 default:
                     logger.error("Valuation model not found for type: " + valuationType);

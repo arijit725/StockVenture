@@ -31,6 +31,8 @@ var getAnalysisReport = 'http://localhost:8080/fundamental/analysis/'+stockID;
 
 var targetPriceUrl = 'http://localhost:8080/fundamental/targetPrice/'+stockID;
 
+
+var currentSharePrice = null;
 function onReportLoad(){
 
     createCompanyTable();
@@ -52,7 +54,6 @@ function onReportLoad(){
 //    GetRawBookContent(generateReportUrl);
 
     showEVEbitdaValue(5);
-    targetPriceValuation(5);
 
 }
 
@@ -107,6 +108,7 @@ function createCompanyTable(){
     var sharepriceVal = document.createElement("TD");
         sharepriceVal.innerHTML=companyDetails.currentSharePrice;
         row2.appendChild(sharepriceVal);
+        currentSharePrice = companyDetails.currentSharePrice;
 
         var industryPEVal = document.createElement("TD");
         industryPEVal.innerHTML=companyDetails.industryPE;
@@ -439,7 +441,7 @@ function showBLScore(jsonResonse){
     header.push("Value");
 
      var tmpdatapoints = new Array();
-     tmpdatapoints.push(["Equity Share Capital Score","equityCapitalScore"," This score is calcualted based on last N years performance. More recent year more impact, More previous year less impact. Higher value means less Diluton of share"]);
+     tmpdatapoints.push(["Equity Share Capital Score","equityCapitalScore"," This score is calcualted based on last N years performance. More recent year more impact, More previous year less impact. Higher value means less Diluton of share. <br> Over 5 years: Score = 20 -> No dilution over 5 years, value >20 means share capital buy back happened, value<20 means share capital dilution happened."]);
      tmpdatapoints.push(["Reserve Score","reserveScore","This score is calcualted based on last N years performance. More recent year more impact, More previous year less impact. More reserve is a good sign"]);
      tmpdatapoints.push(["Debt Score","debtScore","This score is calcualted based on last N years performance. More recent year more impact, More previous year less impact. Positive value means overall debt is reduced. This is a good sign"]);
      tmpdatapoints.push(["Total Balancesheet Score","balanceSheetScore","This score is calcualted based on last N years performance. "]);
@@ -847,8 +849,8 @@ function createYearlyReportAnalysisDataPoints(dataJson){
     var plFY = new Map();
     var datamap = new Map();
     datamap['estimatedEPSCAGR'] = dataJsonList.estimatedEPSCAGR;
-    datamap['averageEPS'] = dataJsonList.averageEPS;
-
+//    datamap['averageEPS'] = dataJsonList.averageEPS;
+    datamap['avgGrowthEstimatedEPS'] = dataJsonList.avgGrowthEstimatedEPS;
     plFY["Value"] = datamap;
 
     return plFY;
@@ -865,7 +867,8 @@ function yearlyReportEstmation(jsonResonse){
 
      var tmpdatapoints = new Array();
      tmpdatapoints.push(["Estimated EPS (CAGR)","estimatedEPSCAGR"," EPS estimated using CAGR technique."]);
-     tmpdatapoints.push(["Average EPS","averageEPS","Average EPS over period of years"]);
+//     tmpdatapoints.push(["Average EPS","averageEPS","Average EPS over period of years"]);
+    tmpdatapoints.push(["Estimated EPS (AVG growth based)","avgGrowthEstimatedEPS","Estimated EPS based on EPS growth over period of years"]);
 
     var ele = document.getElementById(tableID);
         if(ele!=null){
@@ -1427,9 +1430,9 @@ function cashFlowEstmation(jsonResonse){
 }
 
 function onCFYearSelection(){
-   var years = document.getElementById("qlyears").value;
-   console.log("Quarters selection : "+years);
-    showQuarterlyReportDetails(years);
+   var years = document.getElementById("cfyears").value;
+   console.log("Cashflow year selection : "+years);
+    showCashFlowDetails(years);
 }
 
 /*====================== Quarterly Intrinsic Stock Valuation  =========================*/
@@ -1639,85 +1642,137 @@ function showEVEbitdaValue(years){
     showEVEBITDAProjection(jsonResonse);
 }
 
-/*====================== Target Price Estimation =========================*/
+/*====================== PE Valuation Model =========================*/
 
 
+function peValuationMode(){
+    console.log("peValuationMode action is triggered");
+    window.open("pe-valuation-model.html?stockID="+stockID);
+    window.focus();
 
-
-function targetPriceHeaders(){
-    headers = new Array();
-    headers.push(["Model","model"])
-    headers.push(["Target Price","targetPrice"]);
-    headers.push(["Entry Price","entryPrice"]);
-    return headers;
+    fetchPeValuationEstimation();
 }
-function targetPriceDataPoints(){
-    var datapoints = new Array();
-     datapoints.push(["EV/EBITDA","evebitda"," PE Ratio ToolTips PlaceHolder"]);
-//    datapoints.push(["Price TO Sales","priceTOSell",PBRatioToolTips()]);
-//    datapoints.push(["F-Score","fscore"," PE Ratio ToolTips PlaceHolder"]);
-
-    return datapoints;
-}
-
-
-function targetPriceValuation(years){
-    var url = targetPriceUrl+'/'+years;
-    console.log("Getting data from url: "+url);
-    var jsonResonse = GetRawBookContent(url);
-    console.log("TargetPrice Json res: "+jsonResonse);
-    var targetPriceEstimation = JSON.parse(jsonResonse);
-    createTargetPriceTable(targetPriceHeaders(),targetPriceDataPoints(),targetPriceEstimation);
-
-}
-
-function createTargetPriceTable(headers,datapoints,targetPriceEstimation){
-
-    targetPriceMap = targetPriceEstimation.targetPriceMap;
-    var divID = "targetprice-tbl-div";
-    var tableID = "targetprice-tbl-id";
-
-     var ele = document.getElementById(tableID);
-        if(ele!=null){
-            ele.remove();
+var pevaltm;
+function fetchPeValuationEstimation() {
+        var url = getStockValuationUrl+'/pevaluation';
+        var jsonResonse = GetRawBookContent(url);
+        console.log("showPEValuationFValue: response: "+jsonResonse);
+        var data = JSON.parse(jsonResonse);
+        console.log(" Fetching PE value: "+data);
+        pevaltm = setTimeout(fetchPeValuationEstimation, 5000);
+        if(data.evluated){
+            var ele = document.getElementById("pevaluationestimation");
+            ele.innerHTML = data.fairValuedTargetPrice;
+            document.getElementById("pevaluationestimationrgnsfty").innerHTML =data.fairValuedTargetPrice;
+            clearTimeout(pevaltm);
         }
-
-     var table = document.createElement("TABLE");
-     var rowh = table.insertRow();
-     for(var i=0;i<headers.length;i++){
-        var cellH = document.createElement("TH");
-        cellH.innerHTML=headers[i][0];
-        rowh.appendChild(cellH);
-     }
-
-    for(var i=0;i<datapoints.length;i++){
-        var row = table.insertRow();
-        var cell1 = document.createElement("TD");
-        cell1.innerHTML = datapoints[i][0];
-        row.appendChild(cell1);
-        targetPriceModel = targetPriceMap[datapoints[i][1]].priceMap;
-        console.log(targetPriceModel);
-        for(var j=1;j<headers.length;j++){
-            var cellj = document.createElement("TD");
-            var param = headers[j][1];
-            console.log("Param Name : "+param);
-
-            cellj.innerHTML = targetPriceModel[param];
-            row.appendChild(cellj);
-        }
-         if((i%2)==0){
-                    bgColor = "white";
-                }
-                else{
-                    bgColor="lightgray";
-                }
-        row.style.backgroundColor=bgColor;
-
-    }
-     var div = document.getElementById(divID);
-     div.appendChild(table);
-
 }
+
+function pevaluationMrgnOfSfty(mrgnOfSfty){
+    var targetPrice = document.getElementById("pevaluationestimation").innerHTML;
+    targetPrice = parseFloat(targetPrice);
+    console.log("[PEValuation] mrgnOfSfty : "+mrgnOfSfty+" currentSharePrice: "+currentSharePrice+" targetPrice: "+targetPrice);
+    var targetPriceMrgn = targetPrice*(1-(mrgnOfSfty/100));
+    document.getElementById("pevaluationestimationrgnsfty").innerHTML = targetPriceMrgn;
+    console.log("[PEValuation] targetPriceMrgn: "+targetPriceMrgn);
+    if(targetPriceMrgn>currentSharePrice)
+            document.getElementById("pevaluationestimationrgnsfty").style.color = "green";
+    else
+       document.getElementById("pevaluationestimationrgnsfty").style.color = "red";
+
+    var upside = (targetPriceMrgn-currentSharePrice)/currentSharePrice*100;
+        document.getElementById("pevaluationupside").innerHTML = upside;
+
+    if(upside<0)
+     document.getElementById("pevaluationupside").style.color = "red";
+    else
+      document.getElementById("pevaluationupside").style.color = "green";
+}
+
+
+function marginofsafty(ele){
+        var marginofsafty = ele.value;
+        marginofsafty = parseFloat(marginofsafty);
+        pevaluationMrgnOfSfty(marginofsafty);
+}
+
+
+
+
+//function targetPriceHeaders(){
+//    headers = new Array();
+//    headers.push(["Model","model"])
+//    headers.push(["Target Price","targetPrice"]);
+//    headers.push(["Entry Price","entryPrice"]);
+//    return headers;
+//}
+//function targetPriceDataPoints(){
+//    var datapoints = new Array();
+//     datapoints.push(["EV/EBITDA","evebitda"," PE Ratio ToolTips PlaceHolder"]);
+////    datapoints.push(["Price TO Sales","priceTOSell",PBRatioToolTips()]);
+////    datapoints.push(["F-Score","fscore"," PE Ratio ToolTips PlaceHolder"]);
+//
+//    return datapoints;
+//}
+//
+//
+//function targetPriceValuation(years){
+//    var url = targetPriceUrl+'/'+years;
+//    console.log("Getting data from url: "+url);
+//    var jsonResonse = GetRawBookContent(url);
+//    console.log("TargetPrice Json res: "+jsonResonse);
+//    var targetPriceEstimation = JSON.parse(jsonResonse);
+//    createTargetPriceTable(targetPriceHeaders(),targetPriceDataPoints(),targetPriceEstimation);
+//
+//}
+//
+//function createTargetPriceTable(headers,datapoints,targetPriceEstimation){
+//
+//    targetPriceMap = targetPriceEstimation.targetPriceMap;
+//    var divID = "targetprice-tbl-div";
+//    var tableID = "targetprice-tbl-id";
+//
+//     var ele = document.getElementById(tableID);
+//        if(ele!=null){
+//            ele.remove();
+//        }
+//
+//     var table = document.createElement("TABLE");
+//     var rowh = table.insertRow();
+//     for(var i=0;i<headers.length;i++){
+//        var cellH = document.createElement("TH");
+//        cellH.innerHTML=headers[i][0];
+//        rowh.appendChild(cellH);
+//     }
+//
+//    for(var i=0;i<datapoints.length;i++){
+//        var row = table.insertRow();
+//        var cell1 = document.createElement("TD");
+//        cell1.innerHTML = datapoints[i][0];
+//        row.appendChild(cell1);
+//        targetPriceModel = targetPriceMap[datapoints[i][1]].priceMap;
+//        console.log(targetPriceModel);
+//        for(var j=1;j<headers.length;j++){
+//            var cellj = document.createElement("TD");
+//            var param = headers[j][1];
+//            console.log("Param Name : "+param);
+//
+//            cellj.innerHTML = targetPriceModel[param];
+//            row.appendChild(cellj);
+//        }
+//         if((i%2)==0){
+//                    bgColor = "white";
+//                }
+//                else{
+//                    bgColor="lightgray";
+//                }
+//        row.style.backgroundColor=bgColor;
+//
+//    }
+//     var div = document.getElementById(divID);
+//     div.appendChild(table);
+//
+//}
 
 function onTYearSelection(){
     var years = document.getElementById("tyears").value;

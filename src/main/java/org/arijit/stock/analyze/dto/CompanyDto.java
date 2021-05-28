@@ -14,7 +14,8 @@ public class CompanyDto {
 
     private double ttmpe;
     private double ttmeps;
-
+    private double currentPV;
+    private double companyBeta;
 
     public String getCompanyName() {
         return companyName;
@@ -96,6 +97,22 @@ public class CompanyDto {
         this.ttmpe = ttmpe;
     }
 
+    public double getCurrentPV() {
+        return currentPV;
+    }
+
+    public void setCurrentPV(double currentPV) {
+        this.currentPV = currentPV;
+    }
+
+    public double getCompanyBeta() {
+        return companyBeta;
+    }
+
+    public void setCompanyBeta(double companyBeta) {
+        this.companyBeta = companyBeta;
+    }
+
     @Override
     public String toString() {
         return "CompanyDto{" +
@@ -109,6 +126,7 @@ public class CompanyDto {
                 ", industryPE=" + industryPE +
                 ", peTTM=" + ttmpe +
                 ", epsTTM=" + ttmeps +
+                ",currentPV= "+currentPV+
                 '}';
     }
 }

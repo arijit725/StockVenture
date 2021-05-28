@@ -240,10 +240,11 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
     private void calcPEGRatio(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int years){
         List<YearlyReportDto> yearlyReportDtoList= fundamentalInfoDto.getYearlyReportDtoList().stream().limit(years).collect(Collectors.toList());
         logger.info("yearlyReportDtoList: "+yearlyReportDtoList);
-        double avgEPS = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).sum();
-        if(years>=fundamentalInfoDto.getYearlyReportDtoList().size())
-            years=years-1; // if we are reaching maximum input of yearly report, we can not consider last one as there gorwoth will be 0.
-        avgEPS = (double) avgEPS/(years);
+//        double avgEPS = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).sum();
+//        if(years>=fundamentalInfoDto.getYearlyReportDtoList().size())
+//            years=years-1; // if we are reaching maximum input of yearly report, we can not consider last one as there gorwoth will be 0.
+//        avgEPS = (double) avgEPS/(years);
+        double avgEPS = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).average().getAsDouble();
         double currentTTMPE = fundamentalInfoDto.getCompanyDto().getTtmpe();
         logger.info("Average EPS for last "+years+" years :: "+avgEPS+" Current TTM PE Ratio :"+currentTTMPE);
         double pegRatio = (double) currentTTMPE/avgEPS;

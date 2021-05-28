@@ -292,7 +292,22 @@
 <!--    <div class="reivew-header">Ev/EBITDA Valuations</div>-->
 <!--    <div id="ev_ebitda_div" class="tableholder"></div>-->
     </div>
+<div id="targetPrice" class="tableholder">
+    <table>
+        <tr><th>Valuation Method</th>
+            <th>Target Price</th>
+            <th>Margin of safty<input type="text" id="tpmargin" size="1" oninput="marginofsafty(this)"></th>
+            <th>Upside</th>
+        </tr>
+        <tr>
+            <td><input type="button" value="PE-Valuation Model" onclick="peValuationMode()"></td>
+            <td align="center" id="pevaluationestimation"></td>
+            <td align="center" id="pevaluationestimationrgnsfty"></td>
+            <td align="center" id="pevaluationupside"></td>
+        </tr>
+    </table>
 </div>
+
 <!--<div id="targetPrice" class="targetPrice">-->
 <!--    <p class="subject-line">Target Price Estimation(1 year forward)-->
 <!--        <label for="tyears" > Based of previous Years:</label>-->

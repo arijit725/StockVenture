@@ -217,7 +217,7 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
         if(netSalesAvgGrowth>0)
             analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(netSalesAvgGrowthStatement, AnalysisEnums.ANALYZED_GOOD);
         else
-            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(netSalesAvgGrowthStatement,AnalysisEnums.ANALYZED_BAD);
+            analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(netSalesAvgGrowthStatement,AnalysisEnums.ANALYZED_BAD);
         if(netSalesIncreaseCount==growthYear){
             String stmt = "(+) Net Sales is increasing continuously over years.";
             analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(stmt,AnalysisEnums.ANALYZED_GOOD);
@@ -281,11 +281,15 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
 
         /* Interest Analysis*/
         interestAvgGrowth =(double) interestAvgGrowth/growthYear;
-        String interestAvgGrowthStatement = " Average Growth in Interest Paid : "+StockUtil.convertDoubleToPrecision(netProfitAvgGrowth,2);
-        if(netProfitAvgGrowth<0)
+        String interestAvgGrowthStatement = "Average Growth in Interest Paid : "+StockUtil.convertDoubleToPrecision(interestAvgGrowth,2);
+        if(interestAvgGrowth<=0)
             analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(interestAvgGrowthStatement, AnalysisEnums.ANALYZED_GOOD);
         else
-            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(interestAvgGrowthStatement,AnalysisEnums.ANALYZED_BAD);
+            analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(interestAvgGrowthStatement,AnalysisEnums.ANALYZED_BAD);
+        if(interestAvgGrowth==0 && profitAndLossDtoList.get(0).getInterest()==0){
+            String stmt = "(+) No Inerest Paid by the company for last "+years+" years";
+            analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(stmt,AnalysisEnums.ANALYZED_VERY_GOOD);
+        }
         if(interestDecrease==growthYear){
             String stmt = "(+) Paid Interest Amount is decreasing continuously over years.";
             analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(stmt,AnalysisEnums.ANALYZED_GOOD);
@@ -301,7 +305,7 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
         if(netProfitAvgGrowth>0)
             analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(netProfitAvgGrowthGrowthStatement, AnalysisEnums.ANALYZED_GOOD);
         else
-            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(netProfitAvgGrowthGrowthStatement,AnalysisEnums.ANALYZED_BAD);
+            analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(netProfitAvgGrowthGrowthStatement,AnalysisEnums.ANALYZED_BAD);
         if(netProfitIncreaseCount==growthYear){
             String stmt = "(+) Net Profit is increasing continuously over years.";
             analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(stmt,AnalysisEnums.ANALYZED_GOOD);
@@ -314,12 +318,13 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
 
     private void interestDecreasePercentage(AnalyzedInfoDto analyzedInfoDto,ProfitAndLossDto endingYearProfitAndLossDto, ProfitAndLossDto startingYearProfitAndLossDto){
 
-        double endYearRawMaterial = endingYearProfitAndLossDto.getInterest();
-        double startYearRawMaterial = startingYearProfitAndLossDto.getInterest();
-
-        double changeInPercentage  = (double) (endYearRawMaterial-startYearRawMaterial)/startYearRawMaterial;
-        changeInPercentage = (double) changeInPercentage*100;
-
+        double endYearInterest = endingYearProfitAndLossDto.getInterest();
+        double startYearInterest = startingYearProfitAndLossDto.getInterest();
+        double changeInPercentage = endYearInterest;
+        if(startYearInterest!=0) {
+            changeInPercentage = (double) (endYearInterest - startYearInterest) / startYearInterest;
+            changeInPercentage = (double) changeInPercentage * 100;
+        }
         analyzedInfoDto.getProfitAndLossAnalysisInfo().setInterestDecreasePercentage(changeInPercentage);
     }
 

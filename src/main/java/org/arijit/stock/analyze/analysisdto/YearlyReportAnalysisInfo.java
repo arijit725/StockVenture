@@ -8,6 +8,7 @@ public class YearlyReportAnalysisInfo {
     private double estimatedEPSCAGR;
     private Map<String, String> epsGrowthRate;
     private double averageEPS;
+    private double avgGrowthEstimatedEPS;
 
     public YearlyReportAnalysisInfo(){
         epsGrowthRate = new HashMap<>();
@@ -34,6 +35,14 @@ public class YearlyReportAnalysisInfo {
 
     public double getEstimatedEPSCAGR() {
         return estimatedEPSCAGR;
+    }
+
+    public double getAvgGrowthEstimatedEPS() {
+        return avgGrowthEstimatedEPS;
+    }
+
+    public void setAvgGrowthEstimatedEPS(double avgGrowthEstimatedEPS) {
+        this.avgGrowthEstimatedEPS = avgGrowthEstimatedEPS;
     }
 
     @Override

@@ -142,6 +142,11 @@
     font-weight: 900;
 }
 
+.analyzedverygood{
+    color: #013220;
+    padding: 5px;
+    font-weight: 900;
+}
 .analyzedgood{
     color: green;
     padding: 5px;

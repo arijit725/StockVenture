@@ -1,6 +1,7 @@
 package org.arijit.stock.analyze.enums;
 
 public enum  AnalysisEnums {
+    ANALYZED_VERY_GOOD("analyzedverygood"),
     ANALYZED_GOOD("analyzedgood"),
     ANALYZED_BAD("analyzedbad"),
     ANALYZED_NEUTRAL("analyzedneutral");

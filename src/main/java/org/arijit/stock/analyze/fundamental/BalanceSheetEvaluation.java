@@ -204,6 +204,11 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
         else
             analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(eqAvgGrowthStatement,AnalysisEnums.ANALYZED_BAD);
 
+        if(eqAvgGrowth==0 && balanceSheetDtoList.get(0).getEquityShareCapital()==currentBalanceSheetDto.getEquityShareCapital()){
+            String stmt="(+) Equity share capital has not diluted over "+years+" year";
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(stmt,AnalysisEnums.ANALYZED_VERY_GOOD);
+
+        }
 
         reserveAvgGrowth = (double) reserveAvgGrowth / growthYear;
         String reserveAvgGrowthStatement = " Average Reserve Increase: "+StockUtil.convertDoubleToPrecision(reserveAvgGrowth,2);
@@ -223,6 +228,12 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
         else {
             String debtAvgGrowthStatement = " Average Debt Increased: " + StockUtil.convertDoubleToPrecision(debtAvgGrowth, 2);
             analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(debtAvgGrowthStatement, AnalysisEnums.ANALYZED_BAD);
+        }
+
+        if(debtAvgGrowth == 0 && balanceSheetDtoList.get(0).getDebt()==0){
+            String stmt= "(+) Company is a zero debt company. This is a very positive sign for company growth";
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(stmt, AnalysisEnums.ANALYZED_VERY_GOOD);
+
         }
     }
 

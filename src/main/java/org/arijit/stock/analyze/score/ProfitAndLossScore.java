@@ -85,7 +85,9 @@ public class ProfitAndLossScore implements IScore{
         double score = salesGrowth+profitGrowth+interestGrowth;
 
         if(isNetSalesGrowContinuously(profitAndLossDtoList)){
-            logger.info("Net Sales is growing continuously=> Positive Sign");
+            String stmt = "Net Sales is growing continuously=> Positive Sign";
+            logger.info(stmt);
+
             score = score+years; //this is a definitly plus sign that reserve is growing continuously
         }
 
