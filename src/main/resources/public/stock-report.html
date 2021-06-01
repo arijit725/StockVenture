@@ -307,28 +307,56 @@
         </tr>
     </table>
 </div>
+<div id="stockCounter" class ="tableholder">
+    <p class="subject-line">Stock Split per Bid</p>
+    <table>
+        <tr>
+            <td>InvestMmnt Amount: <td><input type="text" id="invstAmt" size="7"></td>
+            <td>Bid Price 1: <input type="text" id="stockBidPrice1" size="7"></td>
+            <td>Bid Price 2: <input type="text" id="stockBidPrice2" size="7"></td>
+            <td>Bid Price 3: <input type="text" id="stockBidPrice3" size="7"></td>
+        </tr>
+            <td><input type="button" value="split-stock" onclick="stockCounter()"></td>
+    </table>
 
-<!--<div id="targetPrice" class="targetPrice">-->
-<!--    <p class="subject-line">Target Price Estimation(1 year forward)-->
-<!--        <label for="tyears" > Based of previous Years:</label>-->
-<!--        <select name="tyears" id="tyears" class="year-selection" onclick="onTYearSelection()">-->
-<!--            <option value="3">3</option>-->
-<!--            <option value="5" selected>5</option>-->
-<!--            <option value="7">7</option>-->
-<!--        </select>-->
-<!--    </p>-->
-<!--    <table>-->
-<!--        <tr><td>-->
-<!--            <div id="targetprice-tbl-div" class="tableholder">-->
-<!--                &lt;!&ndash; this part of code is generated from javascript&ndash;&gt;-->
-<!--            </div>-->
-<!--        </td>-->
-<!--            <td>-->
-<!--                <div id="targetprice_choice_div" class="analysisholder">-->
-<!--                </div>-->
-<!--            </td>-->
-<!--           </tr>-->
-<!--    </table>-->
-<!--</div>-->
+    <table>
+        <tr>
+            <th>DataPoint</th>
+            <th>Bid Price 1:</th>
+            <th>Bid Price 2:</th>
+            <th>Bid Price 3:</th>
+        </tr>
+        <tr><td>Bid Prices</td>
+            <td><label id="stockBidPriceDis1">XXX</label></td>
+            <td><label id="stockBidPriceDis2">XXX</label></td>
+            <td><label id="stockBidPriceDis3">XXX</label></td>
+        </tr>
+        <tr>
+            <td>Investment per Bid</td>
+            <td><label id="bid1Investemnt">XXX</label></td>
+            <td><label id="bid2Investemnt">XXX</label></td>
+            <td><label id="bid3Investemnt">XXX</label></td>
+        </tr>
+        <tr>
+            <td>Stock Split Per Bid</td>
+            <td><label id="bid1StockCount">XXX</label></td>
+            <td><label id="bid2StockCount">XXX</label></td>
+            <td><label id="bid3StockCount">XXX</label></td>
+        </tr>
+        <tr>
+            <td> Final Investment Amount: <label id="finalInvestment">XXX</label></td>
+            <td> Final Stock Count: <label id="finalStockCount">XXX</label></td>
+        </tr>
+
+        <tr>
+            <td> Original Investment Amount: <label id="origInvestment">XXX</label></td>
+            <td> Original Stock Count: <label id="origStockCount">XXX</label></td>
+        </tr>
+        <tr><td> Investment Cost Reduced: <label id="reducedInvestment">XXX</label></td></tr>
+        <tr>
+            <td id="finalTotal"></td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>

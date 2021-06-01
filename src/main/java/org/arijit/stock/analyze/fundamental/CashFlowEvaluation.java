@@ -76,14 +76,21 @@ public class CashFlowEvaluation  implements IFundamentalEvaluation{
                 double cashFromOperatingActivityGrowth = (lasCashFlowDto.getCashFromOperatingActivity()-prevCashFlowDto.getCashFromOperatingActivity())/prevCashFlowDto.getCashFromOperatingActivity();
                 cashFromOperatingActivityGrowth = (double) cashFromOperatingActivityGrowth*100;
                 cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"cashFromOperatingActivity", StockUtil.convertDoubleToPrecision(cashFromOperatingActivityGrowth, precision));
+                try {
+                    double fixedAssestsPurchasedGrowth = lasCashFlowDto.getFixedAssestsPurchased();
+                    if (prevCashFlowDto.getFixedAssestsPurchased() != 0) {
+                        fixedAssestsPurchasedGrowth = (lasCashFlowDto.getFixedAssestsPurchased() - prevCashFlowDto.getFixedAssestsPurchased()) / prevCashFlowDto.getFixedAssestsPurchased();
+                        fixedAssestsPurchasedGrowth = (double) fixedAssestsPurchasedGrowth * 100;
+                        cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"fixedAssestsPurchased",StockUtil.convertDoubleToPrecision(fixedAssestsPurchasedGrowth, precision));
+                    }
+                }catch(Exception e){
+                    logger.info("Unable to calcalte fixed assets purchase growth",e);
+                }
 
-                double fixedAssestsPurchasedGrowth = (lasCashFlowDto.getFixedAssestsPurchased()-prevCashFlowDto.getFixedAssestsPurchased())/prevCashFlowDto.getFixedAssestsPurchased();
-                fixedAssestsPurchasedGrowth = (double) fixedAssestsPurchasedGrowth*100;
-                cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"fixedAssestsPurchased",StockUtil.convertDoubleToPrecision(fixedAssestsPurchasedGrowth, precision));
 
                 try {
                     double netCashFlowGrowth = lasCashFlowDto.getNetCashFlow();
-                    if(prevCashFlowDto.getNetCashFlow()>0) {
+                    if(prevCashFlowDto.getNetCashFlow()!=0) {
                         netCashFlowGrowth = (lasCashFlowDto.getNetCashFlow() - prevCashFlowDto.getNetCashFlow()) / prevCashFlowDto.getNetCashFlow();
                         netCashFlowGrowth = (double) netCashFlowGrowth * 100;
                     }

@@ -40,6 +40,7 @@ public class StockUtil {
         return generateJsonString(statement);
     }
 
+
     private static class Statement{
         private String statement;
         private String style;

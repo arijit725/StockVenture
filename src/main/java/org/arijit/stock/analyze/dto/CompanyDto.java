@@ -1,5 +1,7 @@
 package org.arijit.stock.analyze.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 public class CompanyDto {
 
     private String companyName;
@@ -14,7 +16,9 @@ public class CompanyDto {
 
     private double ttmpe;
     private double ttmeps;
+    @SerializedName("currentpv")
     private double currentPV;
+    @SerializedName("cmpBeta")
     private double companyBeta;
 
     public String getCompanyName() {

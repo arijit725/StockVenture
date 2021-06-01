@@ -104,6 +104,13 @@ function createCompanyTable(){
       ttmepsEle.innerHTML="TTM EPS";
       row.appendChild(ttmepsEle);
 
+    var currentPV = document.createElement("TH");
+    currentPV.innerHTML="Current PB";
+    row.appendChild(currentPV);
+    var companyBeta = document.createElement("TH");
+    companyBeta.innerHTML="Company Beta";
+    row.appendChild(companyBeta);
+
     var row2 = table.insertRow();
     var sharepriceVal = document.createElement("TD");
         sharepriceVal.innerHTML=companyDetails.currentSharePrice;
@@ -129,6 +136,13 @@ function createCompanyTable(){
          var ttmepsVal = document.createElement("TD");
          ttmepsVal.innerHTML=companyDetails.ttmeps;
           row2.appendChild(ttmepsVal);
+
+          var currentPVVal = document.createElement("TD");
+           currentPVVal.innerHTML=companyDetails.currentPV;
+            row2.appendChild(currentPVVal);
+        var companyBetaVal = document.createElement("TD");
+        companyBetaVal.innerHTML=companyDetails.companyBeta;
+        row2.appendChild(companyBetaVal);
 
      var dvTable = document.getElementById(divID);
      dvTable.appendChild(table);
@@ -1698,81 +1712,99 @@ function marginofsafty(ele){
 
 
 
+/*====================== Stock Counter Model =========================*/
+function stockCounter(){
+    var totalInvestmentAmount = parseFloat(document.getElementById("invstAmt").value);
+    var bidPrice1 = parseFloat(document.getElementById("stockBidPrice1").value);
+    var bidPrice2 = parseFloat(document.getElementById("stockBidPrice2").value);
+    var bidPrice3 = parseFloat(document.getElementById("stockBidPrice3").value);
 
-//function targetPriceHeaders(){
-//    headers = new Array();
-//    headers.push(["Model","model"])
-//    headers.push(["Target Price","targetPrice"]);
-//    headers.push(["Entry Price","entryPrice"]);
-//    return headers;
-//}
-//function targetPriceDataPoints(){
-//    var datapoints = new Array();
-//     datapoints.push(["EV/EBITDA","evebitda"," PE Ratio ToolTips PlaceHolder"]);
-////    datapoints.push(["Price TO Sales","priceTOSell",PBRatioToolTips()]);
-////    datapoints.push(["F-Score","fscore"," PE Ratio ToolTips PlaceHolder"]);
-//
-//    return datapoints;
-//}
-//
-//
-//function targetPriceValuation(years){
-//    var url = targetPriceUrl+'/'+years;
-//    console.log("Getting data from url: "+url);
-//    var jsonResonse = GetRawBookContent(url);
-//    console.log("TargetPrice Json res: "+jsonResonse);
-//    var targetPriceEstimation = JSON.parse(jsonResonse);
-//    createTargetPriceTable(targetPriceHeaders(),targetPriceDataPoints(),targetPriceEstimation);
-//
-//}
-//
-//function createTargetPriceTable(headers,datapoints,targetPriceEstimation){
-//
-//    targetPriceMap = targetPriceEstimation.targetPriceMap;
-//    var divID = "targetprice-tbl-div";
-//    var tableID = "targetprice-tbl-id";
-//
-//     var ele = document.getElementById(tableID);
-//        if(ele!=null){
-//            ele.remove();
-//        }
-//
-//     var table = document.createElement("TABLE");
-//     var rowh = table.insertRow();
-//     for(var i=0;i<headers.length;i++){
-//        var cellH = document.createElement("TH");
-//        cellH.innerHTML=headers[i][0];
-//        rowh.appendChild(cellH);
-//     }
-//
-//    for(var i=0;i<datapoints.length;i++){
-//        var row = table.insertRow();
-//        var cell1 = document.createElement("TD");
-//        cell1.innerHTML = datapoints[i][0];
-//        row.appendChild(cell1);
-//        targetPriceModel = targetPriceMap[datapoints[i][1]].priceMap;
-//        console.log(targetPriceModel);
-//        for(var j=1;j<headers.length;j++){
-//            var cellj = document.createElement("TD");
-//            var param = headers[j][1];
-//            console.log("Param Name : "+param);
-//
-//            cellj.innerHTML = targetPriceModel[param];
-//            row.appendChild(cellj);
-//        }
-//         if((i%2)==0){
-//                    bgColor = "white";
-//                }
-//                else{
-//                    bgColor="lightgray";
-//                }
-//        row.style.backgroundColor=bgColor;
-//
-//    }
-//     var div = document.getElementById(divID);
-//     div.appendChild(table);
-//
-//}
+    var bidList = new Array();
+    bidList.push(bidPrice1);
+    bidList.push(bidPrice2);
+    bidList.push(bidPrice3);
+
+    bidList.sort(function(a, b){
+                   var x =parseFloat(a);
+                   var y = parseFloat(b);
+                   if (y < x) {return -1;}
+                   if (y > x) {return 1;}
+                   return 0;
+                 });
+    console.log(bidList);
+        var highPrice = bidList[0];
+        var middlePrice = bidList[1];
+        var lowPrice = bidList[2];
+
+        var highPriceSplit = .2;
+        var middlePriceSplit = .5;
+        var lowPriceSplit = .3;
+        //keep highprice 0.25% less than price as stock
+        highPrice = highPrice * (1-0.0025);
+
+        document.getElementById("stockBidPriceDis1").innerHTML = highPrice;
+        document.getElementById("stockBidPriceDis2").innerHTML = middlePrice;
+        document.getElementById("stockBidPriceDis3").innerHTML = lowPrice;
+
+         var highInvestmentAmount = totalInvestmentAmount * highPriceSplit;
+         var middleInvestmentAmount = totalInvestmentAmount * middlePriceSplit;
+         var lowInvestmentAmount = totalInvestmentAmount * lowPriceSplit;
+
+
+
+
+         var actualStockCount = parseInt(totalInvestmentAmount / highPrice);
+        console.log(" Only with Original Price Calculated Stock Count:  "+ actualStockCount);
+         console.log(" High Price Investment: "+highInvestmentAmount+" Middle Price Investment: "+middleInvestmentAmount+" Low Price Investment: "+lowInvestmentAmount);
+         var highStockCount = parseInt(highInvestmentAmount/highPrice);
+        var middleStockCount = parseInt(middleInvestmentAmount/middlePrice);
+        var lowStockCount = parseInt(lowInvestmentAmount/middlePrice);
+
+        console.log("High Stock Count: "+highStockCount+" Middle Stock Count: "+middleStockCount+" Low Stock Count: "+lowStockCount +"  Total Stock: "+(highStockCount+lowStockCount+middleStockCount));
+
+
+
+        var finalInvestmentAmount = highPrice * highStockCount + middlePrice*middleStockCount + lowPrice*lowStockCount;
+        console.log(" Final Investment Amount : "+finalInvestmentAmount);
+        var investmentDiff = totalInvestmentAmount - finalInvestmentAmount;
+        console.log("investmetDiff: "+investmentDiff);
+
+        if(investmentDiff>=middlePrice){
+            var count = parseInt(investmentDiff/middlePrice);
+            middleInvestmentAmount = middleInvestmentAmount+ (count * middlePrice);
+            middleStockCount =middleStockCount +count;
+            console.log("Adding extra middle stock: "+middleStockCount+" "+middleInvestmentAmount);
+        }
+        else if(investmentDiff>=lowPrice){
+                         var count = parseInt(investmentDiff/lowPrice);
+                         lowInvestmentAmount = lowInvestmentAmount+ (count * lowPrice);
+                         lowStockCount =lowStockCount +count;
+                         console.log("Adding extra low stock: "+lowStockCount+" "+lowInvestmentAmount);
+                     }
+
+        var adjustedStockCount = (highStockCount+lowStockCount+middleStockCount);
+
+        finalInvestmentAmount = highPrice * highStockCount + middlePrice*middleStockCount + lowPrice*lowStockCount;
+
+        investmentDiff = totalInvestmentAmount - finalInvestmentAmount;
+
+        document.getElementById("bid1Investemnt").innerHTML = highInvestmentAmount;
+        document.getElementById("bid2Investemnt").innerHTML = middleInvestmentAmount;
+        document.getElementById("bid3Investemnt").innerHTML = lowInvestmentAmount;
+
+        document.getElementById("bid1StockCount").innerHTML = highStockCount;
+        document.getElementById("bid2StockCount").innerHTML = middleStockCount;
+        document.getElementById("bid3StockCount").innerHTML = lowStockCount;
+        document.getElementById("origStockCount").innerHTML = actualStockCount;
+        document.getElementById("finalStockCount").innerHTML = adjustedStockCount;
+
+        document.getElementById("finalInvestment").innerHTML = finalInvestmentAmount;
+        document.getElementById("origInvestment").innerHTML = totalInvestmentAmount;
+        document.getElementById("reducedInvestment").innerHTML = investmentDiff;
+
+
+}
+
 
 function onTYearSelection(){
     var years = document.getElementById("tyears").value;
