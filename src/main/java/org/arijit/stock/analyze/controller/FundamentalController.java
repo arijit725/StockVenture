@@ -382,7 +382,7 @@ public class FundamentalController {
         }
         catch (Exception e) {
             logger.error("Unable to analyze stock: ",e);
-            res = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            res = ResponseEntity.status(HttpStatus.OK).build();
         }
 
         return Mono.just(res);

@@ -85,7 +85,7 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
                 /*Net Sales analysis*/
                 try {
                     double netSalesGrowth = 0;
-                    if (prevProfitAndLossDto.getNetSales() > 0) {
+                    if (prevProfitAndLossDto.getNetSales() != 0) {
                         netSalesGrowth = (currentProfitAndLossDto.getNetSales() - prevProfitAndLossDto.getNetSales());
                         netSalesGrowth = (double) netSalesGrowth / prevProfitAndLossDto.getNetSales() * 100;
                         netSalesAvgGrowth = netSalesAvgGrowth + netSalesGrowth;
@@ -106,7 +106,7 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
                 /*Consumption of Raw Material Analysis*/
                 try {
                     double rawMaterialsGrowth = 0;
-                    if (prevProfitAndLossDto.getConsumptionRawMaterial() > 0) {
+                    if (prevProfitAndLossDto.getConsumptionRawMaterial() != 0) {
                         rawMaterialsGrowth = (currentProfitAndLossDto.getConsumptionRawMaterial() - prevProfitAndLossDto.getConsumptionRawMaterial());
                         rawMaterialsGrowth = (double) rawMaterialsGrowth / prevProfitAndLossDto.getConsumptionRawMaterial() * 100;
                         rawMaterialAVGGrowth = rawMaterialAVGGrowth + rawMaterialsGrowth;
@@ -128,7 +128,7 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
                 /*Employee Cost Analysis*/
                 try {
                     double eployeeCostGrowth = 0;
-                    if (prevProfitAndLossDto.getEmployeeCost() > 0) {
+                    if (prevProfitAndLossDto.getEmployeeCost() != 0) {
                         eployeeCostGrowth = (currentProfitAndLossDto.getEmployeeCost() - prevProfitAndLossDto.getEmployeeCost());
                         eployeeCostGrowth = (double) eployeeCostGrowth / prevProfitAndLossDto.getEmployeeCost() * 100;
                         employeeCostAvgGrowth = employeeCostAvgGrowth + eployeeCostGrowth;
@@ -149,7 +149,7 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
                 /*PBIT Analysis*/
                 try {
                     double pbitGrowth = 0;
-                    if (prevProfitAndLossDto.getPbit() > 0) {
+                    if (prevProfitAndLossDto.getPbit() != 0) {
                         pbitGrowth = (currentProfitAndLossDto.getPbit() - prevProfitAndLossDto.getPbit());
                         pbitGrowth = (double) pbitGrowth / prevProfitAndLossDto.getPbit() * 100;
                     }
@@ -163,7 +163,7 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
                 /*Net Profit analysis*/
                 try {
                     double interestGrowth = 0;
-                    if (prevProfitAndLossDto.getInterest() > 0) {
+                    if (prevProfitAndLossDto.getInterest() != 0) {
                         interestGrowth = (currentProfitAndLossDto.getInterest() - prevProfitAndLossDto.getInterest());
                         interestGrowth = (double) interestGrowth / prevProfitAndLossDto.getInterest() * 100;
                         interestAvgGrowth = interestAvgGrowth + interestGrowth;
@@ -184,7 +184,7 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
                 /*Net Profit analysis*/
                 try {
                     double netProfitGrowth = 0;
-                    if (prevProfitAndLossDto.getNetProfit() > 0) {
+                    if (prevProfitAndLossDto.getNetProfit() !=0) {
                         netProfitGrowth = (currentProfitAndLossDto.getNetProfit() - prevProfitAndLossDto.getNetProfit());
                         netProfitGrowth = (double) netProfitGrowth / prevProfitAndLossDto.getNetProfit() * 100;
                         netProfitAvgGrowth = netProfitAvgGrowth + netProfitGrowth;

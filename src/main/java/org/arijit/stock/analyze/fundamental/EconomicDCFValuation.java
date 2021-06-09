@@ -158,9 +158,9 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
         double incomeTaxExpense = analyzedInfoDto.getEconomicGrowthDCFDto().getItefy();
         double incomeBeforeTax = analyzedInfoDto.getEconomicGrowthDCFDto().getIbtfy();
         double riskFreeRate = analyzedInfoDto.getEconomicGrowthDCFDto().getRfr();
-        double companyBeta = analyzedInfoDto.getEconomicGrowthDCFDto().getCbeta();
+//        double companyBeta = analyzedInfoDto.getEconomicGrowthDCFDto().getCbeta();
 
-//        double marketReturn = 10; ///making this constant for time being. This should be any index average return over last 10 years.
+        double companyBeta = fundamentalInfoDto.getCompanyDto().getCompanyBeta();
         double marketReturn = analyzedInfoDto.getEconomicGrowthDCFDto().getMktret();
         double marketCapital = fundamentalInfoDto.getCompanyDto().getMarketCap();
 

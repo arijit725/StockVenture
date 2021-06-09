@@ -44,7 +44,13 @@ function onReportLoad(){
 //    profitAndLossAnalysis(5);
 
     showYearlyReportDetails(5);
-    showQuarterlyReportDetails(10);
+    try {
+      showQuarterlyReportDetails(10);
+    }
+    catch(err) {
+        console.log("Error while analysing quarterly result"+err.message);
+        }
+
 
     showRatioDetails(5);
 
@@ -138,10 +144,10 @@ function createCompanyTable(){
           row2.appendChild(ttmepsVal);
 
           var currentPVVal = document.createElement("TD");
-           currentPVVal.innerHTML=companyDetails.currentPV;
+           currentPVVal.innerHTML=companyDetails.currentpv;
             row2.appendChild(currentPVVal);
         var companyBetaVal = document.createElement("TD");
-        companyBetaVal.innerHTML=companyDetails.companyBeta;
+        companyBetaVal.innerHTML=companyDetails.cmpBeta;
         row2.appendChild(companyBetaVal);
 
      var dvTable = document.getElementById(divID);

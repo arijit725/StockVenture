@@ -41,6 +41,7 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
         evaluateMultiBagger(analyzedInfoDto,ratioDtoList);
         evaluatePE(analyzedInfoDto,fundamentalInfoDto.getCompanyDto());
         generateAnalysisStatement(fundamentalInfoDto, analyzedInfoDto, year);
+        peRatioAnalysis(fundamentalInfoDto,analyzedInfoDto,year);
         evaluated = true;
     }
 
@@ -48,6 +49,8 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
     private void generateAnalysisStatement(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto,int years){
         List<RatiosDto>  ratiosDtoList = fundamentalInfoDto.getRatiosDtoList().stream().limit(years).collect(Collectors.toList());
         RatiosDto currentRatiosDto = null;
+
+        int peIncreaseCount = 0;
 
         int roeReduceCount = 0;
         int roeIncreaseCount = 0;
@@ -65,6 +68,10 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
             }
             else{
                 RatiosDto lastRatiosDto = it.next();
+
+                if(currentRatiosDto.getPeRatio()>lastRatiosDto.getPeRatio()){
+                    peIncreaseCount++;
+                }
 
                 if(currentRatiosDto.getRoe()<lastRatiosDto.getRoe()){
                     roeReduceCount++;
@@ -91,9 +98,12 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
             }
         }
         int continuousCOunt = years-1;
-
+        if(peIncreaseCount == continuousCOunt){
+            String statement = "(+) PE ratio is continuously increasing over years. This Could be potential Growth Company [may be for short term]";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_NEUTRAL);
+        }
         if(pbIncreaseCount==continuousCOunt){
-            String statement = "PB ratio is continuously increasing over years. This is a very BAD sign";
+            String statement = "PB ratio is continuously increasing over years.";
             analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_BAD);
         }
         else if(pbReduceCount==continuousCOunt){
@@ -127,9 +137,79 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
             String statement = "Debt-To-Equity ratio is consistently 0. This is a very GOOD sign.";
             analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_GOOD);
         }
+
+        RatiosDto lastYearRatioDto = fundamentalInfoDto.getRatiosDtoList().get(0);
+
+        if(lastYearRatioDto.getEvEbitda()>=6 && lastYearRatioDto.getEvEbitda()<=10){
+            String statement = "(+) EV/EBITDA is with in range for ideal investment";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement,AnalysisEnums.ANALYZED_GOOD);
+        }
     }
 
+    private void peRatioAnalysis(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int years){
+        List<YearlyReportDto> yearlyReportDtoList = fundamentalInfoDto.getYearlyReportDtoList().stream().limit(years).collect(Collectors.toList());
+        List<RatiosDto> ratiosDtoList = fundamentalInfoDto.getRatiosDtoList().stream().limit(years).collect(Collectors.toList());
 
+        double ratioDiffThreshold = 0.5;
+        double epsDiffThreshold = 0.5;
+
+        int ratioDecreaseCount = 0;
+        int epsDecreaseCount = 0;
+        int ratioIncreaseCount = 0;
+        int epsIncreaseCount = 0;
+
+        Iterator<RatiosDto> rit = ratiosDtoList.iterator();
+        RatiosDto currentRatioDto = null;
+        while(rit.hasNext()){
+            if(currentRatioDto==null)
+                currentRatioDto = rit.next();
+            else{
+                RatiosDto prevRatioDto = rit.next();
+                if((currentRatioDto.getPeRatio()-prevRatioDto.getPeRatio())<=ratioDiffThreshold)
+                    ratioDecreaseCount++;
+                else
+                    ratioIncreaseCount++;
+                currentRatioDto =prevRatioDto;
+            }
+        }
+        Iterator<YearlyReportDto> yit = yearlyReportDtoList.iterator();
+        YearlyReportDto curentYearlyReportDto = null;
+        while(yit.hasNext()){
+            if(curentYearlyReportDto==null)
+                curentYearlyReportDto = yit.next();
+            else{
+                YearlyReportDto prevYearlyReportDto = yit.next();
+                if((curentYearlyReportDto.getBasicEPS()-prevYearlyReportDto.getBasicEPS())<=epsDiffThreshold)
+                    epsDecreaseCount++;
+                else
+                    epsIncreaseCount++;
+                curentYearlyReportDto =prevYearlyReportDto;
+            }
+        }
+        int continuousCOunt = years-1;
+        if(ratioDecreaseCount==continuousCOunt && epsDecreaseCount ==continuousCOunt){
+            String statement = "(-) PE ratio and EPS continuously decreasing together. This is very bad sign.";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_BAD);
+        }
+        else if(ratioDecreaseCount==continuousCOunt && epsIncreaseCount ==continuousCOunt){
+            String statement = "(-) PE ratio decreasing but EPS increasing indicates that stock price is not growing. Check why";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_BAD);
+        }
+        else if(ratioDecreaseCount == continuousCOunt){
+            String statement = "(-) PE ratio decreasing over year continuously.";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_BAD);
+        }
+
+        if(ratioIncreaseCount == continuousCOunt && epsIncreaseCount ==continuousCOunt){
+            String statement = "(+) PE ratio and EPS continuously increasing together. Very Good sign";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_VERY_GOOD);
+        }
+        else if(ratioIncreaseCount ==continuousCOunt && epsDecreaseCount ==continuousCOunt){
+            String statement = "(-) PE ration is increasing but EPS decreasing continuously. Check if stock price is gorwing based on company long term investment plan or due to market sentiment. May be good for swing trading.";
+            analyzedInfoDto.getRatioAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_BAD);
+        }
+
+    }
     private void calcGrowth(RatioAnalysisInfo ratioAnalysisInfo, List<RatiosDto> ratiosDtoList){
         Iterator<RatiosDto> iterator = ratiosDtoList.iterator();
         RatiosDto lastRatiosDto = null;

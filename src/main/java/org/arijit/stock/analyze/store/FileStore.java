@@ -37,7 +37,9 @@ public class FileStore implements IStore {
     public void insertStock(FundamentalInfoDto fundamentalInfoDto) throws IOException {
         String jsonString = StockUtil.generateJsonString(fundamentalInfoDto);
         String industry = fundamentalInfoDto.getCompanyDto().getIndustry().trim().replaceAll(" ","_");
+        industry = industry.replaceAll("&","");
         String companyName = fundamentalInfoDto.getCompanyDto().getCompanyName().replaceAll(" ","_")+".json";
+        companyName = companyName.replaceAll("&","");
         String dir = storePath+File.separator+industry;
         File file = new File(dir);
         if(!file.exists())
