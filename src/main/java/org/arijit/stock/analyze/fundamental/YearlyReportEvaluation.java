@@ -48,7 +48,8 @@ public class YearlyReportEvaluation implements IFundamentalEvaluation {
             logger.error("unable to calculate estimated EPS",e);
         }
 
-        double avgEPS = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).average().getAsDouble();
+        double avgEPS = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).sum();
+        avgEPS = (double) avgEPS/(year-1); // we do not have first year growth
         avgEPS = Double.parseDouble(StockUtil.convertDoubleToPrecision(avgEPS,2));
         analyzedInfoDto.getYearlyReportAnalysisInfo().setAvgGrowthEstimatedEPS(avgEPS);
     }

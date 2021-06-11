@@ -44,7 +44,8 @@ public class PEValuation implements  IFundamentalEvaluation{
     private void calcPriceEstimation(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){
         List<YearlyReportDto> yearlyReportDtoList = fundamentalInfoDto.getYearlyReportDtoList();
         yearlyReportDtoList.stream().forEach(report->logger.info(" Date: "+report.getDate()+" EPS Growth Rate: "+report.getEpsGrowthRate()));
-        double avgEPSGrowth = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).average().getAsDouble();
+        double avgEPSGrowth = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).sum();
+        avgEPSGrowth = (double) avgEPSGrowth/(yearlyReportDtoList.size() -1);
         logger.info("Average EPS Growth: "+avgEPSGrowth);
         double shortenAvgEPSGrowth = Double.parseDouble(StockUtil.convertDoubleToPrecision(avgEPSGrowth,2));
         analyzedInfoDto.getPeValuationModelDto().setEPSGrowthRate(shortenAvgEPSGrowth);

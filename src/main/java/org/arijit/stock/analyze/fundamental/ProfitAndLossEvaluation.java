@@ -9,6 +9,7 @@ import org.arijit.stock.analyze.dto.ProfitAndLossDto;
 import org.arijit.stock.analyze.dto.YearlyReportDto;
 import org.arijit.stock.analyze.enums.AnalysisEnums;
 import org.arijit.stock.analyze.score.ScorService;
+import org.arijit.stock.analyze.util.FundamentalAnalysisUtil;
 import org.arijit.stock.analyze.util.StockUtil;
 
 import java.util.Iterator;
@@ -45,11 +46,53 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
         netSalesVsProfitRatio(analyzedInfoDto,profitAndLossDtoList);
 
         calcAvgGrowth(fundamentalInfoDto,analyzedInfoDto,year);
+        calcCAGRGrowth(fundamentalInfoDto, analyzedInfoDto,year);
         ScorService.getInstance().getProfitAndLossScore().score(fundamentalInfoDto,analyzedInfoDto,year);
         evaluated = true;
     }
 
 
+    private void calcCAGRGrowth(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int years){
+        List<ProfitAndLossDto> profitAndLossDtoList = fundamentalInfoDto.getProfitAndLossDtoList().stream().limit(years).collect(Collectors.toList());
+        ProfitAndLossDto endProfitAndLossDto = profitAndLossDtoList.get(0); //0th index gives recent year data
+        ProfitAndLossDto startProftAndLossDto = profitAndLossDtoList.get(profitAndLossDtoList.size()-1); // last index gives starting year data
+        logger.info("[CAGR Analysis]: endProfitAndLossDto: "+endProfitAndLossDto+" startProftAndLossDto: "+startProftAndLossDto);
+        double cagrNetProfitGrowth = FundamentalAnalysisUtil.cagr(endProfitAndLossDto.getNetProfit(), startProftAndLossDto.getNetProfit(),years);
+        double cagrNetSalesGrowth = FundamentalAnalysisUtil.cagr(endProfitAndLossDto.getNetSales(), startProftAndLossDto.getNetSales(),years);
+        /*
+        Below are growth threshold which we consider very good.
+        Unless our opinion remains neutral
+        */
+        String netprofitGrowthstmt = "Net Profit CAGR Growth over "+years+" year: "+cagrNetProfitGrowth;
+        String netSalesGrowthStmt = "Net Sales CAGR Growth over "+years+" year: "+cagrNetSalesGrowth;
+
+        double netProfitGrowtCAGRThreshold = 30;
+        double netSalesGrowthCAGRThreshold = 25;
+
+        if(cagrNetProfitGrowth>netProfitGrowtCAGRThreshold){
+            netprofitGrowthstmt="(+) "+netprofitGrowthstmt;
+            analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(netprofitGrowthstmt,AnalysisEnums.ANALYZED_VERY_GOOD);
+        }
+        else if(cagrNetProfitGrowth<0){
+            netprofitGrowthstmt = "(-) "+netprofitGrowthstmt;
+            analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(netprofitGrowthstmt,AnalysisEnums.ANALYZED_BAD);
+        }
+        else{
+            analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(netprofitGrowthstmt,AnalysisEnums.ANALYZED_NEUTRAL);
+        }
+
+        if(cagrNetProfitGrowth>netSalesGrowthCAGRThreshold){
+            netSalesGrowthStmt="(+) "+netSalesGrowthStmt;
+            analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(netSalesGrowthStmt,AnalysisEnums.ANALYZED_VERY_GOOD);
+        }
+        else if(cagrNetProfitGrowth<0){
+            netSalesGrowthStmt = "(-) "+netSalesGrowthStmt;
+            analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(netSalesGrowthStmt,AnalysisEnums.ANALYZED_BAD);
+        }
+        else{
+            analyzedInfoDto.getProfitAndLossAnalysisInfo().addAnalysisStatement(netSalesGrowthStmt,AnalysisEnums.ANALYZED_NEUTRAL);
+        }
+    }
     private void calcAvgGrowth(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int years){
         List<ProfitAndLossDto> profitAndLossDtoList = fundamentalInfoDto.getProfitAndLossDtoList().stream().limit(years).collect(Collectors.toList());
         ProfitAndLossDto currentProfitAndLossDto = null;
@@ -186,7 +229,7 @@ public class ProfitAndLossEvaluation implements IFundamentalEvaluation {
                     double netProfitGrowth = 0;
                     if (prevProfitAndLossDto.getNetProfit() !=0) {
                         netProfitGrowth = (currentProfitAndLossDto.getNetProfit() - prevProfitAndLossDto.getNetProfit());
-                        netProfitGrowth = (double) netProfitGrowth / prevProfitAndLossDto.getNetProfit() * 100;
+                        netProfitGrowth = (double) netProfitGrowth / Math.abs(prevProfitAndLossDto.getNetProfit()) * 100;
                         netProfitAvgGrowth = netProfitAvgGrowth + netProfitGrowth;
                     }
                     String netProfitAvgGrowthString = StockUtil.convertDoubleToPrecision(netProfitGrowth, 2);

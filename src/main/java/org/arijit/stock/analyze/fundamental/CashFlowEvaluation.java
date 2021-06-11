@@ -40,6 +40,29 @@ public class CashFlowEvaluation  implements IFundamentalEvaluation{
         calcCashFlowVsNetProfit(fundamentalInfoDto,analyzedInfoDto,year);
     }
 
+    private void calcAverageFreeCashFlow(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year){
+        List<CashFlowDto> cashFlowDtoList = fundamentalInfoDto.getCashFlowDtoList().stream().limit(year).collect(Collectors.toList());
+        Iterator<CashFlowDto> it = cashFlowDtoList.iterator();
+        CashFlowDto currentCashFlowDto = null;
+        double avgCashFlowDto = 0;
+        while(it.hasNext()){
+            if(currentCashFlowDto == null)
+                currentCashFlowDto = it.next();
+            else{
+                CashFlowDto prevCashFlowDto = it.next();
+                double diff = 0;
+                if(prevCashFlowDto.getFreeCashFlow()>0){
+                    diff = (currentCashFlowDto.getFreeCashFlow() - prevCashFlowDto.getFreeCashFlow())/prevCashFlowDto.getFreeCashFlow();
+                    diff = diff*100;
+                    logger.info("Current CashFLow: "+currentCashFlowDto.getFreeCashFlow()+" Previous CashFlow: "+prevCashFlowDto.getFreeCashFlow()+" growth percentage: "+diff);
+                    avgCashFlowDto = avgCashFlowDto + diff;
+                }
+                currentCashFlowDto = prevCashFlowDto;
+            }
+        }
+        logger.info(" Average Cashflow Growth: "+avgCashFlowDto);
+
+    }
     private void calcCashFlowVsNetProfit(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto,int year){
         double diffmargin =(double) 3/100; //taking 3% difference margin
         List<CashFlowDto> cashFlowDtoList = fundamentalInfoDto.getCashFlowDtoList().stream().limit(year).collect(Collectors.toList());
@@ -63,6 +86,7 @@ public class CashFlowEvaluation  implements IFundamentalEvaluation{
         analyzedInfoDto.getCashFlowAnalysisInfo().setOperatingCashFlowVsNetProficCmp(decision);
 
     }
+
 
     private void calcGrowth(CashFlowAnalysisInfo cashFlowAnalysisInfo, List<CashFlowDto> cashFlowDtoList){
         Iterator<CashFlowDto> iterator = cashFlowDtoList.iterator();

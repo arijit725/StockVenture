@@ -131,8 +131,8 @@ public class StockAnalysisService {
             double rfr = Double.parseDouble(map.get("rfr"));
             analyzedInfoDto.getEconomicGrowthDCFDto().setRfr(rfr);
 
-            double cbeta = Double.parseDouble(map.get("cbeta"));
-            analyzedInfoDto.getEconomicGrowthDCFDto().setCbeta(cbeta);
+//            double cbeta = Double.parseDouble(map.get("cbeta"));
+//            analyzedInfoDto.getEconomicGrowthDCFDto().setCbeta(cbeta);
 
             double mktret = Double.parseDouble(map.get("mktret"));
             analyzedInfoDto.getEconomicGrowthDCFDto().setMktret(mktret);

@@ -184,7 +184,7 @@ public class EconomicDCFValuation implements  IFundamentalEvaluation{
         logger.info("Market Capital: "+marketCapital+" weight Of Debt: "+weightOfDebt+" weight Of Equity: "+weightOfEquity);
 
         double codE = costOfDebt*(1-(effectiveTaxRate/100));
-        logger.info("Weight of Debt: "+weightOfDebt+" cost Of Debt: "+costOfDebt+" effectiveTaxRate: "+effectiveTaxRate+"codE: "+codE+ " weight of equity: "+weightOfEquity+" Cost of Equity: "+costOfEquity);
+        logger.info("Weight of Debt: "+weightOfDebt+" cost Of Debt: "+costOfDebt+" effectiveTaxRate: "+effectiveTaxRate+" codE: "+codE+ " weight of equity: "+weightOfEquity+" Cost of Equity: "+costOfEquity);
 
         double wacc = ( weightOfDebt*codE)+(weightOfEquity*costOfEquity);
         wacc = (double)wacc/100; //converting to percentage

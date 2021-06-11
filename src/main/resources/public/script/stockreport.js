@@ -604,9 +604,11 @@ function profitAndLossAnalysis(years){
     console.log("netSalesGrowthPercentage "+plAnal.netSalesGrowthPercentage)
     var divID = "profitAndLoss_analysis_div";
     var tableID = "profitAndLoss-analysis-tbl";
-
-    showPLGrowthRate(plAnal);
-
+    try{
+        showPLGrowthRate(plAnal);
+    }catch(err){
+        console.log(err);
+    }
     showAnalysisStatement(divID,plAnal);
 
     profitAndLossCalcAnalysis(plAnal);
@@ -888,7 +890,7 @@ function yearlyReportEstmation(jsonResonse){
      var tmpdatapoints = new Array();
      tmpdatapoints.push(["Estimated EPS (CAGR)","estimatedEPSCAGR"," EPS estimated using CAGR technique."]);
 //     tmpdatapoints.push(["Average EPS","averageEPS","Average EPS over period of years"]);
-    tmpdatapoints.push(["Estimated EPS (AVG growth based)","avgGrowthEstimatedEPS","Estimated EPS based on EPS growth over period of years"]);
+    tmpdatapoints.push(["EPS AVG growth","avgGrowthEstimatedEPS","Average EPS Growth over period of years"]);
 
     var ele = document.getElementById(tableID);
         if(ele!=null){
@@ -1501,8 +1503,8 @@ function requestEconomicDCF(){
     var rfr = document.getElementById("rfr").value;
     console.log("Risk Free Rate: "+rfr);
 
-    var cbeta = document.getElementById("cbeta").value;
-    console.log("Company Beta: "+cbeta);
+//    var cbeta = document.getElementById("cbeta").value;
+//    console.log("Company Beta: "+cbeta);
 
     var mktret = document.getElementById("mktret").value;
     console.log("Market Return: "+mktret);
@@ -1523,7 +1525,7 @@ function requestEconomicDCF(){
         "itefy":itefy,
         "ibtfy":ibtfy,
         "rfr":rfr,
-        "cbeta":cbeta,
+//        "cbeta":cbeta,
         "mktret":mktret,
         "margR":margR,
         "cashEQDCF":cashEQDCF,

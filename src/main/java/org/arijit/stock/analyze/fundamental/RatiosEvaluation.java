@@ -224,7 +224,7 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
 
                 double peRatioGrowth = (lastRatiosDto.getPeRatio()-prevRatiosDto.getPeRatio());
                 if(prevRatiosDto.getPeRatio()!=0) {
-                    peRatioGrowth = (double) peRatioGrowth/prevRatiosDto.getPeRatio();
+                    peRatioGrowth = (double) peRatioGrowth/Math.abs(prevRatiosDto.getPeRatio());
                     peRatioGrowth = (double) peRatioGrowth * 100;
                 }
                 ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"peRatio",StockUtil.convertDoubleToPrecision(peRatioGrowth, precision));
@@ -232,14 +232,14 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
 
                 double pbRatioGrowth = (lastRatiosDto.getPbRatio()-prevRatiosDto.getPbRatio());
                 if(prevRatiosDto.getPbRatio()!=0) {
-                    pbRatioGrowth = (double) pbRatioGrowth/prevRatiosDto.getPbRatio();
+                    pbRatioGrowth = (double) pbRatioGrowth/Math.abs(prevRatiosDto.getPbRatio());
                     pbRatioGrowth = (double) pbRatioGrowth * 100;
                 }
                 ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(),"pbRatio",StockUtil.convertDoubleToPrecision(pbRatioGrowth, precision));
 
                 double roeGrowth = (lastRatiosDto.getRoe() - prevRatiosDto.getRoe());
                 if(prevRatiosDto.getRoe()!=0) {
-                    roeGrowth = (double) roeGrowth/prevRatiosDto.getRoe();
+                    roeGrowth = (double) roeGrowth/Math.abs(prevRatiosDto.getRoe());
                     roeGrowth = (double) roeGrowth * 100;
                 }
                 ratioAnalysisInfo.addRatioGrowths(lastRatiosDto.getDate(), "roe", StockUtil.convertDoubleToPrecision(roeGrowth, precision));
@@ -324,7 +324,8 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
 //        if(years>=fundamentalInfoDto.getYearlyReportDtoList().size())
 //            years=years-1; // if we are reaching maximum input of yearly report, we can not consider last one as there gorwoth will be 0.
 //        avgEPS = (double) avgEPS/(years);
-        double avgEPS = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).average().getAsDouble();
+        double avgEPS = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).sum();
+        avgEPS = (double) avgEPS / (years-1); // we do not have first year growth
         double currentTTMPE = fundamentalInfoDto.getCompanyDto().getTtmpe();
         logger.info("Average EPS for last "+years+" years :: "+avgEPS+" Current TTM PE Ratio :"+currentTTMPE);
         double pegRatio = (double) currentTTMPE/avgEPS;
