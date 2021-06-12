@@ -16,7 +16,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 bootJar {
-    baseName = 'library-catalog'
+    baseName = 'stockventure'
     version =  '0.1.0'
 }
 

@@ -4,32 +4,32 @@ const urlParams = new URLSearchParams(queryString);
 const stockID = urlParams.get('stockID')
 console.log(stockID);
 
-var companyDetailsURL = 'http://localhost:8080/fundamental/companydetails/'+stockID;
+var companyDetailsURL = '/fundamental/companydetails/'+stockID;
 
-var generateReportUrl = 'http://localhost:8080/fundamental/generateReport/'+stockID;
+var generateReportUrl = '/fundamental/generateReport/'+stockID;
 
-var getBalancesheetUrl ='http://localhost:8080/fundamental/balancesheet/'+stockID;
-var getBalancesheetAnalysisUrl ='http://localhost:8080/fundamental/balancesheetAnalysis/'+stockID;
+var getBalancesheetUrl ='/fundamental/balancesheet/'+stockID;
+var getBalancesheetAnalysisUrl ='/fundamental/balancesheetAnalysis/'+stockID;
 
-var getProfitAndLossUrl ='http://localhost:8080/fundamental/profitAndLoss/'+stockID;
-var getProfitAndLossAnalysisUrl='http://localhost:8080/fundamental/profitAndLossAnalysis/'+stockID;
+var getProfitAndLossUrl ='/fundamental/profitAndLoss/'+stockID;
+var getProfitAndLossAnalysisUrl='/fundamental/profitAndLossAnalysis/'+stockID;
 
 
-var getYearlyReportUrl ='http://localhost:8080/fundamental/yearlyreport/'+stockID;
+var getYearlyReportUrl ='/fundamental/yearlyreport/'+stockID;
 
-var getQuarerlyReportUrl ='http://localhost:8080/fundamental/quarterlyreport/'+stockID;
+var getQuarerlyReportUrl ='/fundamental/quarterlyreport/'+stockID;
 
-var getRatiosUrl = 'http://localhost:8080/fundamental/ratios/'+stockID;
-var getRatiosAnalysusUrl='http://localhost:8080/fundamental/ratioAnalysis/'+stockID;
+var getRatiosUrl = '/fundamental/ratios/'+stockID;
+var getRatiosAnalysusUrl='/fundamental/ratioAnalysis/'+stockID;
 
-var getCashFlowUrl = 'http://localhost:8080/fundamental/cashflow/'+stockID;
+var getCashFlowUrl = '/fundamental/cashflow/'+stockID;
 
-var stockValuationUrl = 'http://localhost:8080/fundamental/stockvaluation/'+stockID;
-var getStockValuationUrl='http://localhost:8080/fundamental/getStockValuation/'+stockID;
+var stockValuationUrl = '/fundamental/stockvaluation/'+stockID;
+var getStockValuationUrl='/fundamental/getStockValuation/'+stockID;
 
-var getAnalysisReport = 'http://localhost:8080/fundamental/analysis/'+stockID;
+var getAnalysisReport = '/fundamental/analysis/'+stockID;
 
-var targetPriceUrl = 'http://localhost:8080/fundamental/targetPrice/'+stockID;
+var targetPriceUrl = '/fundamental/targetPrice/'+stockID;
 
 
 var currentSharePrice = null;

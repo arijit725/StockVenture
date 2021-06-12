@@ -1,18 +1,18 @@
 
-var companyDeatilsUrl ='http://localhost:8080/fundamental/companyDetails';
-var balancesheetDeatilsUrl ='http://localhost:8080/fundamental/balancesheetDetails';
-var profitAndLossDetailUrl = 'http://localhost:8080/fundamental/profitAndLossDetails';
-var yearlyReportDetailUrl = 'http://localhost:8080/fundamental/yearlyReportDetails';
-var quarterlyReportDetailUrl = 'http://localhost:8080/fundamental/quarterlyReportDetails';
-var cashFlowDetailUrl = 'http://localhost:8080/fundamental/cashFlowDetails';
-var ratioDetailUrl = 'http://localhost:8080/fundamental/ratioDetails';
-var blUploadlUrl = 'http://localhost:8080/fundamental/uploadbl';
-var plUploadUrl = 'http://localhost:8080/fundamental/uploadpl';
-var uploadPDFuRL = 'http://localhost:8080/fundamental/uploadPDF';
+var companyDeatilsUrl ='/fundamental/companyDetails';
+var balancesheetDeatilsUrl ='/fundamental/balancesheetDetails';
+var profitAndLossDetailUrl = '/fundamental/profitAndLossDetails';
+var yearlyReportDetailUrl = '/fundamental/yearlyReportDetails';
+var quarterlyReportDetailUrl = '/fundamental/quarterlyReportDetails';
+var cashFlowDetailUrl = '/fundamental/cashFlowDetails';
+var ratioDetailUrl = '/fundamental/ratioDetails';
+var blUploadlUrl = '/fundamental/uploadbl';
+var plUploadUrl = '/fundamental/uploadpl';
+var uploadPDFuRL = '/fundamental/uploadPDF';
 
-var getDataUrl = 'http://localhost:8080/fundamental/getData';
+var getDataUrl = '/fundamental/getData';
 
-var getBalancesheetUrl ='http://localhost:8080/fundamental/balancesheet/';
+var getBalancesheetUrl ='/fundamental/balancesheet/';
 
 
 var stockID=null;
