@@ -925,6 +925,7 @@ function quarterlyReportDataPoints(){
     var datapoints = new Array();
      datapoints.push(["EPS","eps","Quarterly Earning per share"]);
      datapoints.push(["YOY Sales Growth","yoySalesGrowth","YOY sales growth"]);
+     datapoints.push(["Net Profit","netprofit","Quarterly Net Profit. Growing is always a good sign"]);
     return datapoints;
 }
 
@@ -938,6 +939,7 @@ function createQlDataPoints(dataJson){
         var datamap = new Map();
         datamap['eps']=data.eps;
         datamap['yoySalesGrowth']=data.yoySalesGrowth;
+        datamap['netprofit']=data.netprofit;
         plFY[data.date] = datamap;
     }
     return plFY;
@@ -960,27 +962,40 @@ function quarterlyReportAnalysis(years,headerList,analyzedjsonResonse){
     var analysis = JSON.parse(analyzedjsonResonse);
     console.log(analysis);
     showQuarterlyGrowthRate(analysis,headerList,years);
-//    highlightedPoints(ratioAnalysis,years);
+    quarterlyReporthighlightedPoints(analysis,years);
     quarterlyReportEstmation(analyzedjsonResonse);
 }
 
+function quarterlyReporthighlightedPoints(quarterlyAnalysis,years){
+
+    var divID = "quarterly_analysis_stmt_div";
+
+    showAnalysisStatement(divID,quarterlyAnalysis);
+}
+
+
 
 function showQuarterlyGrowthRate(analysis,headerList,years){
-//    console.log("Calculating  QuarterlyGrowthRate:");
-//    epsGrowthRate = analysis.epsGrowthRate;
-////    console.log("Fetched ratioGrowthsDtoMap: ");
-//    console.log(epsGrowthRate);
-////    var headerList =createHeaders(years);
-////    var dataPoints = new Array();
-////    dataPoints.push(["Basic EPS","basicEPS"," PE Ratio ToolTips PlaceHolder"]);
-////    console.log("headerList:" +headerList );
-//        //we can not calculate growth for the very first year. .
-//        for(var j=1;j<headerList.length-1;j++){
-//                   var cellid = "eps-"+headerList[j];
-//                   var growthMap = epsGrowthRate[headerList[j]];
-//                   console.log("growthmap: "+growthMap);
-//                   createGrowthLabel(cellid, growthMap);
-//            }
+    console.log("Calculating  QuarterlyGrowthRate:");
+    analyzedgrowthMap = analysis.quarterlyReportGrowthsDtoMap;
+//    console.log("Fetched ratioGrowthsDtoMap: ");
+    console.log(analyzedgrowthMap);
+//    var headerList =createHeaders(years);
+//    var dataPoints = new Array();
+//    dataPoints.push(["Basic EPS","basicEPS"," PE Ratio ToolTips PlaceHolder"]);
+//    console.log("headerList:" +headerList );
+        //we can not calculate growth for the very first year. .
+        for(var j=1;j<headerList.length-1;j++){
+                   var cellid = "eps-"+headerList[j];
+                   var growthMap = analyzedgrowthMap[headerList[j]];
+                   console.log(growthMap);
+                   createGrowthLabel(cellid, growthMap.eps);
+
+                  var cellid = "netprofit-"+headerList[j];
+                  var growthMap = analyzedgrowthMap[headerList[j]];
+                  console.log(growthMap);
+                  createGrowthLabel(cellid, growthMap.netprofit);
+            }
     }
 function createQuarterlyReportAnalysisDataPoints(dataJson){
     var dataJsonList = JSON.parse(dataJson);
@@ -1718,6 +1733,14 @@ function marginofsafty(ele){
         pevaluationMrgnOfSfty(marginofsafty);
 }
 
+
+function epsmultiplierModel(){
+    console.log("epsmultiplierModel action is triggered");
+    window.open("eps-multiplier.html?stockID="+stockID);
+    window.focus();
+
+    fetchPeValuationEstimation();
+}
 
 
 /*====================== Stock Counter Model =========================*/

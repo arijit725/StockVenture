@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.QuarterlyReportDTO;
+import org.arijit.stock.analyze.dto.RatiosDto;
+import org.arijit.stock.analyze.enums.AnalysisEnums;
 import org.arijit.stock.analyze.util.FundamentalAnalysisUtil;
 import org.arijit.stock.analyze.util.StockUtil;
 
@@ -31,12 +33,97 @@ public class QuarterlyReportEvaluation implements IFundamentalEvaluation {
             throw new Exception("FundamentalInfo not found");
         if(analyzedInfoDto==null || analyzedInfoDto.getMisleneousAnalysisInfo()==null)
             throw new Exception("AnalzedInfo not found");
+        analyzedInfoDto.getQuarterlyReportAnalysisInfo().clear();
         calcEstimatedEPS(fundamentalInfoDto,analyzedInfoDto);
         calcGrowth(fundamentalInfoDto,analyzedInfoDto);
         calcAvgEPsGrowth(fundamentalInfoDto,analyzedInfoDto);
+        generateAnalysisStatement(fundamentalInfoDto,analyzedInfoDto,year);
         evaluated = true;
     }
 
+
+    private void generateAnalysisStatement(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto,int years){
+        List<QuarterlyReportDTO>  quarterlyReportDTOList = fundamentalInfoDto.getQuarterlyReportDtoList().stream().limit(years).collect(Collectors.toList());
+        QuarterlyReportDTO currentQuearterlyReportDto = null;
+
+
+        int netProfitReduceCount = 0;
+        int netProfitIncreaseCount = 0;
+        int consecutive4QuarterIncrease = 0;
+
+        int epsReduceCount = 0;
+        int epsIncreaseCount = 0;
+
+        Iterator<QuarterlyReportDTO> it = quarterlyReportDTOList.iterator();
+        while(it.hasNext()){
+            if(currentQuearterlyReportDto==null){
+                currentQuearterlyReportDto = it.next();
+            }
+            else{
+                QuarterlyReportDTO lastQuearterlyReportDto = it.next();
+
+                if(currentQuearterlyReportDto.getEps()>lastQuearterlyReportDto.getEps()){
+                    epsIncreaseCount++;
+                }
+                else{
+                    epsReduceCount++;
+                }
+
+                if(currentQuearterlyReportDto.getNetProfit()<lastQuearterlyReportDto.getNetProfit()){
+                    netProfitReduceCount++;
+                }
+                else if(currentQuearterlyReportDto.getNetProfit()>lastQuearterlyReportDto.getNetProfit()){
+                    netProfitIncreaseCount++;
+                }
+
+                currentQuearterlyReportDto = lastQuearterlyReportDto;
+            }
+        }
+        int continuousCOunt = years-1;
+
+        if(epsIncreaseCount==continuousCOunt){
+            String statement = "(+)Quearterly EPS is continuously increasing over quarters.";
+            analyzedInfoDto.getQuarterlyReportAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_VERY_GOOD);
+        }
+        else if(quarterlyReportDTOList.get(0).getEps()> quarterlyReportDTOList.get(1).getEps() &&
+                quarterlyReportDTOList.get(1).getEps() > quarterlyReportDTOList.get(2).getEps() &&
+                quarterlyReportDTOList.get(2).getEps() > quarterlyReportDTOList.get(3).getEps() &&
+                quarterlyReportDTOList.get(3).getEps() > quarterlyReportDTOList.get(4).getEps()) {
+            String statement = "(+)Quearterly EPS is continuously increasing for last 4 quarters.";
+            analyzedInfoDto.getQuarterlyReportAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_GOOD);
+        }
+        else if(epsReduceCount==continuousCOunt){
+            String statement = "(-)Quearterly EPS is continuously decreasing over years";
+            analyzedInfoDto.getQuarterlyReportAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_BAD);
+        }
+        else{
+            String statement = "Quearterly EPS growth does not conclude specific direction";
+            analyzedInfoDto.getQuarterlyReportAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_NEUTRAL);
+        }
+
+
+        if(netProfitIncreaseCount==continuousCOunt){
+            String statement = "(+)Quarterly Net Profit is continuously increasing over quarters.";
+            analyzedInfoDto.getQuarterlyReportAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_VERY_GOOD);
+        }
+
+        else if(netProfitReduceCount==continuousCOunt){
+            String statement = "(-)Quarterly Net Profit is continuously decreasing over years.";
+            analyzedInfoDto.getQuarterlyReportAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_BAD);
+        }
+
+        else if(quarterlyReportDTOList.get(0).getNetProfit()> quarterlyReportDTOList.get(1).getNetProfit() &&
+            quarterlyReportDTOList.get(1).getNetProfit() > quarterlyReportDTOList.get(2).getNetProfit() &&
+                    quarterlyReportDTOList.get(2).getNetProfit() > quarterlyReportDTOList.get(3).getNetProfit() &&
+                    quarterlyReportDTOList.get(3).getNetProfit() > quarterlyReportDTOList.get(4).getNetProfit()) {
+                String statement = "(+)Quearterly Net Profit is continuously increasing for last 4 quarters.";
+                analyzedInfoDto.getQuarterlyReportAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_GOOD);
+            } else {
+                String statement = "Quearterly Net Profit growth does not conclude specific direction";
+                analyzedInfoDto.getQuarterlyReportAnalysisInfo().addAnalysisStatement(statement, AnalysisEnums.ANALYZED_NEUTRAL);
+            }
+
+    }
 
     private void calcGrowth(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){
         List<QuarterlyReportDTO> quarterlyReportDTOList = fundamentalInfoDto.getQuarterlyReportDtoList();
@@ -52,7 +139,15 @@ public class QuarterlyReportEvaluation implements IFundamentalEvaluation {
                     epsGrowth = (currentQuarterlyReportDto.getEps() - prevQuarterlyReportDto.getEps())/prevQuarterlyReportDto.getEps();
                     epsGrowth = (double)epsGrowth*100;
                 }
+
                 analyzedInfoDto.getQuarterlyReportAnalysisInfo().addQuarterlyReportGrowths(currentQuarterlyReportDto.getDate(),"eps", StockUtil.convertDoubleToPrecision(epsGrowth,2));
+                double netProfiGrowth = 0;
+                if(prevQuarterlyReportDto.getNetProfit()!=0){
+                    netProfiGrowth = (currentQuarterlyReportDto.getNetProfit() - prevQuarterlyReportDto.getNetProfit())/prevQuarterlyReportDto.getNetProfit();
+                    netProfiGrowth = (double)netProfiGrowth*100;
+                }
+
+                analyzedInfoDto.getQuarterlyReportAnalysisInfo().addQuarterlyReportGrowths(currentQuarterlyReportDto.getDate(),"netprofit", StockUtil.convertDoubleToPrecision(netProfiGrowth,2));
                 currentQuarterlyReportDto = prevQuarterlyReportDto;
             }
         }

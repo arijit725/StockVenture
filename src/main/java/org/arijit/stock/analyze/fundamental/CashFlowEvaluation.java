@@ -97,16 +97,23 @@ public class CashFlowEvaluation  implements IFundamentalEvaluation{
                 lasCashFlowDto = iterator.next();
             else{
                 CashFlowDto prevCashFlowDto = iterator.next();
-                double cashFromOperatingActivityGrowth = (lasCashFlowDto.getCashFromOperatingActivity()-prevCashFlowDto.getCashFromOperatingActivity())/prevCashFlowDto.getCashFromOperatingActivity();
-                cashFromOperatingActivityGrowth = (double) cashFromOperatingActivityGrowth*100;
-                cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"cashFromOperatingActivity", StockUtil.convertDoubleToPrecision(cashFromOperatingActivityGrowth, precision));
+                try{
+                double cashFromOperatingActivityGrowth = lasCashFlowDto.getCashFromOperatingActivity();
+                if(lasCashFlowDto.getCashFromOperatingActivity() != 0) {
+                    cashFromOperatingActivityGrowth = (lasCashFlowDto.getCashFromOperatingActivity() - prevCashFlowDto.getCashFromOperatingActivity()) / prevCashFlowDto.getCashFromOperatingActivity();
+                    cashFromOperatingActivityGrowth = (double) cashFromOperatingActivityGrowth * 100;
+                }
+                    cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(), "cashFromOperatingActivity", StockUtil.convertDoubleToPrecision(cashFromOperatingActivityGrowth, precision));
+                }catch (Exception e){
+                    logger.info("Unable to calcalte Operating Activity growth",e);
+                }
                 try {
                     double fixedAssestsPurchasedGrowth = lasCashFlowDto.getFixedAssestsPurchased();
                     if (prevCashFlowDto.getFixedAssestsPurchased() != 0) {
                         fixedAssestsPurchasedGrowth = (lasCashFlowDto.getFixedAssestsPurchased() - prevCashFlowDto.getFixedAssestsPurchased()) / prevCashFlowDto.getFixedAssestsPurchased();
                         fixedAssestsPurchasedGrowth = (double) fixedAssestsPurchasedGrowth * 100;
-                        cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"fixedAssestsPurchased",StockUtil.convertDoubleToPrecision(fixedAssestsPurchasedGrowth, precision));
                     }
+                    cashFlowAnalysisInfo.addCashFlowGrowth(lasCashFlowDto.getDate(),"fixedAssestsPurchased",StockUtil.convertDoubleToPrecision(fixedAssestsPurchasedGrowth, precision));
                 }catch(Exception e){
                     logger.info("Unable to calcalte fixed assets purchase growth",e);
                 }

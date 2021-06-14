@@ -16,6 +16,8 @@ public class AnalyzedInfoDto {
     private final EconomicGrowthDCFDto economicGrowthDCFDto;
     private final EVEBITDAValuationModelDto evebitdaValuationModelDto;
     private final PEValuationModelDto peValuationModelDto;
+    private final EPSMutlipliedValuationModelDto epsMutlipliedValuationModelDto;
+
     private AnalyzedInfoDto(){
         balanceSheetAnalysisInfo = new BalanceSheetAnalysisInfo();
         yearlyReportAnalysisInfo = new YearlyReportAnalysisInfo();
@@ -28,6 +30,7 @@ public class AnalyzedInfoDto {
         economicGrowthDCFDto = new EconomicGrowthDCFDto();
         evebitdaValuationModelDto = new EVEBITDAValuationModelDto();
         peValuationModelDto = new PEValuationModelDto();
+        epsMutlipliedValuationModelDto = new EPSMutlipliedValuationModelDto();
     }
 
     public static AnalyzedInfoDto create(){

@@ -401,6 +401,7 @@ function quarterReprtDataPoints(){
     datapoints.push(["FY Date","qrdate"]);
     datapoints.push(["Basic EPS","eps"]);
     datapoints.push(["YOY Sales Growth","yoySalesGrowth"]);
+    datapoints.push(["Net Profit","netprofit"]);
     return datapoints;
 }
 

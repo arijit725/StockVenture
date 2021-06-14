@@ -1,5 +1,6 @@
 package org.arijit.stock.analyze.dto;
 
+import com.google.gson.annotations.SerializedName;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.util.DateUtil;
@@ -17,7 +18,8 @@ public class QuarterlyReportDTO implements Comparable<QuarterlyReportDTO> {
 
     private double eps;
     private double yoySalesGrowth;
-
+    @SerializedName("netprofit")
+    private double netProfit;
 
     private QuarterlyReportDTO(){
 
@@ -38,6 +40,10 @@ public class QuarterlyReportDTO implements Comparable<QuarterlyReportDTO> {
 
     public double getYoySalesGrowth() {
         return yoySalesGrowth;
+    }
+
+    public double getNetProfit() {
+        return netProfit;
     }
 
     public static QuarterlyReportDTO builder(){
@@ -72,6 +78,7 @@ public class QuarterlyReportDTO implements Comparable<QuarterlyReportDTO> {
                 "date='" + date + '\'' +
                 ", eps=" + eps +
                 ", yoySalesGrowth=" + yoySalesGrowth +
+                ", netProfit=" + netProfit +
                 '}';
     }
 }

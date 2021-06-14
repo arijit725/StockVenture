@@ -153,11 +153,23 @@
                 </div>
             </td>
                 <td>
+                    <div id="quarterly_analysis_stmt_div" class="tableholder">
+                    </div>
+                </td>
+                </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
                     <div id="quarterly_analysis_div" class="tableholder">
                     </div>
                     <label class="tooltip">
                         <span id="qlTips" class="tooltiptext">Yearly Report Analysis Fundamental</span>
                     </label>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
 <!--                <td>-->
 <!--                    <div id="ql_calc_div" class="tableholder">-->
@@ -304,6 +316,12 @@
             <td align="center" id="pevaluationestimation"></td>
             <td align="center" id="pevaluationestimationrgnsfty"></td>
             <td align="center" id="pevaluationupside"></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="EPS-Multiplier-Valuation" onclick="epsmultiplierModel()"></td>
+            <td align="center" id="epsmultiplierestimation"></td>
+            <td align="center" id="epsmultiplierestimationrgnsfty"></td>
+            <td align="center" id="epsmultiplierupside"></td>
         </tr>
     </table>
 </div>

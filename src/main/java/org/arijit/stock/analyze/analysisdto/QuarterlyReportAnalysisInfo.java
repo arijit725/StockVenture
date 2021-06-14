@@ -1,8 +1,11 @@
 package org.arijit.stock.analyze.analysisdto;
 
+import org.arijit.stock.analyze.enums.AnalysisEnums;
 import org.arijit.stock.analyze.util.StockUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class QuarterlyReportAnalysisInfo {
@@ -12,12 +15,13 @@ public class QuarterlyReportAnalysisInfo {
     private Map<String, HashMap<String,String>> quarterlyReportGrowthsDtoMap;
 
 
-
+    private List<String> analysisStatement;
     private String estimatedEPSCAGRStr;
     private String ttmEPSStr;
 
     public QuarterlyReportAnalysisInfo(){
         quarterlyReportGrowthsDtoMap = new HashMap<>();
+        analysisStatement = new ArrayList<>();
     }
 
     public double getAvgEPSGrowth() {
@@ -52,6 +56,15 @@ public class QuarterlyReportAnalysisInfo {
             quarterlyReportGrowthsDtoMap.put(date,new HashMap<>());
         }
         quarterlyReportGrowthsDtoMap.get(date).put(attribute,value);
+    }
+
+    public void clear(){
+        this.analysisStatement.clear();
+    }
+
+    public void addAnalysisStatement(String statement, AnalysisEnums analysisEnums){
+        String stmt = StockUtil.createAnalysisStatement(statement,analysisEnums);
+        this.analysisStatement.add(stmt);
     }
 
     @Override
