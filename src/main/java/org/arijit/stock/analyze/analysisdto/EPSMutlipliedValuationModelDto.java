@@ -15,6 +15,8 @@ public class EPSMutlipliedValuationModelDto {
 
     private Map<Integer, ProjectionDto> projectionDtoMap;
 
+    private boolean evluated;
+
     public EPSMutlipliedValuationModelDto(){
         projectionDtoMap = new TreeMap<>();
         projectionDtoMap.put(1,new ProjectionDto(1));
@@ -64,8 +66,12 @@ public class EPSMutlipliedValuationModelDto {
         this.finalIntrinsicValue = finalIntrinsicValue;
     }
 
-    public ProjectionDto getProjectionDtoMap(int year) {
+    public ProjectionDto getProjectionDto(int year) {
         return projectionDtoMap.get(year);
+    }
+
+    public Map<Integer, ProjectionDto> getProjectionDtoMap() {
+        return projectionDtoMap;
     }
 
     public void addProjectedEPS(int year, double ttmEPS){
@@ -74,6 +80,14 @@ public class EPSMutlipliedValuationModelDto {
 
     public void addProjectedIntrinsicValue(int year, double intrinsicValue){
         projectionDtoMap.get(1).setIntrinsicValue(intrinsicValue);
+    }
+
+    public void setEvluated(boolean evluated) {
+        this.evluated = evluated;
+    }
+
+    public boolean isEvluated() {
+        return evluated;
     }
 
     @Override

@@ -1,6 +1,6 @@
-var industryListURL = 'http://localhost:8080/fundamental/listindustry';
-var stockListURL = 'http://localhost:8080/fundamental/liststock';
-var loadReportUrl = 'http://localhost:8080/fundamental/loadanalysis';
+var industryListURL = '/fundamental/listindustry';
+var stockListURL = '/fundamental/liststock';
+var loadReportUrl = '/fundamental/loadanalysis';
 
 function onIndustryLoad(){
     var jsonResponse = GetContent(industryListURL);

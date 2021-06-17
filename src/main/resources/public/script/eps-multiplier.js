@@ -17,13 +17,24 @@ function onReportLoad(){
 
     createCompanyTable();
 
-    yearlyReportsTable(7);
-
-
+    waacdisountrate();
+    forwardpe();
 }
 
 
 
+function waacdisountrate(){
+    var fetchedValue = 11;
+    console.log("Fetched value "+fetchedValue);
+    id = "discountrate";
+    document.getElementById(id).value = fetchedValue;
+}
+
+function forwardpe(){
+    id = "forwardpe";
+    fetchedValue = 23.32;
+    document.getElementById(id).value = fetchedValue;
+}
 
 
 /*====================== Company Details =========================*/
@@ -108,220 +119,54 @@ function getCompanyDetails(){
 }
 
 
-function prepareStockPriceTable(){
-    var rawHsit = document.getElementById('rawHsit');
-    var txt = rawHsit.value;
-    var delEle = document.getElementById('hisinput');
-    delEle.remove();
-
-    parentDivID = "histD";
-    tableID = "histDTable";
-
-    var headerList = new Array();
-    headerList.push('Date');
-    headerList.push('Open');
-    headerList.push('High');
-    headerList.push('Low');
-    headerList.push('Close');
-    headerList.push('FY-EPS');
-    headerList.push('PE');
-
-    createStockPriceTable(parentDivID,tableID,headerList, txt);
-}
-var regex = /(([a-zA-Z]+\s\d{4})\t(\d+\.\d+)\t(\d+\.\d+)\t(\d+\.\d+)\t(\d+\.\d+))/g;
-function createStockPriceTable(divID,tableID,headerList,data){
-        console.log("Creating HistoricPriceTable.")
-
-
-        console.log("splitting");
-        console.log(data);
-
-        var array = [...data.matchAll(regex)];
-        console.log(array);
-
-        var dataList = new Array();
-        var stockpriceList = new Array();
-        for(var i=0;i<array.length;i++){
-            var parsedData = new Array();
-
-            var date = array[i][2];
-            date=date.replace(" ","-");
-            var open = array[i][3];
-            var high = array[i][4];
-            var low = array[i][5];
-            var close = array[i][6];
-            var priceMap = {
-                "date":date,
-                "open":parseFloat(open),
-                "high":parseFloat(high),
-                "low":parseFloat(low),
-                "close":parseFloat(close)
-            };
-            parsedData.push(date);
-            parsedData.push(open);
-            parsedData.push(high);
-            parsedData.push(low);
-            parsedData.push(close);
-            parsedData.push("_");
-            parsedData.push("_");
-            console.log(parsedData);
-            dataList.push(parsedData);
-            stockpriceList.push(priceMap);
-        }
-        inputDataMap['stockpriceList'] = stockpriceList;
-
-        var table = document.createElement("TABLE");
-        table.setAttribute('id', tableID);
-        var row = table.insertRow();
-
-        var columnCount = headerList.length;
-        console.log("Column count: "+columnCount)
-
-        for (var i = 0; i < columnCount; i++) {
-            var headerCell = document.createElement("TH");
-            headerCell.innerHTML = headerList[i];
-            row.appendChild(headerCell);
-        }
-
-        var bgColor="white";
-        for(var i=0;i<dataList.length;i++){
-            row = table.insertRow();
-
-            if((i%2)==0){
-                 bgColor = "white";
-             }
-             else{
-                 bgColor="lightgray";
-             }
-             row.style.backgroundColor=bgColor;
-             var parsedData = dataList[i];
-
-             for(var j=0;j<parsedData.length;j++){
-                var datapointsCell = document.createElement("TD");
-                var id = "cp";
-                if(j==0)
-                    id = "cp-"+parsedData[0]
-                else
-                    id = "cp-"+headerList[j]+"-"+parsedData[0];
-                datapointsCell.innerHTML = parsedData[j];
-                datapointsCell.setAttribute("id", id);
-                row.appendChild(datapointsCell);
-             }
-        }
-
-    var dvTable = document.getElementById(divID);
-    dvTable.appendChild(table);
-}
-
-/*======================================Functions for Yearly Report Handle================================*/
-function yearlyReportsDataPoints(){
-    var datapoints = new Array();
-    datapoints.push(["FY Date","yldate"]);
-    datapoints.push(["Basic EPS","basicEPS"]);
-
-    return datapoints;
-}
-
-function yearlyReportsTable(years){
-//    uploadYearlyReportPDF("Yearly-Report","yrpdf");
-    console.log("creaing Yearly-Report table");
-    var datapoints = yearlyReportsDataPoints();
-    var tableID = document.getElementById("yrtbl");
-    if(tableID!=null){
-        tableID.remove();
-    }
-    var headerList =createGenericHeader();
-    console.log("Generated Headers: "+headerList);
-    createTable2("yrDiv","yrtbl",headerList,datapoints,submitYearlyReportDetails);
-}
-
-function createEPSDataSet(){
-    var yrPrefix = "yrdate";
-    var epsPrefix = "yrbasiceps";
-
-    var i=1;
-    var id1 = yrPrefix+'-'+i;
-    var id2 = epsPrefix+'-'+i;
-    var yrele = document.getElementById(id1);
-    var epsele = document.getElementById(id2);
-    var epsMap = new Map();
-    while(epsele!=null){
-        var yrStr = yrele.value.replace(" ","-");
-        epsMap[yrStr] = parseFloat(epsele.value);
-        i++;
-        id1 = yrPrefix+'-'+i;
-        id2 = epsPrefix+'-'+i;
-        yrele = document.getElementById(id1);
-        epsele = document.getElementById(id2);
-    }
-    console.log(epsMap);
-    return epsMap;
-}
-
-function submitYearlyReportDetails(){
-    console.log("submitYearlyReportDetails action is triggered");
-    var tableID = "yrtbl";
-    var datapoints = yearlyReportsDataPoints();
-//    var headers = getTableHeader(tableID);
-}
-
-var firstTimeMarketGrowthSelection = false;
-
-function onMarketGrowthSelection(){
-    inputDataMap['marketGrowth']=marketGrowth;
-    if(!firstTimeMarketGrowthSelection){
-        generateReport();
-    }
-}
-
 
 function generateReport(){
-
-    var epsMap = createEPSDataSet();
-    inputDataMap['epsMap'] =epsMap;
-    var marketGrowth = document.getElementById("cmg").value;
-    inputDataMap['marketGrowth']=marketGrowth;
+    inputDataMap['growthRate'] =document.getElementById("growthrate").value;
+    inputDataMap['discountRate']=document.getElementById("discountrate").value;
+    inputDataMap['estimatedPE']=document.getElementById("forwardpe").value;
     console.log(inputDataMap);
     var requestBody = generateJsonString(inputDataMap);
     console.log(requestBody);
-    var url = stockValuationUrl+'/pevaluation';
+    var url = stockValuationUrl+'/epsmultiplier';
         console.log("Posting data to url: "+url);
-        var jsonResonse = postRequest(url,requestBody, showPEValuationFValue);
+        var jsonResonse = postRequest(url,requestBody, showValuationValue);
     }
 
 
 var currentSharePrice = null;
 
-function showPEValuationFValue(){
-    var url = getStockValuationUrl+'/pevaluation';
+function showValuationValue(){
+    var url = getStockValuationUrl+'/epsmultiplier';
     var jsonResonse = GetRawBookContent(url);
     console.log("showPEValuationFValue: response: "+jsonResonse);
     var data = JSON.parse(jsonResonse);
-    document.getElementById("avgHistPeTable-7yrs").innerHTML = data.avgPE7Years;
-    document.getElementById("avgHistPeTable-4yrs").innerHTML = data.avgPE4Years;
+    projectedMap = data.projectionDtoMap;
+    console.log(projectedMap)
+    document.getElementById("projeps1").innerHTML = projectedMap[1].ttmEPS;
+    document.getElementById("projeps2").innerHTML = projectedMap[2].ttmEPS;
+    document.getElementById("projeps3").innerHTML = projectedMap[3].ttmEPS;
+    document.getElementById("projeps4").innerHTML = projectedMap[4].ttmEPS;
+    document.getElementById("projeps5").innerHTML = projectedMap[5].ttmEPS;
+
+    document.getElementById("intrn1").innerHTML = projectedMap[1].intrinsicValue;
+    document.getElementById("intrn2").innerHTML = projectedMap[2].intrinsicValue;
+    document.getElementById("intrn3").innerHTML = projectedMap[3].intrinsicValue;
+    document.getElementById("intrn4").innerHTML = projectedMap[4].intrinsicValue;
+    document.getElementById("intrn5").innerHTML = projectedMap[5].intrinsicValue;
+
+    var finalIntrinsicValue = data.finalIntrinsicValue;
+    var currentSharePrice = data.currentPrice;
+    document.getElementById("finalIntrinsicValue").innerHTML = finalIntrinsicValue;
 
 
-    var epsGrowthRate = data.EPSGrowthRate;
-    var estEpsGrowthAvg = epsGrowthRate / 2;
-    var estEpsGrowthPoor = -1*epsGrowthRate;
+    var upside = (finalIntrinsicValue-currentSharePrice)/currentSharePrice*100;
+    document.getElementById("upside").innerHTML = upside;
 
-    document.getElementById("estEpsGrowth").innerHTML = epsGrowthRate;
-    document.getElementById("estEpsGrowthAvg").innerHTML = estEpsGrowthAvg;
-    document.getElementById("estEpsGrowthPoor").innerHTML = estEpsGrowthPoor;
-
-    document.getElementById("trgtprice7yrs").innerHTML = data.targetPrice7yrPE;
-    document.getElementById("trgtprice4yrs").innerHTML = data.targetPrice4yrPE;
-    document.getElementById("fvtrgprice").innerHTML = data.fairValuedTargetPrice;
-    document.getElementById("estEps").innerHTML = data.estimatedEPS;
-    currentSharePrice = data.currentSharePrice;
-    if(data.fairValuedTargetPrice>currentSharePrice)
-        document.getElementById("fvtrgprice").style.color = "green";
+    if(upside<0)
+     document.getElementById("upside").style.color = "red";
     else
-        document.getElementById("fvtrgprice").style.color = "red";
-
-
-    showCalcPE(data.stockpriceList);
-}
+      document.getElementById("upside").style.color = "green";
+ }
 
 function showCalcPE(stockpriceList){
     for(var i=0;i<stockpriceList.length;i++){
@@ -383,6 +228,8 @@ function postRequest(url, requestBody,onloadfunc){
 }
 
 /*============================  Utility Functions ===================================*/
+
+
 
 
 function splitAndFill(ele){

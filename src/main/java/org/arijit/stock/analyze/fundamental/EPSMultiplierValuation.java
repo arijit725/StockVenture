@@ -3,14 +3,13 @@ package org.arijit.stock.analyze.fundamental;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.AnalyzedInfoDto;
+import org.arijit.stock.analyze.analysisdto.EPSMutlipliedValuationModelDto;
 import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.YearlyReportDto;
 import org.arijit.stock.analyze.util.FundamentalAnalysisUtil;
 import org.arijit.stock.analyze.util.StockUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class EPSMultiplierValuation implements  IFundamentalEvaluation {
@@ -25,42 +24,75 @@ public class EPSMultiplierValuation implements  IFundamentalEvaluation {
 
     @Override
     public void evaluate(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto, int year) throws Exception {
+        analyzedInfoDto.getEpsMutlipliedValuationModelDto().setEvluated(false);
         double epsTTM = fundamentalInfoDto.getCompanyDto().getTtmeps();
-        double growthRate = calcGrowthRate(fundamentalInfoDto,analyzedInfoDto,year);
-        double disCountRate = analyzedInfoDto.getEconomicGrowthDCFDto().getDiscountRate();
+        double growthRate = analyzedInfoDto.getEpsMutlipliedValuationModelDto().getGrowthRate();
+        double disCountRate = analyzedInfoDto.getEpsMutlipliedValuationModelDto().getDiscountRate();
+        double estimatedPERatio = analyzedInfoDto.getEpsMutlipliedValuationModelDto().getEstimatedPE();
+        analyzedInfoDto.getEpsMutlipliedValuationModelDto().setCurrentPrice(fundamentalInfoDto.getCompanyDto().getCurrentSharePrice());
+        logger.info("EPS TTM: "+epsTTM+" growthRate: "+growthRate+" discountRate: "+disCountRate+ "Estimated peRatio: "+estimatedPERatio);
+        Map<Integer, EPSMutlipliedValuationModelDto.ProjectionDto> projectionDtoMap = analyzedInfoDto.getEpsMutlipliedValuationModelDto().getProjectionDtoMap();
+        calcEPSProjection(projectionDtoMap,epsTTM,growthRate);
+        logger.info("Projected Valuation with estimated EPS : "+projectionDtoMap);
+        caclIntrinsicprojection(projectionDtoMap,estimatedPERatio,disCountRate);
+        logger.info("Projected Valuation with estimated Intrinsic Value : "+projectionDtoMap);
 
-        double peRatio = analyzedInfoDto.getRatioAnalysisInfo().getForwardPEAnalysis().getForwardPE();
-        double marginOfSafty = analyzedInfoDto.getEconomicGrowthDCFDto().getMarginOfSafty();
+        preciseProjection(projectionDtoMap);
+        double targetPrice = projectionDtoMap.get(1).getIntrinsicValue();
 
-        logger.info("EPS TTM: "+epsTTM+" growthRate: "+growthRate+" discountRate: "+disCountRate+ "Forward peRatio: "+peRatio);
-
-        List<ProjectedValuation> projectedValuationList = new ArrayList<>(5);
-        double presentEPS = epsTTM;
-        for(int i=0;i<5;i++){
-            int j = i+1;
-            ProjectedValuation projectedValuation = new ProjectedValuation();
-            projectedValuation.year=j;
-            projectedValuation.estimatedEPS = calcEstimatedEPS(presentEPS,growthRate);
-            presentEPS = projectedValuation.estimatedEPS;
-            projectedValuationList.add(projectedValuation);
-        }
-        logger.info("Projected Valuation with estimated EPS : "+projectedValuationList);
-        //at this point presentEPS must be updated with 5th year estimated eps.
-        double estimatedEPS = presentEPS;
-        for(int i=projectedValuationList.size()-1;i>=0;i--){
-            ProjectedValuation projectedValuation = projectedValuationList.get(i);
-            double terminalValuation = projectedValuation.estimatedEPS * peRatio;
-            terminalValuation =  terminalValuation /(1+disCountRate);
-            projectedValuation.intrinsicValue = terminalValuation;
-        }
-
-        logger.info("Projected Valuation with Intrinsic Value :"+projectedValuationList);
-        double targetPrice = projectedValuationList.get(0).intrinsicValue;
-
-        double mrgTargetPrice = targetPrice - (targetPrice*marginOfSafty/100);
-        logger.info("Target Price: "+targetPrice+" After Margin of Safty: "+mrgTargetPrice);
+        analyzedInfoDto.getEpsMutlipliedValuationModelDto().setFinalIntrinsicValue(targetPrice);
+        logger.info("Target Price: "+targetPrice);
+        analyzedInfoDto.getEpsMutlipliedValuationModelDto().setEvluated(true);
     }
 
+    /**
+     * Calculate Intrinsic value in reverse fasion
+     * @param projectionDtoMap
+     * @param esimatedPE
+     * @param discountRate
+     */
+    private void caclIntrinsicprojection(Map<Integer, EPSMutlipliedValuationModelDto.ProjectionDto> projectionDtoMap,double esimatedPE, double discountRate){
+        EPSMutlipliedValuationModelDto.ProjectionDto lastYearProjection = projectionDtoMap.get(5);
+        double lastYearIntrinsicValue = lastYearProjection.getTtmEPS()*esimatedPE;
+        lastYearProjection.setIntrinsicValue(lastYearIntrinsicValue);
+        logger.info("5th year projection: "+lastYearProjection);
+        double intrinsicValue = lastYearIntrinsicValue;
+        double dRate = (double)discountRate/100;
+
+        for(int i=4;i>0;i--){
+            EPSMutlipliedValuationModelDto.ProjectionDto projectionDto = projectionDtoMap.get(i);
+            double newIntrinsicValue = intrinsicValue/(1+dRate);
+            projectionDto.setIntrinsicValue(newIntrinsicValue);
+            intrinsicValue = newIntrinsicValue;
+        }
+    }
+    private void calcEPSProjection(Map<Integer, EPSMutlipliedValuationModelDto.ProjectionDto> projectionDtoMap, double ttmEPS, double growthRate){
+        Iterator<Map.Entry<Integer, EPSMutlipliedValuationModelDto.ProjectionDto>> it = projectionDtoMap.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry<Integer, EPSMutlipliedValuationModelDto.ProjectionDto> entry = it.next();
+            if(entry.getKey()==1){
+                //this is first year, so projected eps  == ttm eps
+                entry.getValue().setTtmEPS(ttmEPS);
+                continue;
+            }
+            double projectedEPS = calcEstimatedEPS(ttmEPS,growthRate);
+            entry.getValue().setTtmEPS(projectedEPS);
+            //update ttmEPS with (n-1) year ttmeps
+            ttmEPS = projectedEPS;
+        }
+    }
+
+    private void preciseProjection(Map<Integer, EPSMutlipliedValuationModelDto.ProjectionDto> projectionDtoMap){
+        projectionDtoMap.entrySet().stream().forEach(item->{
+            double intrinsicValue = item.getValue().getIntrinsicValue();
+            intrinsicValue = Double.parseDouble(StockUtil.convertDoubleToPrecision(intrinsicValue,2));
+            item.getValue().setIntrinsicValue(intrinsicValue);
+
+            double eps = item.getValue().getTtmEPS();
+            eps = Double.parseDouble(StockUtil.convertDoubleToPrecision(eps,2));
+            item.getValue().setTtmEPS(eps);
+        });
+    }
     /**
      * Calculate estimated eps
      */

@@ -1727,22 +1727,67 @@ function pevaluationMrgnOfSfty(mrgnOfSfty){
 }
 
 
-function marginofsafty(ele){
-        var marginofsafty = ele.value;
-        marginofsafty = parseFloat(marginofsafty);
-        pevaluationMrgnOfSfty(marginofsafty);
-}
 
+
+
+
+
+/*====================== EPS Multiplier Valuation Model =========================*/
 
 function epsmultiplierModel(){
     console.log("epsmultiplierModel action is triggered");
     window.open("eps-multiplier.html?stockID="+stockID);
     window.focus();
 
-    fetchPeValuationEstimation();
+    fetchEPSMultiplerValuationEstimation();
+}
+
+var epsvaltm;
+function fetchEPSMultiplerValuationEstimation(){
+     var url = getStockValuationUrl+'/epsmultiplier';
+            var jsonResonse = GetRawBookContent(url);
+            console.log("showepsmultiplier: response: "+jsonResonse);
+            var data = JSON.parse(jsonResonse);
+            console.log(" Fetching epsmultiplier value: "+data);
+            epsvaltm = setTimeout(fetchEPSMultiplerValuationEstimation, 5000);
+            if(data.evluated){
+                var ele = document.getElementById("epsmultiplierestimation");
+                ele.innerHTML = data.finalIntrinsicValue;
+                document.getElementById("epsmultiplierestimationrgnsfty").innerHTML =data.fairValuedTargetPrice;
+                clearTimeout(epsvaltm);
+            }
 }
 
 
+function epsmultipliervaluationMrgnOfSfty(mrgnOfSfty){
+    var targetPrice = document.getElementById("epsmultiplierestimation").innerHTML;
+    targetPrice = parseFloat(targetPrice);
+    console.log("[PEValuation] mrgnOfSfty : "+mrgnOfSfty+" currentSharePrice: "+currentSharePrice+" targetPrice: "+targetPrice);
+    var targetPriceMrgn = targetPrice*(1-(mrgnOfSfty/100));
+    document.getElementById("epsmultiplierestimationrgnsfty").innerHTML = targetPriceMrgn;
+    console.log("[PEValuation] targetPriceMrgn: "+targetPriceMrgn);
+    if(targetPriceMrgn>currentSharePrice)
+            document.getElementById("epsmultiplierestimationrgnsfty").style.color = "green";
+    else
+       document.getElementById("epsmultiplierestimationrgnsfty").style.color = "red";
+
+    var upside = (targetPriceMrgn-currentSharePrice)/currentSharePrice*100;
+        document.getElementById("epsmultiplierupside").innerHTML = upside;
+
+    if(upside<0)
+     document.getElementById("epsmultiplierupside").style.color = "red";
+    else
+      document.getElementById("epsmultiplierupside").style.color = "green";
+}
+
+
+
+function marginofsafty(ele){
+        var marginofsafty = ele.value;
+        marginofsafty = parseFloat(marginofsafty);
+        pevaluationMrgnOfSfty(marginofsafty);
+        epsmultipliervaluationMrgnOfSfty(marginofsafty);
+}
 /*====================== Stock Counter Model =========================*/
 function stockCounter(){
     var totalInvestmentAmount = parseFloat(document.getElementById("invstAmt").value);

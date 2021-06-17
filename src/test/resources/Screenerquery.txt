@@ -5,4 +5,17 @@ Current price <100 AND
 Market Capitalization >1000
 
 
+# Value-Growth-Screen-1
+
+(Market Capitalization > 500) AND
+(Average return on equity 5Years > 20) AND
+Profit growth 5Years >20% AND
+EPS >20 AND
+(Debt to equity < 1.5) AND
+(Interest Coverage Ratio > 2) AND
+( PEG Ratio <= 1) AND
+(Profit growth 5Years > 20)
+
+
+
 

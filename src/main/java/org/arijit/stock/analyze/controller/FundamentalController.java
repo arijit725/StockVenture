@@ -747,6 +747,11 @@ public class FundamentalController {
                     String peValuationDtoStr = StockUtil.generateJsonString(peValuationDto);
                     res = ResponseEntity.ok(peValuationDtoStr);
                     break;
+                case "epsmultiplier":
+                    EPSMutlipliedValuationModelDto epsMutlipliedValuationModelDto = stockAnalysisService.epsMultiplierValuation(stockID,requestBody);
+                    String epsMultiplierValuationStr = StockUtil.generateJsonString(epsMutlipliedValuationModelDto);
+                    res = ResponseEntity.ok(epsMultiplierValuationStr);
+                    break;
                 case "evebitda":
                     break;
                 default:
@@ -786,6 +791,11 @@ public class FundamentalController {
                     PEValuationModelDto peValuationDto = stockAnalysisService.getPEValuation(stockID);
                     String peValuationDtoStr = StockUtil.generateJsonString(peValuationDto);
                     res = ResponseEntity.ok(peValuationDtoStr);
+                    break;
+                case "epsmultiplier":
+                    EPSMutlipliedValuationModelDto epsMutlipliedValuationModelDto = stockAnalysisService.getEPSMultiplierValuation(stockID);
+                    String epsMultiplierValuationDtoStr = StockUtil.generateJsonString(epsMutlipliedValuationModelDto);
+                    res = ResponseEntity.ok(epsMultiplierValuationDtoStr);
                     break;
                 default:
                     logger.error("Valuation model not found for type: " + valuationType);

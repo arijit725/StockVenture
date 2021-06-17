@@ -208,4 +208,45 @@ public class StockAnalysisService {
 
         return analyzedInfoDto.getPeValuationModelDto();
     }
+
+
+    public EPSMutlipliedValuationModelDto epsMultiplierValuation(String stockID,String requestBody) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+        try{
+            logger.info("==========================EPSMultiplierValuation==================================");
+            Gson gson = new Gson();
+            logger.info("request body: "+requestBody);
+            EPSMutlipliedValuationModelDto epsMutlipliedValuationModelDto = gson.fromJson(requestBody, EPSMutlipliedValuationModelDto.class);
+            logger.info("EPSMutlipliedValuationModelDto: "+epsMutlipliedValuationModelDto);
+            analyzedInfoDto.getEpsMutlipliedValuationModelDto().setGrowthRate(epsMutlipliedValuationModelDto.getGrowthRate());
+            analyzedInfoDto.getEpsMutlipliedValuationModelDto().setDiscountRate(epsMutlipliedValuationModelDto.getDiscountRate());
+            analyzedInfoDto.getEpsMutlipliedValuationModelDto().setEstimatedPE(epsMutlipliedValuationModelDto.getEstimatedPE());
+            try {
+                EPSMultiplierValuation.getInstance().evaluate(fundamentalInfoDto, analyzedInfoDto, 7);
+            }catch (Exception e){
+                logger.error(e);
+            }
+            return analyzedInfoDto.getEpsMutlipliedValuationModelDto();
+        }catch(Exception e){
+            logger.error("Unable to evaluate ",e);
+        }
+
+        return null;
+    }
+
+    public EPSMutlipliedValuationModelDto getEPSMultiplierValuation(String stockID) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+
+        return analyzedInfoDto.getEpsMutlipliedValuationModelDto();
+    }
 }

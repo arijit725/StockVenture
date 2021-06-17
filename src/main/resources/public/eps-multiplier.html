@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>proofassistance</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="css/stockreport.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script  src="script/eps-multiplier.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://www.myersdaily.org/joseph/javascript/md5.js"></script>
+
+    <!--    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>-->
+</head>
+
+<body onload="onReportLoad()">
+<div class="header">
+    <label id="companyName"></label> | <label id="industry"></label>
+</div>
+<div id="Company-Details" class="company-details">
+</div>
+<div class="financial-details">
+    <div id="datafeed" class="reivew-header">EPS PE Multiplier Valuation</div>
+    <div id="inputDiv" class="tableholder">
+        <table><tr>
+            <td>Growth Rate:</td><td><input type="text" id="growthrate" size="7"></td>
+            <td>Discount Rate:</td><td><input type="text" id="discountrate" size="7"></td>
+            <td>Estimated PE Ratio</td><td><input type="text" id="forwardpe" size="7"></td>
+        </tr>
+        <tr>
+            <td>
+                <input type="button" value="Generate-Report" class="report-generate" onclick="generateReport()">
+            </td>
+        </tr>
+        </table>
+    </div>
+        <div class="tableholder">
+        <table cellspacing="0" cellpadding="0">
+            <tr>
+                <th>DataPoints</th>
+                <th>Year-1</th>
+                <th>Year-2</th>
+                <th>Year-3</th>
+                <th>Year-4</th>
+                <th>Year-5</th>
+            </tr>
+            <tr>
+                <td>Projected EPS</td>
+                <td id ="projeps1" >0</td>
+                <td id ="projeps2" >0</td>
+                <td id ="projeps3" >0</td>
+                <td id ="projeps4" >0</td>
+                <td id ="projeps5" >0</td>
+            </tr>
+            <tr>
+                <td>Projected Intrinsic Value</td>
+                <td id ="intrn1" ></td>
+                <td id ="intrn2" ></td>
+                <td id ="intrn3" ></td>
+                <td id ="intrn4" ></td>
+                <td id ="intrn5" ></td>
+            </tr>
+        </table>
+        </div>
+    <div class="tableholder">
+        <table>
+            <tr>
+                <td>Intrinsic Value: </td><td id="finalIntrinsicValue">XXXX</td>
+            </tr>
+            <tr>
+                <td>Upside: </td><td id="upside">XX.XX</td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

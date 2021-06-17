@@ -81,6 +81,10 @@ public class AnalyzedInfoDto {
         return peValuationModelDto;
     }
 
+    public EPSMutlipliedValuationModelDto getEpsMutlipliedValuationModelDto() {
+        return epsMutlipliedValuationModelDto;
+    }
+
     @Override
     public String toString() {
         return "AnalyzedInfoDto{" +
