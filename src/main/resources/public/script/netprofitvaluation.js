@@ -152,6 +152,7 @@ function generateReport(){
     var netProfitMap = createNetProfitDataSet();
     inputDataMap['netprofitMap'] =netProfitMap;
     inputDataMap['discountRate']=document.getElementById("discountrate").value;
+    inputDataMap['estimatedPE']=document.getElementById("estPE").value;
     console.log(inputDataMap);
     var requestBody = generateJsonString(inputDataMap);
     console.log(requestBody);

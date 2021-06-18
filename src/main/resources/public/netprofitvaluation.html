@@ -70,10 +70,16 @@
                 </td>
             </tr>
             <tr>
-                <td>Discount Rate: <input type="text" id="discountrate" size="7"></td>
-                <td>
-                    <input type="button" value="Generate-Report" class="report-generate" onclick="generateReport()">
-                </td>
+                <table>
+                    <tr>
+                        <td>Discount Rate: <input type="text" id="discountrate" size="7"></td>
+                        <td>Estimated PE: <input type="text" id="estPE" size="7"></td>
+                        <td>
+                            <input type="button" value="Generate-Report" class="report-generate" onclick="generateReport()">
+                        </td>
+                    </tr>
+
+                </table>
             </tr>
         </table>
 
@@ -156,6 +162,7 @@
                             <tr><td>Discounted Market Capital</td><td id="discap">XXX</td></tr>
                             <tr><td>Number of Outstanding Shares</td><td id="outshare">XXX</td></tr>
                             <tr><td>Intrinsic Value</td><td id="intrnValue">XXX</td></tr>
+                            <tr><td>Upside: </td><td id="upside">XX.XX</td></tr>
                         </table>
                     </div>
                 </td>

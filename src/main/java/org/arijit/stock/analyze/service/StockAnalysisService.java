@@ -266,6 +266,7 @@ public class StockAnalysisService {
             logger.info("NetProfitValuationModelDto: "+netProfitValuationModelDto);
             analyzedInfoDto.getNetProfitValuationModelDto().setDiscountRate(netProfitValuationModelDto.getDiscountRate());
             analyzedInfoDto.getNetProfitValuationModelDto().setNetprofitMap(netProfitValuationModelDto.getNetprofitMap());
+            analyzedInfoDto.getNetProfitValuationModelDto().setEstimatedPE(netProfitValuationModelDto.getEstimatedPE());
             try {
                 NetProfitValuation.getInstance().evaluate(fundamentalInfoDto, analyzedInfoDto, 7);
             }catch (Exception e){

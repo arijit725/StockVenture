@@ -98,8 +98,10 @@ public class NetProfitValuation implements  IFundamentalEvaluation {
         Here calculate estimated market capital after 10 years and discounted market capital after 10 years.
          */
         double industryPE = fundamentalInfoDto.getCompanyDto().getIndustryPE();
+        double estimatedPE = analyzedInfoDto.getNetProfitValuationModelDto().getEstimatedPE();
         double discountRate = analyzedInfoDto.getNetProfitValuationModelDto().getDiscountRate();
-        double estimatedMarketCapital = estimated10thYearProfit*industryPE;
+//        double estimatedMarketCapital = estimated10thYearProfit*industryPE;
+        double estimatedMarketCapital = estimated10thYearProfit*estimatedPE;
         double denominator = 1+ (discountRate/100);
         denominator = Math.pow(denominator,10);
         double discountedMarketCapital = estimatedMarketCapital/denominator;

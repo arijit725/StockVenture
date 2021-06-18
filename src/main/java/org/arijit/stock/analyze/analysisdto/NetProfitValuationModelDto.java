@@ -14,7 +14,7 @@ public class NetProfitValuationModelDto {
     private double finalIntrinsicValue;
     private double estimatedProfit;
     private double outstandingShare;
-
+    private double estimatedPE;
     private Map<Integer, Double> projectionDtoMap;
 
     private boolean evluated;
@@ -41,6 +41,14 @@ public class NetProfitValuationModelDto {
 
     public double getDiscountedMarketCapital() {
         return discountedMarketCapital;
+    }
+
+    public double getEstimatedPE() {
+        return estimatedPE;
+    }
+
+    public void setEstimatedPE(double estimatedPE) {
+        this.estimatedPE = estimatedPE;
     }
 
     public void setDiscountedMarketCapital(double discountedMarketCapital) {

@@ -1684,6 +1684,7 @@ function marginofsafty(ele){
         marginofsafty = parseFloat(marginofsafty);
         pevaluationMrgnOfSfty(marginofsafty);
         epsmultipliervaluationMrgnOfSfty(marginofsafty);
+        netprofitvaluationMrgnOfSfty(marginofsafty);
 }
 
 /*====================== PE Valuation Model =========================*/
