@@ -119,39 +119,39 @@ function createCompanyTable(){
 
     var row2 = table.insertRow();
     var sharepriceVal = document.createElement("TD");
-        sharepriceVal.innerHTML=companyDetails.currentSharePrice;
-        row2.appendChild(sharepriceVal);
-        currentSharePrice = companyDetails.currentSharePrice;
+    sharepriceVal.innerHTML=companyDetails.currentSharePrice;
+    row2.appendChild(sharepriceVal);
+    currentSharePrice = companyDetails.currentSharePrice;
 
-        var industryPEVal = document.createElement("TD");
-        industryPEVal.innerHTML=companyDetails.industryPE;
-        row2.appendChild(industryPEVal);
+    var industryPEVal = document.createElement("TD");
+    industryPEVal.innerHTML=companyDetails.industryPE;
+    row2.appendChild(industryPEVal);
 
-        var marketCapVal = document.createElement("TD");
-        marketCapVal.innerHTML=companyDetails.marketCap;
-        row2.appendChild(marketCapVal);
+    var marketCapVal = document.createElement("TD");
+    marketCapVal.innerHTML=companyDetails.marketCap;
+    row2.appendChild(marketCapVal);
 
-        var faceValueVal = document.createElement("TD");
-        faceValueVal.innerHTML=companyDetails.faceValue;
-        row2.appendChild(faceValueVal);
+    var faceValueVal = document.createElement("TD");
+    faceValueVal.innerHTML=companyDetails.faceValue;
+    row2.appendChild(faceValueVal);
 
-         var ttmpeVal = document.createElement("TD");
-         ttmpeVal.innerHTML=companyDetails.ttmpe;
-         row2.appendChild(ttmpeVal);
+     var ttmpeVal = document.createElement("TD");
+     ttmpeVal.innerHTML=companyDetails.ttmpe;
+     row2.appendChild(ttmpeVal);
 
-         var ttmepsVal = document.createElement("TD");
-         ttmepsVal.innerHTML=companyDetails.ttmeps;
-          row2.appendChild(ttmepsVal);
+     var ttmepsVal = document.createElement("TD");
+     ttmepsVal.innerHTML=companyDetails.ttmeps;
+      row2.appendChild(ttmepsVal);
 
-          var currentPVVal = document.createElement("TD");
-           currentPVVal.innerHTML=companyDetails.currentpv;
-            row2.appendChild(currentPVVal);
-        var companyBetaVal = document.createElement("TD");
-        companyBetaVal.innerHTML=companyDetails.cmpBeta;
-        row2.appendChild(companyBetaVal);
+      var currentPVVal = document.createElement("TD");
+       currentPVVal.innerHTML=companyDetails.currentpv;
+        row2.appendChild(currentPVVal);
+    var companyBetaVal = document.createElement("TD");
+    companyBetaVal.innerHTML=companyDetails.cmpBeta;
+    row2.appendChild(companyBetaVal);
 
-     var dvTable = document.getElementById(divID);
-     dvTable.appendChild(table);
+    var dvTable = document.getElementById(divID);
+    dvTable.appendChild(table);
 }
 
 function getCompanyDetails(){
@@ -1679,6 +1679,13 @@ function showEVEbitdaValue(years){
     showEVEBITDAProjection(jsonResonse);
 }
 
+function marginofsafty(ele){
+        var marginofsafty = ele.value;
+        marginofsafty = parseFloat(marginofsafty);
+        pevaluationMrgnOfSfty(marginofsafty);
+        epsmultipliervaluationMrgnOfSfty(marginofsafty);
+}
+
 /*====================== PE Valuation Model =========================*/
 
 
@@ -1782,12 +1789,57 @@ function epsmultipliervaluationMrgnOfSfty(mrgnOfSfty){
 
 
 
-function marginofsafty(ele){
-        var marginofsafty = ele.value;
-        marginofsafty = parseFloat(marginofsafty);
-        pevaluationMrgnOfSfty(marginofsafty);
-        epsmultipliervaluationMrgnOfSfty(marginofsafty);
+
+
+/*====================== Net Profit Valuation Model =========================*/
+
+function netprofitvaluationmodel(){
+    console.log("netprofitvaluationmodel action is triggered");
+    window.open("netprofitvaluation.html?stockID="+stockID);
+    window.focus();
+
+    fetchNetProfitValuationEstimation();
 }
+
+var netprofitvaltm;
+function fetchNetProfitValuationEstimation(){
+     var url = getStockValuationUrl+'/netprofitvaluation';
+            var jsonResonse = GetRawBookContent(url);
+            console.log("showe Net Profit Valuation: response: "+jsonResonse);
+            var data = JSON.parse(jsonResonse);
+            console.log(" Fetching Net Profit Valuation value: "+data);
+            netprofitvaltm = setTimeout(fetchNetProfitValuationEstimation, 5000);
+            if(data.evluated){
+                var ele = document.getElementById("netprofitestimation");
+                ele.innerHTML = data.finalIntrinsicValue;
+                document.getElementById("netprofitmationrgnsfty").innerHTML =data.fairValuedTargetPrice;
+                clearTimeout(netprofitvaltm);
+            }
+}
+
+
+function netprofitvaluationMrgnOfSfty(mrgnOfSfty){
+    var targetPrice = document.getElementById("netprofitestimation").innerHTML;
+    targetPrice = parseFloat(targetPrice);
+    console.log("[NetProfitValuation] mrgnOfSfty : "+mrgnOfSfty+" currentSharePrice: "+currentSharePrice+" targetPrice: "+targetPrice);
+    var targetPriceMrgn = targetPrice*(1-(mrgnOfSfty/100));
+    document.getElementById("netprofitmationrgnsfty").innerHTML = targetPriceMrgn;
+    console.log("[NetProfitValuation] targetPriceMrgn: "+targetPriceMrgn);
+    if(targetPriceMrgn>currentSharePrice)
+            document.getElementById("netprofitmationrgnsfty").style.color = "green";
+    else
+       document.getElementById("netprofitmationrgnsfty").style.color = "red";
+
+    var upside = (targetPriceMrgn-currentSharePrice)/currentSharePrice*100;
+        document.getElementById("netprofitupside").innerHTML = upside;
+
+    if(upside<0)
+     document.getElementById("netprofitupside").style.color = "red";
+    else
+      document.getElementById("netprofitupside").style.color = "green";
+}
+
+
 /*====================== Stock Counter Model =========================*/
 function stockCounter(){
     var totalInvestmentAmount = parseFloat(document.getElementById("invstAmt").value);

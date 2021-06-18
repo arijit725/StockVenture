@@ -306,24 +306,47 @@
     </div>
 <div id="targetPrice" class="tableholder">
     <table>
-        <tr><th>Valuation Method</th>
-            <th>Target Price</th>
-            <th>Margin of safty<input type="text" id="tpmargin" size="1" oninput="marginofsafty(this)"></th>
-            <th>Upside</th>
-        </tr>
         <tr>
-            <td><input type="button" value="PE-Valuation Model" onclick="peValuationMode()"></td>
-            <td align="center" id="pevaluationestimation"></td>
-            <td align="center" id="pevaluationestimationrgnsfty"></td>
-            <td align="center" id="pevaluationupside"></td>
-        </tr>
-        <tr>
-            <td><input type="button" value="EPS-Multiplier-Valuation" onclick="epsmultiplierModel()"></td>
-            <td align="center" id="epsmultiplierestimation"></td>
-            <td align="center" id="epsmultiplierestimationrgnsfty"></td>
-            <td align="center" id="epsmultiplierupside"></td>
+            <td style="vertical-align:top">
+                <table>
+                    <tr><th>Valuation Method</th>
+                        <th>Target Price</th>
+                        <th>Margin of safty<input type="text" id="tpmargin" size="1" oninput="marginofsafty(this)"></th>
+                        <th>Upside</th>
+                    </tr>
+                    <tr>
+                        <td><input type="button" value="PE-Valuation Model" onclick="peValuationMode()"></td>
+                        <td align="center" id="pevaluationestimation"></td>
+                        <td align="center" id="pevaluationestimationrgnsfty"></td>
+                        <td align="center" id="pevaluationupside"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="button" value="EPS-Multiplier-Valuation" onclick="epsmultiplierModel()"></td>
+                        <td align="center" id="epsmultiplierestimation"></td>
+                        <td align="center" id="epsmultiplierestimationrgnsfty"></td>
+                        <td align="center" id="epsmultiplierupside"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="button" value="Net-Profit-Valuation" onclick="netprofitvaluationmodel()"></td>
+                        <td align="center" id="netprofitestimation"></td>
+                        <td align="center" id="netprofitmationrgnsfty"></td>
+                        <td align="center" id="netprofitupside"></td>
+                    </tr>
+                </table>
+            </td>
+            <td style="vertical-align:top">
+                <table>
+                    <tr><th>Valuation Method</th>
+                        <th>Target Price</th>
+                        <th>Margin of safty<input type="text" id="tpmargin1" size="1" oninput="marginofsafty(this)"></th>
+                        <th>Upside</th>
+                    </tr>
+                </table>
+                Other Valuations should come here
+            </td>
         </tr>
     </table>
+
 </div>
 <div id="stockCounter" class ="tableholder">
     <p class="subject-line">Stock Split per Bid</p>

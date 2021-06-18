@@ -249,4 +249,44 @@ public class StockAnalysisService {
 
         return analyzedInfoDto.getEpsMutlipliedValuationModelDto();
     }
+
+
+    public NetProfitValuationModelDto netProfitValuation(String stockID,String requestBody) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+        try{
+            logger.info("==========================NetProfitValuation==================================");
+            Gson gson = new Gson();
+            logger.info("request body: "+requestBody);
+            NetProfitValuationModelDto netProfitValuationModelDto = gson.fromJson(requestBody, NetProfitValuationModelDto.class);
+            logger.info("NetProfitValuationModelDto: "+netProfitValuationModelDto);
+            analyzedInfoDto.getNetProfitValuationModelDto().setDiscountRate(netProfitValuationModelDto.getDiscountRate());
+            analyzedInfoDto.getNetProfitValuationModelDto().setNetprofitMap(netProfitValuationModelDto.getNetprofitMap());
+            try {
+                NetProfitValuation.getInstance().evaluate(fundamentalInfoDto, analyzedInfoDto, 7);
+            }catch (Exception e){
+                logger.error(e);
+            }
+            return analyzedInfoDto.getNetProfitValuationModelDto();
+        }catch(Exception e){
+            logger.error("Unable to evaluate ",e);
+        }
+
+        return null;
+    }
+
+    public NetProfitValuationModelDto getNetProfitValuation(String stockID) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+
+        return analyzedInfoDto.getNetProfitValuationModelDto();
+    }
 }

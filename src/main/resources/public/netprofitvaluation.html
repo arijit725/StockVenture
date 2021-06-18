@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>netprofitvaluation</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="css/stockreport.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script  src="script/netprofitvaluation.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://www.myersdaily.org/joseph/javascript/md5.js"></script>
+
+    <!--    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>-->
+</head>
+
+<body onload="onReportLoad()">
+<div class="header">
+    <label id="companyName"></label> | <label id="industry"></label>
+</div>
+<div id="Company-Details" class="company-details">
+</div>
+<div class="financial-details">
+    <div id="datafeed" class="reivew-header">EPS PE Multiplier Valuation</div>
+        <div class="tableholder">
+        <table>
+            <tr>
+                <td>
+                    <table cellspacing="0" cellpadding="0">
+                        <tr>
+                            <th>DataPoints</th>
+                            <th>Year-1</th>
+                            <th>Year-2</th>
+                            <th>Year-3</th>
+                            <th>Year-4</th>
+                            <th>Year-5</th>
+                            <th>Year-6</th>
+                            <th>Year-7</th>
+                            <th>Year-8</th>
+                            <th>Year-9</th>
+                            <th>Year-10</th>
+                        </tr>
+                        <tr>
+                            <td>Date</td>
+                            <td><input type="text" id="date-1" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-2" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-3" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-4" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-5" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-6" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-7" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-8" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-9" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-10" size="7" oninput="splitAndFill(this)"></td>
+                        </tr>
+                        <tr>
+                            <td>Net Profit</td>
+                            <td><input type="text" id="np-1" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="np-2" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="np-3" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="np-4" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="np-5" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="np-6" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="np-7" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="np-8" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="np-9" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="np-10" size="7" oninput="splitAndFill(this)"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>Discount Rate: <input type="text" id="discountrate" size="7"></td>
+                <td>
+                    <input type="button" value="Generate-Report" class="report-generate" onclick="generateReport()">
+                </td>
+            </tr>
+        </table>
+
+        </div>
+    <div class="tableholder">
+        <table>
+            <tr>
+                <td style="vertical-align:top">
+                    <div class="tableholder">
+                    <table>
+                        <tr>
+                            <p class="subject-line">Next 10 Years Estimated Profit:</p>
+                        </tr>
+                        <tr>
+                            <th>Year-1</th>
+                            <th>Year-2</th>
+                            <th>Year-3</th>
+                            <th>Year-4</th>
+                            <th>Year-5</th>
+                            <th>Year-6</th>
+                            <th>Year-7</th>
+                            <th>Year-8</th>
+                            <th>Year-9</th>
+                            <th>Year-10</th>
+                        </tr>
+                        <tr>
+                            <td id="estNp1">XXXX</td>
+                            <td id="estNp2">XXXX</td>
+                            <td id="estNp3">XXXX</td>
+                            <td id="estNp4">XXXX</td>
+                            <td id="estNp5">XXXX</td>
+                            <td id="estNp6">XXXX</td>
+                            <td id="estNp7">XXXX</td>
+                            <td id="estNp8">XXXX</td>
+                            <td id="estNp9">XXXX</td>
+                            <td id="estNp10">XXXX</td>
+
+                        </tr>
+                    </table>
+                    </div>
+                </td>
+                <td style="vertical-align:top">
+                    <div class="tableholder">
+                        <table>
+                            <tr>
+                                <p class="subject-line">Net Profit CAGR Estimation</p>
+                            </tr>
+                            <tr>
+                                <th>10 years</th>
+                                <th>5 years</th>
+                            </tr>
+                            <tr>
+                                <td id="yr10CAGR">XXX</td>
+                                <td id="yr5CAGR">XXX</td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td style="vertical-align:top">
+                    <div class="tableholder">
+                    <table>
+                        <tr>
+                            <p class="subject-line">Estimated Profit Parameters:</p>
+                        </tr>
+                        <tr><td>Estimated Net Profit Growth for 10 years[CAGR]</td><td id="cagrPg">XXX</td></tr>
+                        <tr><td>Estimated Net Profit After 10 Years</td><td id="estnp">XXX</td></tr>
+                        <tr><td>Estimated Market Capital After 10 Years</td><td id="estmcap">XXX</td></tr>
+                    </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td style="vertical-align:top">
+                    <div class="tableholder">
+                        <table>
+                            <tr>
+                                <p class="subject-line">Estimated Intrinsic Value:</p>
+                            </tr>
+                            <tr><td>Discounted Market Capital</td><td id="discap">XXX</td></tr>
+                            <tr><td>Number of Outstanding Shares</td><td id="outshare">XXX</td></tr>
+                            <tr><td>Intrinsic Value</td><td id="intrnValue">XXX</td></tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

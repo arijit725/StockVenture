@@ -752,6 +752,11 @@ public class FundamentalController {
                     String epsMultiplierValuationStr = StockUtil.generateJsonString(epsMutlipliedValuationModelDto);
                     res = ResponseEntity.ok(epsMultiplierValuationStr);
                     break;
+                case "netprofitvaluation":
+                    NetProfitValuationModelDto netProfitValuationModelDto = stockAnalysisService.netProfitValuation(stockID,requestBody);
+                    String netProfitValuationStr = StockUtil.generateJsonString(netProfitValuationModelDto);
+                    res = ResponseEntity.ok(netProfitValuationStr);
+                    break;
                 case "evebitda":
                     break;
                 default:
@@ -796,6 +801,11 @@ public class FundamentalController {
                     EPSMutlipliedValuationModelDto epsMutlipliedValuationModelDto = stockAnalysisService.getEPSMultiplierValuation(stockID);
                     String epsMultiplierValuationDtoStr = StockUtil.generateJsonString(epsMutlipliedValuationModelDto);
                     res = ResponseEntity.ok(epsMultiplierValuationDtoStr);
+                    break;
+                case "netprofitvaluation":
+                    NetProfitValuationModelDto netProfitValuationModelDto = stockAnalysisService.getNetProfitValuation(stockID);
+                    String netProfitValuationStr = StockUtil.generateJsonString(netProfitValuationModelDto);
+                    res = ResponseEntity.ok(netProfitValuationStr);
                     break;
                 default:
                     logger.error("Valuation model not found for type: " + valuationType);

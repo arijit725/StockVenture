@@ -17,6 +17,7 @@ public class AnalyzedInfoDto {
     private final EVEBITDAValuationModelDto evebitdaValuationModelDto;
     private final PEValuationModelDto peValuationModelDto;
     private final EPSMutlipliedValuationModelDto epsMutlipliedValuationModelDto;
+    private final NetProfitValuationModelDto netProfitValuationModelDto;
 
     private AnalyzedInfoDto(){
         balanceSheetAnalysisInfo = new BalanceSheetAnalysisInfo();
@@ -31,6 +32,7 @@ public class AnalyzedInfoDto {
         evebitdaValuationModelDto = new EVEBITDAValuationModelDto();
         peValuationModelDto = new PEValuationModelDto();
         epsMutlipliedValuationModelDto = new EPSMutlipliedValuationModelDto();
+        netProfitValuationModelDto = new NetProfitValuationModelDto();
     }
 
     public static AnalyzedInfoDto create(){
@@ -83,6 +85,10 @@ public class AnalyzedInfoDto {
 
     public EPSMutlipliedValuationModelDto getEpsMutlipliedValuationModelDto() {
         return epsMutlipliedValuationModelDto;
+    }
+
+    public NetProfitValuationModelDto getNetProfitValuationModelDto() {
+        return netProfitValuationModelDto;
     }
 
     @Override
