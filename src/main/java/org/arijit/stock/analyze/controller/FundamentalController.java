@@ -757,6 +757,16 @@ public class FundamentalController {
                     String netProfitValuationStr = StockUtil.generateJsonString(netProfitValuationModelDto);
                     res = ResponseEntity.ok(netProfitValuationStr);
                     break;
+                case "twophasedcfvaluation":
+                    DCFTwoPhaseValuationModelDto dcfTwoPhaseValuationModelDto  = stockAnalysisService.dcf2PhaseValuation(stockID,requestBody);
+                    String dcfTwoPhaseStr = StockUtil.generateJsonString(dcfTwoPhaseValuationModelDto);
+                    res = ResponseEntity.ok(dcfTwoPhaseStr);
+                    break;
+                case "waac":
+                    WaacDto waacDto = stockAnalysisService.waacCalculation(stockID,requestBody);
+                    String waacStr = StockUtil.generateJsonString(waacDto);
+                    res = ResponseEntity.ok(waacStr);
+                    break;
                 case "evebitda":
                     break;
                 default:
@@ -806,6 +816,16 @@ public class FundamentalController {
                     NetProfitValuationModelDto netProfitValuationModelDto = stockAnalysisService.getNetProfitValuation(stockID);
                     String netProfitValuationStr = StockUtil.generateJsonString(netProfitValuationModelDto);
                     res = ResponseEntity.ok(netProfitValuationStr);
+                    break;
+                case "twophasedcfvaluation":
+                    DCFTwoPhaseValuationModelDto dcfTwoPhaseValuationModelDto = stockAnalysisService.getDCF2PhaseValuation(stockID);
+                    String dcfTwoPhaseStr = StockUtil.generateJsonString(dcfTwoPhaseValuationModelDto);
+                    res = ResponseEntity.ok(dcfTwoPhaseStr);
+                    break;
+                case "waac":
+                    WaacDto waacDto = stockAnalysisService.getWaacCalculation(stockID);
+                    String waacStr = StockUtil.generateJsonString(waacDto);
+                    res = ResponseEntity.ok(waacStr);
                     break;
                 default:
                     logger.error("Valuation model not found for type: " + valuationType);

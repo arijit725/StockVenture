@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>dcftwophasevaluation</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="css/stockreport.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script  src="script/dcf-2phase-valuation.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://www.myersdaily.org/joseph/javascript/md5.js"></script>
+
+    <!--    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>-->
+</head>
+
+<body onload="onReportLoad()">
+<div class="header">
+    <label id="companyName"></label> | <label id="industry"></label>
+</div>
+<div id="Company-Details" class="company-details">
+</div>
+<div class="financial-details">
+    <div id="datafeed" class="reivew-header">DCF Two Phase Valuation</div>
+        <div class="tableholder">
+        <table>
+            <tr>
+                <td>
+                    <table cellspacing="0" cellpadding="0">
+                        <tr>
+                            <th>DataPoints</th>
+                            <th>Year-10</th>
+                            <th>Year-9</th>
+                            <th>Year-8</th>
+                            <th>Year-7</th>
+                            <th>Year-6</th>
+                            <th>Year-5</th>
+                            <th>Year-4</th>
+                            <th>Year-3</th>
+                            <th>Year-2</th>
+                            <th>Year-1</th>
+                        </tr>
+                        <tr>
+                            <td>Date</td>
+                            <td><input type="text" id="date-1" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-2" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-3" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-4" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-5" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-6" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-7" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-8" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-9" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="date-10" size="7" oninput="splitAndFill(this)"></td>
+                        </tr>
+                        <tr>
+                            <td>FCF</td>
+                            <td><input type="text" id="fcf-1" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="fcf-2" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="fcf-3" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="fcf-4" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="fcf-5" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="fcf-6" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="fcf-7" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="fcf-8" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="fcf-9" size="7" oninput="splitAndFill(this)"></td>
+                            <td><input type="text" id="fcf-10" size="7" oninput="splitAndFill(this)"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <div>
+                <table>
+
+                    <tr>
+                        <td class="tooltip">Growth Rate [ 1 - 5 years ]:
+                            <span class="tooltiptext">Estimated FCF Growth Rate for future 1 - 5 years</span>
+                        </td>
+                        <td> <input type="text" id="growthR1" size="7"></td>
+                        <td class="tooltip">Growth Rate [ 6 - 10 years ]:
+                            <span class="tooltiptext">Estimated FCF Growth Rate for future 6 - 10 years</span></td>
+                        <td> <input type="text" id="growthR2" size="7"></td>
+                    </tr>
+                    <tr>
+                        <td class="tooltip">Discount Rate:
+                            <span class="tooltiptext">Either WAAC rater or 1 year Index return</span>
+                        </td><td> <input type="text" id="discountrate" size="7"></td>
+                        <td class="tooltip">Terminal Growth Rate:<span class="tooltiptext">Max 2% for very Stable Company</span></td>
+                            <td><input type="text" id="termGR" size="7"></td>
+                    </tr>
+                        <tr>
+                        <td>
+                            <input type="button" value="Generate-Report" class="report-generate" onclick="generateReport()">
+                        </td>
+                    </tr>
+                </table>
+                </div>
+            </tr>
+        </table>
+
+        </div>
+    <div class="tableholder">
+        <table>
+            <tr>
+                <td style="vertical-align:top">
+                    <div class="tableholder">
+                    <table>
+                        <tr>
+                            <p class="subject-line">Next 10 Years FCF Projection:</p>
+                        </tr>
+                        <tr>
+                           <th>Year</span></th>
+                            <th>Estimated FCF</th>
+                            <th>Growth Rate</th>
+                            <th>PV of Estimated FCF</th>
+                        </tr>
+                        <tr>
+                            <td id="yr-1" style="text-align:center" >Year-1</td>
+                             <td id="ffcf-1" style="text-align:center">XXXX</td>
+                            <td id="gr-1" style="text-align:center">XX.XX%</td>
+                            <td id="pvfcf-1" style="text-align:center">XXXX</td>
+                        </tr>
+                        <tr style="background-color:lightgray">
+                            <td id="yr-2" style="text-align:center">Year-1</td>
+                            <td id="ffcf-2" style="text-align:center">XXXX</td>
+                            <td id="gr-2" style="text-align:center">XX.XX%</td>
+                            <td id="pvfcf-2" style="text-align:center">XXXX</td>
+                        </tr>
+                        <tr>
+                            <td id="yr-3" style="text-align:center">Year-1</td>
+                            <td id="ffcf-3" style="text-align:center">XXXX</td>
+                            <td id="gr-3" style="text-align:center">XX.XX%</td>
+                            <td id="pvfcf-3"style="text-align:center">XXXX</td>
+                        </tr>
+                        <tr style="background-color:lightgray">
+                            <td id="yr-4" style="text-align:center">Year-1</td>
+                            <td id="ffcf-4" style="text-align:center">XXXX</td>
+                            <td id="gr-4" style="text-align:center">XX.XX%</td>
+                            <td id="pvfcf-4" style="text-align:center">XXXX</td>
+                        </tr>
+                        <tr>
+                            <td id="yr-5" style="text-align:center">Year-1</td>
+                            <td id="ffcf-5" style="text-align:center">XXXX</td>
+                            <td id="gr-5" style="text-align:center">XX.XX%</td>
+                            <td id="pvfcf-5" style="text-align:center">XXXX</td>
+                        </tr>
+                        <tr style="background-color:lightgray">
+                            <td id="yr-6" style="text-align:center">Year-1</td>
+                            <td id="ffcf-6" style="text-align:center">XXXX</td>
+                            <td id="gr-6" style="text-align:center">XX.XX%</td>
+                            <td id="pvfcf-6" style="text-align:center">XXXX</td>
+                        </tr>
+                        <tr>
+                            <td id="yr-7" style="text-align:center">Year-1</td>
+                            <td id="ffcf-7" style="text-align:center">XXXX</td>
+                            <td id="gr-7" style="text-align:center">XX.XX%</td>
+                            <td id="pvfcf-7" style="text-align:center">XXXX</td>
+                        </tr>
+                        <tr style="background-color:lightgray">
+                            <td id="yr-8" style="text-align:center">Year-1</td>
+                            <td id="ffcf-8" style="text-align:center">XXXX</td>
+                            <td id="gr-8" style="text-align:center">XX.XX%</td>
+                            <td id="pvfcf-8" style="text-align:center">XXXX</td>
+                        </tr>
+                        <tr>
+                            <td id="yr-9" style="text-align:center">Year-1</td>
+                            <td id="ffcf-9" style="text-align:center">XXXX</td>
+                            <td id="gr-9" style="text-align:center">XX.XX%</td>
+                            <td id="pvfcf-9" style="text-align:center">XXXX</td>
+                        </tr>
+                        <tr style="background-color:lightgray">
+                            <td id="yr-10" style="text-align:center">Year-1</td>
+                            <td id="ffcf-10" style="text-align:center">XXXX</td>
+                            <td id="gr-10" style="text-align:center">XX.XX%</td>
+                            <td id="pvfcf-10" style="text-align:center">XXXX</td>
+                        </tr>
+                    </table>
+                    </div>
+                </td>
+
+                <td style="vertical-align:top">
+                    <div class="tableholder">
+                    <table>
+                        <tr>
+                            <p class="subject-line">PV Calculation:</p>
+                        </tr>
+                        <tr><td>Initial 3Years Average FCF</td><td id="avgfcf">XXX</td></tr>
+                        <tr><td>10th Year FCF</td><td id="fcf10">XXX</td></tr>
+                        <tr><td>PV of year 1-10 Cash Flow</td><td id="pvfcf10">XXX</td></tr>
+                        <tr><td>Terminal Value</td><td id="tv">XXX</td></tr>
+                        <tr><td>Total PV of CashFLow</td><td id="tpv">XXX</td></tr>
+                    </table>
+                    </div>
+                </td>
+<!--                <td style="vertical-align:top">-->
+<!--                    <div class="tableholder">-->
+<!--                        <table>-->
+<!--                            <tr>-->
+<!--                                <p class="subject-line">Market Capital Projection:</p>-->
+<!--                            </tr>-->
+<!--                            <tr><td>Discounter Market Capital</td><td id="dmc">XXX</td></tr>-->
+<!--                            <tr><td>Current Market Capital</td><td id="cmc">XXX</td></tr>-->
+<!--                            <tr><td>Number of Shares Outstanding</td><td id="nso">XXX</td></tr>-->
+<!--                        </table>-->
+<!--                    </div>-->
+<!--                </td>-->
+                <td style="vertical-align:top">
+                    <div class="tableholder">
+                        <table>
+                            <tr>
+                                <p class="subject-line">Estimated Intrinsic Value:</p>
+                            </tr>
+                            <tr><td>Discounter Market Capital</td><td id="dmc">XXX</td></tr>
+                            <tr><td>Discounter Market Capital</td><td id="outshare">XXX</td></tr>
+                            <tr><td>Intrinsic Value</td><td id="intrnValue">XXX</td></tr>
+                            <tr><td>Upside: </td><td id="upside">XX.XX</td></tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

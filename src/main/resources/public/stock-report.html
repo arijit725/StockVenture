@@ -270,44 +270,100 @@
 
 <!--    <div id="ev_ebitda_div" class="tableholder"></div>-->
     <div class="reivew-header">Economic DCF Valuations</div>
-    <table>
-        <tr>
-            <td>
-                <table>
-                    <tr>
-                        <td><label for="growR">Perpertual Growth Rate %: </label></td><td><input type="text" id="growR" name="growR"></td>
-                        <!--            <td><label for="disR">Discount Rate %: </label></td><td><input type="text" id="disR" name="disR"></td>-->
-                        <!--            <td><label for="iefy">Interest Expense(Last FY): </label></td><td><input type="text" id="iefy" name="iefy"></td>-->
-                        <td><label for="itefy">Income Tax Expense(Last FY): </label></td><td><input type="text" id="itefy" name="itefy"></td>
-                        <td><label for="ibtfy">Income Before Tax (Last FY): </label></td><td><input type="text" id="ibtfy" name="ibtfy"></td>
-                    </tr>
-                    <tr>
-                        <td><label for="rfr">Risk Free Rate: </label></td><td><input type="text" id="rfr" name="rfr"></td>
-<!--                        <td><label for="cbeta">Company Beta: </label></td><td><input type="text" id="cbeta" name="cbeta"></td>-->
-                        <td><label for="mktret">Market Return: </label></td><td><input type="text" id="mktret" name="mktret"></td>
+<!--    <table>-->
+<!--        <tr>-->
+<!--            <td>-->
+<!--                <table>-->
+<!--                    <tr>-->
+<!--                        <td><label for="growR">Perpertual Growth Rate %: </label></td><td><input type="text" id="growR" name="growR"></td>-->
+<!--                        &lt;!&ndash;            <td><label for="disR">Discount Rate %: </label></td><td><input type="text" id="disR" name="disR"></td>&ndash;&gt;-->
+<!--                        &lt;!&ndash;            <td><label for="iefy">Interest Expense(Last FY): </label></td><td><input type="text" id="iefy" name="iefy"></td>&ndash;&gt;-->
+<!--                        <td><label for="itefy">Income Tax Expense(Last FY): </label></td><td><input type="text" id="itefy" name="itefy"></td>-->
+<!--                        <td><label for="ibtfy">Income Before Tax (Last FY): </label></td><td><input type="text" id="ibtfy" name="ibtfy"></td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><label for="rfr">Risk Free Rate: </label></td><td><input type="text" id="rfr" name="rfr"></td>-->
+<!--&lt;!&ndash;                        <td><label for="cbeta">Company Beta: </label></td><td><input type="text" id="cbeta" name="cbeta"></td>&ndash;&gt;-->
+<!--                        <td><label for="mktret">Market Return: </label></td><td><input type="text" id="mktret" name="mktret"></td>-->
 
-                    </tr>
-                    <tr>
-                        <td><label for="cashEQDCF">Last FY Cash or Cash Equivalent: </label></td><td><input type="text" id="cashEQDCF" name="cashEQDCF"></td>
-                        <!--            <td><label for="debtDCF">Last FY Total Debt: </label></td><td><input type="text" id="debtDCF" name="debtDCF"></td>-->
-                        <td><label for="margR">Margin of Safty %: </label></td><td><input type="text" id="margR" name="margR"></td>
-                    </tr>
-                    <tr><td colspan="3"><input type="submit" value="Calculate" onclick="requestEconomicDCF()"></td></tr>
-                </table>
-            </td>
-            <td>
-                <div id="ecmDcf" class="tableholder"></div>
-            </td>
-        </tr>
-    </table>
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><label for="cashEQDCF">Last FY Cash or Cash Equivalent: </label></td><td><input type="text" id="cashEQDCF" name="cashEQDCF"></td>-->
+<!--                        &lt;!&ndash;            <td><label for="debtDCF">Last FY Total Debt: </label></td><td><input type="text" id="debtDCF" name="debtDCF"></td>&ndash;&gt;-->
+<!--                        <td><label for="margR">Margin of Safty %: </label></td><td><input type="text" id="margR" name="margR"></td>-->
+<!--                    </tr>-->
+<!--                    <tr><td colspan="3"><input type="submit" value="Calculate" onclick="requestEconomicDCF()"></td></tr>-->
+<!--                </table>-->
+<!--            </td>-->
+<!--            <td>-->
+<!--                <div id="ecmDcf" class="tableholder"></div>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--    </table>-->
 
 <!--    <div class="reivew-header">Ev/EBITDA Valuations</div>-->
 <!--    <div id="ev_ebitda_div" class="tableholder"></div>-->
     </div>
+<div id="growthestimation" class="tableholder">
+    <table>
+        <tr>
+            <p class="subject-line">Growth Rate and Discount Rate Estimation</p>
+        </tr>
+        <tr>
+            <td style="vertical-align:top">
+                <table>
+                    <tr>
+                        <td style="vertical-align:top">
+                            <table>
+                                <tr>
+                                    <td><label for="itefy">Income Tax Expense(Last FY): </label></td><td><input type="text" id="itefy" name="itefy"></td>
+                                    <td><label for="ibtfy">Income Before Tax (Last FY): </label></td><td><input type="text" id="ibtfy" name="ibtfy"></td>
+                                </tr>
+                                <tr>
+                                    <td class="tooltip">Risk Free Rate:
+                                        <span class="tooltiptext">Government 10Year Bond Rate</span>
+                                    </td><td><input type="text" id="rfr" name="rfr"></td>
+                                    <!--                        <td><label for="cbeta">Company Beta: </label></td><td><input type="text" id="cbeta" name="cbeta"></td>-->
+                                    <td class="tooltip">Market Return:
+                                        <span class="tooltiptext">1 Year Index/Market Return</span>
+                                    </td><td><input type="text" id="mktret" name="mktret"></td>
+                                </tr>
+                                <tr><td colspan="3"><input type="submit" value="Calculate" onclick="calculateWaac()"></td></tr>
+                            </table>
+                        </td>
+                        <td style="vertical-align:top">
+                            <div class="tableholder">
+                                <table>
+                                    <tr>
+                                        <th>Discount Rate: </th><td id="discRate">XXXX</td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+        </tr>
+        <tr>
+            <td>FCF Growth Rate Estimation</td>
+
+        </tr>
+        <tr>
+            <td>NetProfit Growth Rate Estimation</td>
+        </tr>
+    </table>
+</div>
 <div id="targetPrice" class="tableholder">
     <table>
         <tr>
-            Margin of Safty: <input type="text" id="tpmargin" size="1" oninput="marginofsafty(this)">
+            <p class="subject-line"> Intrinsic Valuation</p>
+        </tr>
+        <tr>
+            <td>
+            Margin of Safty: <input type="text" id="tpmargin" size="1" value="0" oninput="marginofsafty(this)">
+            </td>
         </tr>
         <tr>
             <td style="vertical-align:top">
@@ -344,9 +400,35 @@
                         <th>Margin of safty</th>
                         <th>Upside</th>
                     </tr>
+                    <tr>
+                        <td><input type="button" value="2-Phase-DCF-Valuation" onclick="twophasedcfvaluation()"></td>
+                        <td align="center" id="twophasedcfestimation"></td>
+                        <td align="center" id="twophasedcfmationrgnsfty"></td>
+                        <td align="center" id="twophasedcfupside"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="button" value="EV/EBITDA-Valuation" onclick="evebitdavaluation()"></td>
+                        <td align="center" id="evebitdaestimation"></td>
+                        <td align="center" id="evebitdamrgnsfty"></td>
+                        <td align="center" id="evebitdaupside"></td>
+                    </tr>
                 </table>
-                Other Valuations should come here
             </td>
+            <td style="vertical-align:top">
+                <table>
+                    <tr><th>Valuation Method</th>
+                        <th>Target Price</th>
+                        <th>Margin of safty</th>
+                        <th>Upside</th>
+                    </tr>
+                    <tr>
+<!--                        Other Valuations Placeholder-->
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th>Aggregated Estimated Value</th><td id="aggregatedEstimation">XXXX</td>
         </tr>
     </table>
 

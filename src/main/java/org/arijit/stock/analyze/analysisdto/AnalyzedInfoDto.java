@@ -18,6 +18,8 @@ public class AnalyzedInfoDto {
     private final PEValuationModelDto peValuationModelDto;
     private final EPSMutlipliedValuationModelDto epsMutlipliedValuationModelDto;
     private final NetProfitValuationModelDto netProfitValuationModelDto;
+    private final DCFTwoPhaseValuationModelDto dcfTwoPhaseValuationModelDto;
+    private final WaacDto waacDto;
 
     private AnalyzedInfoDto(){
         balanceSheetAnalysisInfo = new BalanceSheetAnalysisInfo();
@@ -33,6 +35,8 @@ public class AnalyzedInfoDto {
         peValuationModelDto = new PEValuationModelDto();
         epsMutlipliedValuationModelDto = new EPSMutlipliedValuationModelDto();
         netProfitValuationModelDto = new NetProfitValuationModelDto();
+        dcfTwoPhaseValuationModelDto = new DCFTwoPhaseValuationModelDto();
+        waacDto = new WaacDto();
     }
 
     public static AnalyzedInfoDto create(){
@@ -89,6 +93,14 @@ public class AnalyzedInfoDto {
 
     public NetProfitValuationModelDto getNetProfitValuationModelDto() {
         return netProfitValuationModelDto;
+    }
+
+    public DCFTwoPhaseValuationModelDto getDcfTwoPhaseValuationModelDto() {
+        return dcfTwoPhaseValuationModelDto;
+    }
+
+    public WaacDto getWaacDto() {
+        return waacDto;
     }
 
     @Override

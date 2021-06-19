@@ -1619,6 +1619,48 @@ function createDCFHeader(nextNYearsFreeCashFlow){
     }
 }
 
+/*====================== Calculate WAAC  =========================*/
+
+function calculateWaac(){
+
+    var itefy = document.getElementById("itefy").value;
+    itefy = itefy.replace(",","");
+    console.log("Income Tax Expense(Last FY): "+itefy);
+
+    var ibtfy = document.getElementById("ibtfy").value;
+    ibtfy = ibtfy.replace(",","");
+    console.log("Income Before Tax (Last FY): "+ibtfy);
+
+    var rfr = document.getElementById("rfr").value;
+    rfr = rfr.replace(",","");
+    console.log("Risk Free Rate: "+rfr);
+
+    var mktret = document.getElementById("mktret").value;
+    mktret = mktret.replace(",","");
+    console.log("Market Return: "+mktret);
+
+    var request={
+        "incomeTaxExpense":itefy,
+        "incomeBeforeTax":ibtfy,
+        "riskFreeRate":rfr,
+        "marketReturn":mktret
+    };
+
+    var requestBody = generateJsonString(request);
+    console.log("calculateWaac request body:  "+requestBody);
+    var url = stockValuationUrl+'/waac';
+    console.log("Posting data to url: "+url);
+    var jsonResonse = postRequest(url,requestBody, showWaacValue);
+}
+
+function showWaacValue(){
+    var url = getStockValuationUrl+'/waac';
+    var jsonResonse = GetRawBookContent(url);
+    console.log("showEconomicDCFValue: response: "+jsonResonse);
+    var data = JSON.parse(jsonResonse);
+    document.getElementById("discRate").innerHTML = data.discountRate+"%";
+}
+
 /*====================== EV/EBITDA Valuation =========================*/
 
 function createEVEBITDADataPoints(dataJson){
@@ -1668,6 +1710,41 @@ function showEVEBITDAProjection(jsonResonse){
            valrow.style.color='red';
 
 
+
+}
+function evebitdavaluation(){
+    var url = getStockValuationUrl+'/evebitda/5';
+//    var url = targetPriceUrl+'/'+years;
+    var jsonResonse = GetRawBookContent(url);
+    var data = JSON.parse(jsonResonse);
+    var targetPrice = data.targetPrice;
+    document.getElementById("evebitdaestimation").innerHTML = targetPrice;
+    targetPrice = parseFloat(targetPrice);
+    if(targetPrice<currentSharePrice)
+         document.getElementById("evebitdaestimation").style.color = "red";
+        else
+          document.getElementById("evebitdaestimation").style.color = "green";
+}
+
+function evEbitdaMrgnOfSfty(mrgnOfSfty){
+    var targetPrice = document.getElementById("evebitdaestimation").innerHTML;
+    targetPrice = parseFloat(targetPrice);
+    console.log("[EV/EBITDA] mrgnOfSfty : "+mrgnOfSfty+" currentSharePrice: "+currentSharePrice+" targetPrice: "+targetPrice);
+    var targetPriceMrgn = targetPrice*(1-(mrgnOfSfty/100));
+    document.getElementById("evebitdamrgnsfty").innerHTML = targetPriceMrgn;
+    console.log("[PEValuation] targetPriceMrgn: "+targetPriceMrgn);
+    if(targetPriceMrgn>currentSharePrice)
+            document.getElementById("evebitdamrgnsfty").style.color = "green";
+    else
+       document.getElementById("evebitdamrgnsfty").style.color = "red";
+
+    var upside = (targetPriceMrgn-currentSharePrice)/currentSharePrice*100;
+        document.getElementById("evebitdaupside").innerHTML = upside;
+
+    if(upside<0)
+     document.getElementById("evebitdaupside").style.color = "red";
+    else
+      document.getElementById("evebitdaupside").style.color = "green";
 }
 
 function showEVEbitdaValue(years){
@@ -1685,6 +1762,8 @@ function marginofsafty(ele){
         pevaluationMrgnOfSfty(marginofsafty);
         epsmultipliervaluationMrgnOfSfty(marginofsafty);
         netprofitvaluationMrgnOfSfty(marginofsafty);
+        twophasedcfMrgnOfSfty(marginofsafty);
+        evEbitdaMrgnOfSfty(marginofsafty);
 }
 
 /*====================== PE Valuation Model =========================*/
@@ -1708,7 +1787,12 @@ function fetchPeValuationEstimation() {
         if(data.evluated){
             var ele = document.getElementById("pevaluationestimation");
             ele.innerHTML = data.fairValuedTargetPrice;
-            document.getElementById("pevaluationestimationrgnsfty").innerHTML =data.fairValuedTargetPrice;
+//            document.getElementById("pevaluationestimationrgnsfty").innerHTML =data.fairValuedTargetPrice;
+            var targetPrice = parseFloat(data.fairValuedTargetPrice);
+            if(targetPrice<currentSharePrice)
+                     document.getElementById("pevaluationestimation").style.color = "red";
+                    else
+                      document.getElementById("pevaluationestimation").style.color = "green";
             clearTimeout(pevaltm);
         }
 }
@@ -1735,11 +1819,6 @@ function pevaluationMrgnOfSfty(mrgnOfSfty){
 }
 
 
-
-
-
-
-
 /*====================== EPS Multiplier Valuation Model =========================*/
 
 function epsmultiplierModel(){
@@ -1761,7 +1840,12 @@ function fetchEPSMultiplerValuationEstimation(){
             if(data.evluated){
                 var ele = document.getElementById("epsmultiplierestimation");
                 ele.innerHTML = data.finalIntrinsicValue;
-                document.getElementById("epsmultiplierestimationrgnsfty").innerHTML =data.fairValuedTargetPrice;
+//                document.getElementById("epsmultiplierestimationrgnsfty").innerHTML =data.fairValuedTargetPrice;
+                var targetPrice = parseFloat(data.finalIntrinsicValue);
+                if(targetPrice<currentSharePrice)
+                    document.getElementById("epsmultiplierestimation").style.color = "red";
+                else
+                    document.getElementById("epsmultiplierestimation").style.color = "green";
                 clearTimeout(epsvaltm);
             }
 }
@@ -1813,7 +1897,12 @@ function fetchNetProfitValuationEstimation(){
             if(data.evluated){
                 var ele = document.getElementById("netprofitestimation");
                 ele.innerHTML = data.finalIntrinsicValue;
-                document.getElementById("netprofitmationrgnsfty").innerHTML =data.fairValuedTargetPrice;
+//                document.getElementById("netprofitmationrgnsfty").innerHTML =data.finalIntrinsicValue;
+                var targetPrice = parseFloat(data.finalIntrinsicValue);
+                if(targetPrice<currentSharePrice)
+                    document.getElementById("netprofitestimation").style.color = "red";
+                else
+                    document.getElementById("netprofitestimation").style.color = "green";
                 clearTimeout(netprofitvaltm);
             }
 }
@@ -1838,6 +1927,60 @@ function netprofitvaluationMrgnOfSfty(mrgnOfSfty){
      document.getElementById("netprofitupside").style.color = "red";
     else
       document.getElementById("netprofitupside").style.color = "green";
+}
+
+
+/*====================== 2 Phase DCF Valuation Model =========================*/
+
+function twophasedcfvaluation(){
+    console.log("twophasedcfvaluation action is triggered");
+    window.open("dcf-2-phase-valuation.html?stockID="+stockID);
+    window.focus();
+
+    fetch2PhaseDCFValuationEstimation();
+}
+
+var twophasedcfvaluationvaltm;
+function fetch2PhaseDCFValuationEstimation(){
+     var url = getStockValuationUrl+'/twophasedcfvaluation';
+            var jsonResonse = GetRawBookContent(url);
+            console.log("showe Net Profit Valuation: response: "+jsonResonse);
+            var data = JSON.parse(jsonResonse);
+            console.log(" Fetching Net Profit Valuation value: "+data);
+            twophasedcfvaluationvaltm = setTimeout(fetch2PhaseDCFValuationEstimation, 5000);
+            if(data.evluated){
+                var ele = document.getElementById("twophasedcfestimation");
+                ele.innerHTML = data.finalIntrinsicValue;
+//                document.getElementById("twophasedcfmationrgnsfty").innerHTML =data.finalIntrinsicValue;
+                var targetPrice = parseFloat(data.finalIntrinsicValue);
+                if(targetPrice<currentSharePrice)
+                    document.getElementById("twophasedcfestimation").style.color = "red";
+                else
+                    document.getElementById("twophasedcfestimation").style.color = "green";
+                clearTimeout(twophasedcfvaluationvaltm);
+            }
+}
+
+
+function twophasedcfMrgnOfSfty(mrgnOfSfty){
+    var targetPrice = document.getElementById("twophasedcfestimation").innerHTML;
+    targetPrice = parseFloat(targetPrice);
+    console.log("[Two Phase DCF Valuation] mrgnOfSfty : "+mrgnOfSfty+" currentSharePrice: "+currentSharePrice+" targetPrice: "+targetPrice);
+    var targetPriceMrgn = targetPrice*(1-(mrgnOfSfty/100));
+    document.getElementById("twophasedcfmationrgnsfty").innerHTML = targetPriceMrgn;
+    console.log("[Two Phase DCF Valuation] targetPriceMrgn: "+targetPriceMrgn);
+    if(targetPriceMrgn>currentSharePrice)
+            document.getElementById("twophasedcfmationrgnsfty").style.color = "green";
+    else
+       document.getElementById("twophasedcfmationrgnsfty").style.color = "red";
+
+    var upside = (targetPriceMrgn-currentSharePrice)/currentSharePrice*100;
+        document.getElementById("twophasedcfupside").innerHTML = upside;
+
+    if(upside<0)
+     document.getElementById("twophasedcfupside").style.color = "red";
+    else
+      document.getElementById("twophasedcfupside").style.color = "green";
 }
 
 
