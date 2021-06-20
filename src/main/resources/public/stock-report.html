@@ -310,6 +310,38 @@
             <p class="subject-line">Growth Rate and Discount Rate Estimation</p>
         </tr>
         <tr>
+            Cross veriy Growth Rate with calculated growth rate and use as per market study. You can check at <a href="https://in.finance.yahoo.com" target="_blank">Yahoo Finance</a>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td style="vertical-align:top">
+                            <div class="tableholder" id="fcfGrowthRate">
+                                <table>
+                                    <tr>
+                                        <th>Cumulative Free CashFlow Growth Rate: </th><td id="fcfgr"></td>
+                                        <td><input type="submit" value="details" onclick="getFCFGrowthdetails()"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+
+                        <td style="vertical-align:top">
+                            <div class="tableholder" id="netProgitGrowthRate">
+                                <table>
+                                    <tr>
+                                        <th>Cumulative Net Profit Growth Rate: </th><td id="npr"></td>
+                                        <td><input type="submit" value="details" onclick="getNetProfitGrowthdetails()"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
             <td style="vertical-align:top">
                 <table>
                     <tr>
@@ -321,11 +353,11 @@
                                 </tr>
                                 <tr>
                                     <td class="tooltip">Risk Free Rate:
-                                        <span class="tooltiptext">Government 10Year Bond Rate</span>
+                                        <span class="tooltiptext">India Government Bond Rate Yield for 10 Years</span>
                                     </td><td><input type="text" id="rfr" name="rfr"></td>
                                     <!--                        <td><label for="cbeta">Company Beta: </label></td><td><input type="text" id="cbeta" name="cbeta"></td>-->
                                     <td class="tooltip">Market Return:
-                                        <span class="tooltiptext">1 Year Index/Market Return</span>
+                                        <span class="tooltiptext">10/20/30 Years Index/Market Return</span>
                                     </td><td><input type="text" id="mktret" name="mktret"></td>
                                 </tr>
                                 <tr><td colspan="3"><input type="submit" value="Calculate" onclick="calculateWaac()"></td></tr>
@@ -346,13 +378,7 @@
             </td>
 
         </tr>
-        <tr>
-            <td>FCF Growth Rate Estimation</td>
 
-        </tr>
-        <tr>
-            <td>NetProfit Growth Rate Estimation</td>
-        </tr>
     </table>
 </div>
 <div id="targetPrice" class="tableholder">

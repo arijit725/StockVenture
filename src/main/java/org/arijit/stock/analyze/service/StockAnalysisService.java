@@ -382,4 +382,15 @@ public class StockAnalysisService {
 
         return analyzedInfoDto.getDcfTwoPhaseValuationModelDto();
     }
+
+    public AverageGrowthDto getAverageGrowthRate(String stockID) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+        AverageGrowthCalculation.getInstance().evaluate(fundamentalInfoDto,analyzedInfoDto,-1);
+        return analyzedInfoDto.getAverageGrowthDto();
+    }
 }

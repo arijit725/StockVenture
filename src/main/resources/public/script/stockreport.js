@@ -51,16 +51,26 @@ function onReportLoad(){
         console.log("Error while analysing quarterly result"+err.message);
         }
 
-
-    showRatioDetails(5);
-
-    showCashFlowDetails(12);
+    try{
+        showRatioDetails(5);
+     }catch(err){
+        console.log("Error while analysing quarterly result"+err.message);
+    }
+    try{
+        showCashFlowDetails(12);
+    }catch(err){
+        console.log("Error while analysing quarterly result"+err.message);
+    }
 //    ratiosAnalysis(5);
 //    console.log("onReportLoad triggered: url: "+generateReportUrl);
 //    GetRawBookContent(generateReportUrl);
+    try{
+        showEVEbitdaValue(5);
+    } catch(err){
+        console.log("Error while analysing quarterly result"+err.message);
+    }
 
-    showEVEbitdaValue(5);
-
+    futureaverageGrowthRate();
 }
 
 
@@ -1222,8 +1232,8 @@ function showforwardPE(jsonResonse){
 
      var tmpdatapoints = new Array();
      tmpdatapoints.push(["Current/TTM PE Ratio","currentPE"," Current TTM PE Ratio"]);
-     tmpdatapoints.push(["Yearly Forward PE Ratio","yearlyForwardPE","Forward PE Ratio calculated based on past years data"]);
-     tmpdatapoints.push(["Quarterly Forward PE Ratio","quarterlyForwardPE","Forward PE Ratio calculated based on last 4 quarters data"]);
+     tmpdatapoints.push(["Yearly Forward PE Ratio","yearlyForwardPE","Forward PE Ratio=Current Market Price/( Estimated EPS based on last 3 years CAGR Growth)"]);
+     tmpdatapoints.push(["Quarterly Forward PE Ratio","quarterlyForwardPE","Forward PE Ratio = Current Market Price/(TTM EPS for last 4 quarters)"]);
      tmpdatapoints.push(["Forward PE Ratio","forwardPE","Forward PE gives idea about future valuation of stock for 1 down the line. Forward PE = (Yearly Forward PE + Quarterly Forward PE)/2."]);
      tmpdatapoints.push(["Forward PE Valuation","fwpevaluation","We should consider to invest in FAIR_VALUED stock. Avoid under valued stock or over valued stock. Consider to sell stock when it shows Over valued."]);
 
@@ -1470,6 +1480,21 @@ function onCFYearSelection(){
    var years = document.getElementById("cfyears").value;
    console.log("Cashflow year selection : "+years);
     showCashFlowDetails(years);
+}
+
+
+
+
+function futureaverageGrowthRate(){
+    var url = getStockValuationUrl+'/averageGrowthRate';
+    var jsonResonse = GetRawBookContent(url);
+    console.log("futureaverageGrowthRate: "+jsonResonse);
+    var data = JSON.parse(jsonResonse);
+    var fcfGrowthDto = data.fcfGrowthDto;
+    var netProfitGrowthDto = data.netProfitGrowthDto;
+    document.getElementById("fcfgr").innerHTML = fcfGrowthDto.growthRate;
+    document.getElementById("npr").innerHTML = netProfitGrowthDto.growthRate;
+
 }
 
 /*====================== Quarterly Intrinsic Stock Valuation  =========================*/

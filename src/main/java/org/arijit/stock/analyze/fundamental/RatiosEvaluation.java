@@ -7,6 +7,7 @@ import org.arijit.stock.analyze.analysisdto.RatioAnalysisInfo;
 import org.arijit.stock.analyze.dto.*;
 import org.arijit.stock.analyze.enums.AnalysisEnums;
 import org.arijit.stock.analyze.enums.ValuationEnums;
+import org.arijit.stock.analyze.util.FundamentalAnalysisUtil;
 import org.arijit.stock.analyze.util.StockUtil;
 
 import java.util.*;
@@ -346,10 +347,11 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
 //        double currentSharePrice,FundamentalInfoDto fundamentalInfoDto,int year
         double currentSharePrice = fundamentalInfoDto.getCompanyDto().getCurrentSharePrice();
         double estimatedEPS = analyzedInfoDto.getYearlyReportAnalysisInfo().getEstimatedEPSCAGR();
-        logger.info("currentSharePrice: "+currentSharePrice+" estimatedEPS: "+estimatedEPS);
+        double estimatedEPS3Year = eps3yrsCAGR(fundamentalInfoDto);
+        logger.info("currentSharePrice: "+currentSharePrice+" estimatedEPS: "+estimatedEPS+" estimatedEPS3Year: "+estimatedEPS3Year);
         double yearlyforwardPERatio = 0;
-        if(estimatedEPS!=0) {
-            yearlyforwardPERatio = calcForwardPE(currentSharePrice, estimatedEPS);
+        if(estimatedEPS3Year!=0) {
+            yearlyforwardPERatio = calcForwardPE(currentSharePrice, estimatedEPS3Year);
         }
 
         double qtrForwardPERatio = caclQtrForwardPE(fundamentalInfoDto,analyzedInfoDto);
@@ -376,11 +378,20 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
     }
 
 
+    private double eps3yrsCAGR(FundamentalInfoDto fundamentalInfoDto){
+        List<YearlyReportDto> yearlyReportDtoList = fundamentalInfoDto.getYearlyReportDtoList().stream().limit(3).collect(Collectors.toList());
+        YearlyReportDto startDto = yearlyReportDtoList.get(2); //we want 3rd year data
+        YearlyReportDto endDto = yearlyReportDtoList.get(0);
+        double cagr = FundamentalAnalysisUtil.cagr(endDto.getBasicEPS(), startDto.getBasicEPS(),3);
+        double estimatedEPS = endDto.getBasicEPS()*(1+(cagr/100));
+        return estimatedEPS;
+    }
 
     private double caclQtrForwardPE(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){
 //        double currentSharePrice,FundamentalInfoDto fundamentalInfoDto,int year
         double currentSharePrice = fundamentalInfoDto.getCompanyDto().getCurrentSharePrice();
-        double estimatedEPS = analyzedInfoDto.getQuarterlyReportAnalysisInfo().getEstimatedEPSCAGR();
+//        double estimatedEPS = analyzedInfoDto.getQuarterlyReportAnalysisInfo().getEstimatedEPSCAGR();
+        double estimatedEPS = analyzedInfoDto.getQuarterlyReportAnalysisInfo().getTtmEPS(); //instead of CAGR EPS we are using ttm EPS.
         double forwardPERatio = 0;
         if(estimatedEPS!=0){
             forwardPERatio = calcForwardPE(currentSharePrice,estimatedEPS);

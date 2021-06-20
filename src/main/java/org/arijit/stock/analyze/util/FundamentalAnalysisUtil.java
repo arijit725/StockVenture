@@ -1,5 +1,8 @@
 package org.arijit.stock.analyze.util;
 
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.util.FastMath;
+
 public class FundamentalAnalysisUtil {
 
     /**
@@ -21,4 +24,5 @@ public class FundamentalAnalysisUtil {
         tmp = tmp*100;
         return tmp;
     }
+
 }

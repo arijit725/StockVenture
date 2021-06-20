@@ -20,6 +20,7 @@ public class AnalyzedInfoDto {
     private final NetProfitValuationModelDto netProfitValuationModelDto;
     private final DCFTwoPhaseValuationModelDto dcfTwoPhaseValuationModelDto;
     private final WaacDto waacDto;
+    private final AverageGrowthDto averageGrowthDto;
 
     private AnalyzedInfoDto(){
         balanceSheetAnalysisInfo = new BalanceSheetAnalysisInfo();
@@ -37,6 +38,7 @@ public class AnalyzedInfoDto {
         netProfitValuationModelDto = new NetProfitValuationModelDto();
         dcfTwoPhaseValuationModelDto = new DCFTwoPhaseValuationModelDto();
         waacDto = new WaacDto();
+        averageGrowthDto = new AverageGrowthDto();
     }
 
     public static AnalyzedInfoDto create(){
@@ -101,6 +103,10 @@ public class AnalyzedInfoDto {
 
     public WaacDto getWaacDto() {
         return waacDto;
+    }
+
+    public AverageGrowthDto getAverageGrowthDto() {
+        return averageGrowthDto;
     }
 
     @Override

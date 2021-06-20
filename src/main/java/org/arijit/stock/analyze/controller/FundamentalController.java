@@ -827,6 +827,11 @@ public class FundamentalController {
                     String waacStr = StockUtil.generateJsonString(waacDto);
                     res = ResponseEntity.ok(waacStr);
                     break;
+                case "averageGrowthRate":
+                    AverageGrowthDto averageGrowthDto = stockAnalysisService.getAverageGrowthRate(stockID);
+                    String growthRateStr = StockUtil.generateJsonString(averageGrowthDto);
+                    res = ResponseEntity.ok(growthRateStr);
+                    break;
                 default:
                     logger.error("Valuation model not found for type: " + valuationType);
                     res = ResponseEntity.notFound().build();
