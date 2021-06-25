@@ -122,7 +122,8 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
         double eqAvgGrowth = 0;
         double reserveAvgGrowth = 0;
         double debtAvgGrowth = 0;
-
+        double reserveIncreaseCount  = 0;
+        double reserveDecreaseCount  = 0;
         while(it.hasNext()){
             if(currentBalanceSheetDto==null)
                 currentBalanceSheetDto = it.next();
@@ -169,7 +170,16 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
                     logger.error("unable to calculate total share capital growth",e);
                 }
 
-
+                try{
+                    if(currentBalanceSheetDto.getReserves()>=prevBalanceSheetDto.getReserves()){
+                        reserveIncreaseCount++;
+                    }
+                    else if(currentBalanceSheetDto.getReserves()<prevBalanceSheetDto.getReserves()){
+                        reserveDecreaseCount++;
+                    }
+                }catch(Exception e){
+                    logger.error("Unable to measure reserve growth count",e);
+                }
                 try {
                     double debtsGrowth = 0;
                     if (prevBalanceSheetDto.getDebt() > 0) {
@@ -230,10 +240,18 @@ public class BalanceSheetEvaluation implements IFundamentalEvaluation{
             analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(debtAvgGrowthStatement, AnalysisEnums.ANALYZED_BAD);
         }
 
+        if(reserveIncreaseCount == growthYear){
+            String stmt= "(+) Reserves is increasing continuously";
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(stmt, AnalysisEnums.ANALYZED_VERY_GOOD);
+        }
+        else if(reserveDecreaseCount == growthYear){
+            String stmt= "(-) Reserves is decreasing continuously";
+            analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(stmt, AnalysisEnums.ANALYZED_BAD);
+        }
+
         if(debtAvgGrowth == 0 && balanceSheetDtoList.get(0).getDebt()==0){
             String stmt= "(+) Company is a zero debt company. This is a very positive sign for company growth";
             analyzedInfoDto.getBalanceSheetAnalysisInfo().addAnalysisStatement(stmt, AnalysisEnums.ANALYZED_VERY_GOOD);
-
         }
     }
 

@@ -128,11 +128,19 @@ public class AverageGrowthCalculation implements  IFundamentalEvaluation{
         else {
             ProfitAndLossDto startDto = profitAndLossDtoList.get(endIndex);
             String period = startDto.getDate() + " to " + endDto.getDate();
-            double periodCagr = FundamentalAnalysisUtil.cagr(endDto.getNetProfit(), startDto.getNetProfit(), 5);
-            logger.info("[Calculated CAGR ] [End Date: " + endDto.getDate() + " FCF: " + endDto.getNetProfit() + "] [ Start Date: " + startDto.getDate() + " FCF: " + startDto.getNetProfit() + "] CAGR: " + periodCagr);
-            periodCagr = Double.parseDouble(StockUtil.convertDoubleToPrecision(periodCagr, 3));
-            analyzedInfoDto.getAverageGrowthDto().getNetProfitGrowthDto().addPeriodGrowth(period, periodCagr);
-            growthList.add(periodCagr);
+            double periodCagr = Double.NaN;
+            int yrCount = 5;
+            while(Double.isNaN(periodCagr) && yrCount>=3){
+                periodCagr = FundamentalAnalysisUtil.cagr(endDto.getNetProfit(), startDto.getNetProfit(), yrCount);
+                yrCount--;
+            }
+            if(!Double.isNaN(periodCagr)) {
+                logger.info("[Calculated CAGR ] [End Date: " + endDto.getDate() + " FCF: " + endDto.getNetProfit() + "] [ Start Date: " + startDto.getDate() + " FCF: " + startDto.getNetProfit() + "] CAGR: " + periodCagr);
+                periodCagr = Double.parseDouble(StockUtil.convertDoubleToPrecision(periodCagr, 3));
+                analyzedInfoDto.getAverageGrowthDto().getNetProfitGrowthDto().addPeriodGrowth(period, periodCagr);
+                growthList.add(periodCagr);
+            }
+
         }
 
         //divide into four 3 years period
@@ -148,10 +156,12 @@ public class AverageGrowthCalculation implements  IFundamentalEvaluation{
             ProfitAndLossDto startDto = profitAndLossDtoList.get(endIndex);
             String period = startDto.getDate()+" to "+endDto.getDate();
             double periodCagr = FundamentalAnalysisUtil.cagr(endDto.getNetProfit(), startDto.getNetProfit(),3) ;
-            logger.info("[Calculated CAGR ] [End Date: "+endDto.getDate()+" FCF: "+endDto.getNetProfit()+"] [ Start Date: "+startDto.getDate()+" FCF: "+startDto.getNetProfit()+"] CAGR: "+periodCagr);
-            periodCagr = Double.parseDouble(StockUtil.convertDoubleToPrecision(periodCagr,3));
-            analyzedInfoDto.getAverageGrowthDto().getNetProfitGrowthDto().addPeriodGrowth(period,periodCagr);
-            growthList.add(periodCagr);
+            if (!Double.isNaN(periodCagr)) {
+                logger.info("[Calculated CAGR ] [End Date: " + endDto.getDate() + " FCF: " + endDto.getNetProfit() + "] [ Start Date: " + startDto.getDate() + " FCF: " + startDto.getNetProfit() + "] CAGR: " + periodCagr);
+                periodCagr = Double.parseDouble(StockUtil.convertDoubleToPrecision(periodCagr, 3));
+                analyzedInfoDto.getAverageGrowthDto().getNetProfitGrowthDto().addPeriodGrowth(period, periodCagr);
+                growthList.add(periodCagr);
+            }
             startIndex++;
             chunk--;
         }
