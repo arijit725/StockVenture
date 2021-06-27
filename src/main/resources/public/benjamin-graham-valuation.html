@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>benjamin-graham-valuation</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" href="css/stockreport.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script  src="script/benjamin-graham-valutaion.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://www.myersdaily.org/joseph/javascript/md5.js"></script>
+
+    <!--    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>-->
+</head>
+
+<body onload="onReportLoad()">
+<div class="header">
+    <label id="companyName"></label> | <label id="industry"></label>
+</div>
+<div id="Company-Details" class="company-details">
+</div>
+<div class="financial-details">
+    <div id="datafeed" class="reivew-header">Benjamin Graham Valuation</div>
+    <div id="inputDiv" class="tableholder">
+        <table>
+            <tr>
+                <td style="vertical-align:top">
+                    <table>
+                        <tr>
+                            <td> EPS Growth Rate:</td><td><input type="text" id="growthrate" size="7"></td>
+                            <td>AAA India Bond Yield:</td><td><input type="text" id="aaabondY" size="7"></td>
+                        </tr>
+                        <tr>
+                            <td>Repo Rate Bank</td><td><input type="text" id="reporate" size="7"></td>
+                            <td>PE Ratio for Zero Growth Company</td><td><input type="text" id="zpe" size="7" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="button" value="Generate-Report" class="report-generate" onclick="generateReport()">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="vertical-align:top">
+                    <table>
+                        <tr>
+                            <th>Capitalisation</th>
+                            <th>Growth of Company</th>
+                            <th>Reference Max EPS</th>
+                        </tr>
+                        <tr>
+                            <td>Large Cap</td>
+                            <td>Good</td>
+                            <td>15%</td>
+                        </tr>
+                        <tr>
+                            <td>Large Cap</td>
+                            <td>Average</td>
+                            <td>10%</td>
+                        </tr>
+                        <tr>
+                            <td>Mid Cap</td>
+                            <td>Good</td>
+                            <td>40%</td>
+                        </tr>
+                        <tr>
+                            <td>Mid Cap</td>
+                            <td>Average</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>Small Cap</td>
+                            <td>Good</td>
+                            <td>100%</td>
+                        </tr>
+                        <tr>
+                            <td>Small Cap</td>
+                            <td>Average</td>
+                            <td>40%</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+    <div class="tableholder">
+        <table>
+            <tr>
+                <th>Intrinsic Value: </th><td id="finalIntrinsicValue">XXXX</td>
+            </tr>
+            <tr>
+                <th>Upside: </th><td id="upside">XX.XX</td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

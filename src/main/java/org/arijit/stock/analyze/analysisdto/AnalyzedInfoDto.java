@@ -19,6 +19,7 @@ public class AnalyzedInfoDto {
     private final EPSMutlipliedValuationModelDto epsMutlipliedValuationModelDto;
     private final NetProfitValuationModelDto netProfitValuationModelDto;
     private final DCFTwoPhaseValuationModelDto dcfTwoPhaseValuationModelDto;
+    private final BenjaminGrahamValuationModelDto benjaminGrahamValuationModelDto;
     private final WaacDto waacDto;
     private final AverageGrowthDto averageGrowthDto;
 
@@ -39,6 +40,7 @@ public class AnalyzedInfoDto {
         dcfTwoPhaseValuationModelDto = new DCFTwoPhaseValuationModelDto();
         waacDto = new WaacDto();
         averageGrowthDto = new AverageGrowthDto();
+        benjaminGrahamValuationModelDto = new BenjaminGrahamValuationModelDto();
     }
 
     public static AnalyzedInfoDto create(){
@@ -107,6 +109,10 @@ public class AnalyzedInfoDto {
 
     public AverageGrowthDto getAverageGrowthDto() {
         return averageGrowthDto;
+    }
+
+    public BenjaminGrahamValuationModelDto getBenjaminGrahamValuationModelDto() {
+        return benjaminGrahamValuationModelDto;
     }
 
     @Override

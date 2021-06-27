@@ -372,6 +372,49 @@ public class StockAnalysisService {
         return null;
     }
 
+    public BenjaminGrahamValuationModelDto getGrahamValuation(String stockID) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+
+        return analyzedInfoDto.getBenjaminGrahamValuationModelDto();
+    }
+
+
+    public BenjaminGrahamValuationModelDto grahamValuation(String stockID,String requestBody) throws Exception {
+        FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
+        if(fundamentalInfoDto==null)
+            throw new Exception("could not find stock");
+        AnalyzedInfoDto analyzedInfoDto = MemCache.getInstance().getAnalyzedDetails(stockID);
+        if(analyzedInfoDto==null)
+            throw new Exception("Could not find analysis for stock with id: "+stockID);
+        try{
+            logger.info("==========================BenjaminGrahamValuation==================================");
+            Gson gson = new Gson();
+            logger.info("request body: "+requestBody);
+            BenjaminGrahamValuationModelDto benjaminGrahamValuationModelDto = gson.fromJson(requestBody, BenjaminGrahamValuationModelDto.class);
+            logger.info("DCFTwoPhaseValuationModelDto: "+benjaminGrahamValuationModelDto);
+            analyzedInfoDto.getBenjaminGrahamValuationModelDto().setGrowthRate(benjaminGrahamValuationModelDto.getGrowthRate());
+            analyzedInfoDto.getBenjaminGrahamValuationModelDto().setAaaBondY(benjaminGrahamValuationModelDto.getAaaBondY());
+            analyzedInfoDto.getBenjaminGrahamValuationModelDto().setPeZero(benjaminGrahamValuationModelDto.getPeZero());
+            analyzedInfoDto.getBenjaminGrahamValuationModelDto().setRepoRate(benjaminGrahamValuationModelDto.getRepoRate());
+
+            try {
+                BenjaminGrahamValuation.getInstance().evaluate(fundamentalInfoDto, analyzedInfoDto, 7);
+            }catch (Exception e){
+                logger.error(e);
+            }
+            return analyzedInfoDto.getBenjaminGrahamValuationModelDto();
+        }catch(Exception e){
+            logger.error("Unable to evaluate ",e);
+        }
+
+        return null;
+    }
+
     public DCFTwoPhaseValuationModelDto getDCF2PhaseValuation(String stockID) throws Exception {
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
         if(fundamentalInfoDto==null)
@@ -382,7 +425,6 @@ public class StockAnalysisService {
 
         return analyzedInfoDto.getDcfTwoPhaseValuationModelDto();
     }
-
     public AverageGrowthDto getAverageGrowthRate(String stockID) throws Exception {
         FundamentalInfoDto fundamentalInfoDto = MemCache.getInstance().getDetails(stockID);
         if(fundamentalInfoDto==null)

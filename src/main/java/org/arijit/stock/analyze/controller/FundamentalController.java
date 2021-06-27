@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.arijit.stock.analyze.analysisdto.*;
 import org.arijit.stock.analyze.dto.*;
+import org.arijit.stock.analyze.fundamental.BenjaminGrahamValuation;
 import org.arijit.stock.analyze.parser.BalanceSheetPDFParser;
 import org.arijit.stock.analyze.service.FundamentalService;
 import org.arijit.stock.analyze.service.StockAnalysisService;
@@ -762,6 +763,11 @@ public class FundamentalController {
                     String dcfTwoPhaseStr = StockUtil.generateJsonString(dcfTwoPhaseValuationModelDto);
                     res = ResponseEntity.ok(dcfTwoPhaseStr);
                     break;
+                case "graham":
+                    BenjaminGrahamValuationModelDto benjaminGrahamValuationModelDto  = stockAnalysisService.grahamValuation(stockID,requestBody);
+                    String grahamStr = StockUtil.generateJsonString(benjaminGrahamValuationModelDto);
+                    res = ResponseEntity.ok(grahamStr);
+                    break;
                 case "waac":
                     WaacDto waacDto = stockAnalysisService.waacCalculation(stockID,requestBody);
                     String waacStr = StockUtil.generateJsonString(waacDto);
@@ -821,6 +827,11 @@ public class FundamentalController {
                     DCFTwoPhaseValuationModelDto dcfTwoPhaseValuationModelDto = stockAnalysisService.getDCF2PhaseValuation(stockID);
                     String dcfTwoPhaseStr = StockUtil.generateJsonString(dcfTwoPhaseValuationModelDto);
                     res = ResponseEntity.ok(dcfTwoPhaseStr);
+                    break;
+                case "graham":
+                    BenjaminGrahamValuationModelDto benjaminGrahamValuationModelDto = stockAnalysisService.getGrahamValuation(stockID);
+                    String grahamValuationStr = StockUtil.generateJsonString(benjaminGrahamValuationModelDto);
+                    res = ResponseEntity.ok(grahamValuationStr);
                     break;
                 case "waac":
                     WaacDto waacDto = stockAnalysisService.getWaacCalculation(stockID);

@@ -9,6 +9,7 @@ public class YearlyReportAnalysisInfo {
     private Map<String, String> epsGrowthRate;
     private double averageEPS;
     private double avgGrowthEstimatedEPS;
+    private double cagrGrowthEstimatedEPS;
 
     public YearlyReportAnalysisInfo(){
         epsGrowthRate = new HashMap<>();
@@ -41,16 +42,17 @@ public class YearlyReportAnalysisInfo {
         return avgGrowthEstimatedEPS;
     }
 
+    public double getCagrGrowthEstimatedEPS() {
+        return cagrGrowthEstimatedEPS;
+    }
+
+    public void setCagrGrowthEstimatedEPS(double cagrGrowthEstimatedEPS) {
+        this.cagrGrowthEstimatedEPS = cagrGrowthEstimatedEPS;
+    }
+
     public void setAvgGrowthEstimatedEPS(double avgGrowthEstimatedEPS) {
         this.avgGrowthEstimatedEPS = avgGrowthEstimatedEPS;
     }
 
-    @Override
-    public String toString() {
-        return "YearlyReportAnalysisInfo{" +
-                "estimatedEPSCAGR=" + estimatedEPSCAGR +
-                ", epsGrowthRate=" + epsGrowthRate +
-                ", averageEPS=" + averageEPS +
-                '}';
-    }
+
 }

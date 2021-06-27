@@ -883,6 +883,7 @@ function createYearlyReportAnalysisDataPoints(dataJson){
     datamap['estimatedEPSCAGR'] = dataJsonList.estimatedEPSCAGR;
 //    datamap['averageEPS'] = dataJsonList.averageEPS;
     datamap['avgGrowthEstimatedEPS'] = dataJsonList.avgGrowthEstimatedEPS;
+    datamap['cagrGrowthEstimatedEPS'] = dataJsonList.cagrGrowthEstimatedEPS;
     plFY["Value"] = datamap;
 
     return plFY;
@@ -899,8 +900,8 @@ function yearlyReportEstmation(jsonResonse){
 
      var tmpdatapoints = new Array();
      tmpdatapoints.push(["Estimated EPS (CAGR)","estimatedEPSCAGR"," EPS estimated using CAGR technique."]);
-//     tmpdatapoints.push(["Average EPS","averageEPS","Average EPS over period of years"]);
     tmpdatapoints.push(["EPS AVG growth","avgGrowthEstimatedEPS","Average EPS Growth over period of years"]);
+    tmpdatapoints.push(["EPS CAGR growth","cagrGrowthEstimatedEPS","CAGR EPS Growth over period of years"]);
 
     var ele = document.getElementById(tableID);
         if(ele!=null){
@@ -1781,6 +1782,7 @@ function showEVEbitdaValue(years){
     showEVEBITDAProjection(jsonResonse);
 }
 
+
 function marginofsafty(ele){
         var marginofsafty = ele.value;
         marginofsafty = parseFloat(marginofsafty);
@@ -1789,6 +1791,7 @@ function marginofsafty(ele){
         netprofitvaluationMrgnOfSfty(marginofsafty);
         twophasedcfMrgnOfSfty(marginofsafty);
         evEbitdaMrgnOfSfty(marginofsafty);
+        grahamMrgnOfSfty(marginofsafty);
 }
 
 /*====================== PE Valuation Model =========================*/
@@ -2006,6 +2009,60 @@ function twophasedcfMrgnOfSfty(mrgnOfSfty){
      document.getElementById("twophasedcfupside").style.color = "red";
     else
       document.getElementById("twophasedcfupside").style.color = "green";
+}
+
+
+/*====================== Bejamin Graham Valuation Model =========================*/
+
+function grahamValution(){
+    console.log("Benjamin Graham action is triggered");
+    window.open("benjamin-graham-valuation.html?stockID="+stockID);
+    window.focus();
+
+    grahamValuationEstimation();
+}
+
+var grahamvaluationvaltm;
+function grahamValuationEstimation(){
+     var url = getStockValuationUrl+'/graham';
+            var jsonResonse = GetRawBookContent(url);
+            console.log("show Graham valuation: response: "+jsonResonse);
+            var data = JSON.parse(jsonResonse);
+            console.log(" Fetching Net Profit Valuation value: "+data);
+            grahamvaluationvaltm = setTimeout(grahamValuationEstimation, 5000);
+            if(data.evluated){
+                var ele = document.getElementById("grahamestimation");
+                ele.innerHTML = data.finalIntrinsicValue;
+//                document.getElementById("twophasedcfmationrgnsfty").innerHTML =data.finalIntrinsicValue;
+                var targetPrice = parseFloat(data.finalIntrinsicValue);
+                if(targetPrice<currentSharePrice)
+                    document.getElementById("grahamestimation").style.color = "red";
+                else
+                    document.getElementById("grahamestimation").style.color = "green";
+                clearTimeout(grahamvaluationvaltm);
+            }
+}
+
+
+function grahamMrgnOfSfty(mrgnOfSfty){
+    var targetPrice = document.getElementById("grahamestimation").innerHTML;
+    targetPrice = parseFloat(targetPrice);
+    console.log("[Graham] mrgnOfSfty : "+mrgnOfSfty+" currentSharePrice: "+currentSharePrice+" targetPrice: "+targetPrice);
+    var targetPriceMrgn = targetPrice*(1-(mrgnOfSfty/100));
+    document.getElementById("grahammrgnsfty").innerHTML = targetPriceMrgn;
+    console.log("[Graham] targetPriceMrgn: "+targetPriceMrgn);
+    if(targetPriceMrgn>currentSharePrice)
+            document.getElementById("grahammrgnsfty").style.color = "green";
+    else
+       document.getElementById("grahammrgnsfty").style.color = "red";
+
+    var upside = (targetPriceMrgn-currentSharePrice)/currentSharePrice*100;
+        document.getElementById("grahamupside").innerHTML = upside;
+
+    if(upside<0)
+     document.getElementById("grahamupside").style.color = "red";
+    else
+      document.getElementById("grahamupside").style.color = "green";
 }
 
 
