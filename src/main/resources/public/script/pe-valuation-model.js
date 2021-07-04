@@ -11,6 +11,7 @@ var generateReportUrl = '/fundamental/generateReport/'+stockID;
 var stockValuationUrl = '/fundamental/stockvaluation/'+stockID;
 var getStockValuationUrl='/fundamental/getStockValuation/'+stockID;
 
+var generatedOnce = false;
 var inputDataMap = new Map();
 
 function onReportLoad(){
@@ -268,12 +269,22 @@ function submitYearlyReportDetails(){
 var firstTimeMarketGrowthSelection = false;
 
 function onMarketGrowthSelection(){
+    var marketGrowth = document.getElementById("cmg").value;
     inputDataMap['marketGrowth']=marketGrowth;
-    if(!firstTimeMarketGrowthSelection){
+    if(generatedOnce){
         generateReport();
     }
 }
 
+function onGrowthApproachSelection(){
+    var growthApproach = document.getElementById("grAppr").value;
+    inputDataMap['growthApproach']=growthApproach;
+    console.log("generatedOnce: "+generatedOnce);
+    if(generatedOnce){
+        console.log("Regenerating report: ")
+        generateReport();
+    }
+}
 
 function generateReport(){
 
@@ -281,6 +292,8 @@ function generateReport(){
     inputDataMap['epsMap'] =epsMap;
     var marketGrowth = document.getElementById("cmg").value;
     inputDataMap['marketGrowth']=marketGrowth;
+    var growthApproach = document.getElementById("grAppr").value;
+    inputDataMap['growthApproach']=growthApproach;
     console.log(inputDataMap);
     var requestBody = generateJsonString(inputDataMap);
     console.log(requestBody);
@@ -321,6 +334,7 @@ function showPEValuationFValue(){
 
 
     showCalcPE(data.stockpriceList);
+    generatedOnce = true;
 }
 
 function showCalcPE(stockpriceList){

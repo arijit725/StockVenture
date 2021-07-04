@@ -36,13 +36,41 @@ public class RatiosEvaluation implements IFundamentalEvaluation{
         if(ratioDtoList.isEmpty()||ratioDtoList.size()<year)
             throw new Exception("Number of year exceeds RatioDtoList list");
         analyzedInfoDto.getRatioAnalysisInfo().clear();
-        calcForwardPE(fundamentalInfoDto,analyzedInfoDto,year);
-        calcGrowth(analyzedInfoDto.getRatioAnalysisInfo(),ratioDtoList);
-        calcPEGRatio(fundamentalInfoDto,analyzedInfoDto,year);
-        evaluateMultiBagger(analyzedInfoDto,ratioDtoList);
-        evaluatePE(analyzedInfoDto,fundamentalInfoDto.getCompanyDto());
-        generateAnalysisStatement(fundamentalInfoDto, analyzedInfoDto, year);
-        peRatioAnalysis(fundamentalInfoDto,analyzedInfoDto,year);
+        try {
+            calcForwardPE(fundamentalInfoDto, analyzedInfoDto, year);
+        }catch(Exception e){
+            logger.error("Unable to calculate forwardPE",e);
+        }
+        try {
+            calcGrowth(analyzedInfoDto.getRatioAnalysisInfo(), ratioDtoList);
+        }catch (Exception e){
+            logger.error("Unable to calcuation ratio growth",e);
+        }
+        try {
+            calcPEGRatio(fundamentalInfoDto, analyzedInfoDto, year);
+        }catch (Exception e){
+            logger.error("Unable to calculate PEG ratio",e);
+        }
+        try {
+            evaluateMultiBagger(analyzedInfoDto, ratioDtoList);
+        }catch (Exception e){
+            logger.error("Unable to evaluate Mutlibagger",e);
+        }
+        try {
+            evaluatePE(analyzedInfoDto, fundamentalInfoDto.getCompanyDto());
+        }catch (Exception e){
+            logger.error("Unable to evaluate PE",e);
+        }
+        try {
+            generateAnalysisStatement(fundamentalInfoDto, analyzedInfoDto, year);
+        }catch (Exception e){
+            logger.error("unable to generate analysis statement");
+        }
+        try {
+            peRatioAnalysis(fundamentalInfoDto, analyzedInfoDto, year);
+        }catch (Exception e){
+            logger.error("Unable to evaluate pe",e);
+        }
         evaluated = true;
     }
 

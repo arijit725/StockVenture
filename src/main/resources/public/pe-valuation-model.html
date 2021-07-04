@@ -62,12 +62,28 @@
                     </table>
                 </td>
                 <td>
-                    <label for="cmg">Current Market Growth : </label>
-                    <select name="cmg" id="cmg" class="year-selection" onchange="onMarketGrowthSelection()">
-                        <option value="Good" selected>Good</option>
-                        <option value="Average">Average</option>
-                        <option value="Poor">Poor</option>
-                    </select>
+                    <table>
+                        <tr>
+                            <td>
+                                <label for="cmg">Current Market Growth : </label>
+                                <select name="cmg" id="cmg" class="year-selection" onchange="onMarketGrowthSelection()">
+                                    <option value="Good" selected>Good</option>
+                                    <option value="Average">Average</option>
+                                    <option value="Poor">Poor</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="grAppr">Growth Approach : </label>
+                                <select name="grAppr" id="grAppr" class="year-selection" onchange="onGrowthApproachSelection()">
+                                    <option value="CAGR" >CAGR</option>
+                                    <option value="Average" selected>Average</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+
                 </td>
                 <td style="vertical-align:top">
                     <div id="avgHistPE" class="tableholder">

@@ -3,7 +3,7 @@ package org.arijit.stock.analyze.dto;
 import com.google.gson.annotations.SerializedName;
 
 public class CompanyDto {
-
+    private String ticker;
     private String companyName;
     private int years;
     private boolean seasonal;
@@ -20,6 +20,14 @@ public class CompanyDto {
     private double currentPV;
     @SerializedName("cmpBeta")
     private double companyBeta;
+
+    public String getTicker() {
+        return ticker;
+    }
+
+    public void setTicker(String ticker) {
+        this.ticker = ticker;
+    }
 
     public String getCompanyName() {
         return companyName;

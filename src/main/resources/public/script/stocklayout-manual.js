@@ -65,6 +65,7 @@ function openCity(evt, cityName) {
 /*======================================Functions for Company Details Handle================================*/
 function submitCompanyDetails(){
     startTab();
+    var ticker = document.getElementById("ticker").value;
     var companyName = document.getElementById("companyName").value;
     var marketCap = document.getElementById("marketCap").value.replace(',','');
     marketCap = marketCap.replace(',','');
@@ -82,6 +83,7 @@ function submitCompanyDetails(){
 
 //    localStorage.setItem("companyName", companyName);
     var companyDetails={
+        "ticker":ticker,
         "companyName":companyName,
         "marketCap":marketCap,
         "industry":industry,

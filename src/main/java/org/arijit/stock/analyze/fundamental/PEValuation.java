@@ -12,6 +12,7 @@ import org.arijit.stock.analyze.dto.FundamentalInfoDto;
 import org.arijit.stock.analyze.dto.YearlyReportDto;
 import org.arijit.stock.analyze.enums.ValuationEnums;
 import org.arijit.stock.analyze.util.DateUtil;
+import org.arijit.stock.analyze.util.FundamentalAnalysisUtil;
 import org.arijit.stock.analyze.util.StockUtil;
 
 import java.text.ParseException;
@@ -41,11 +42,70 @@ public class PEValuation implements  IFundamentalEvaluation{
         calcPriceEstimation(fundamentalInfoDto,analyzedInfoDto);
     }
 
+
+    private double calcEPSGrowth(PEValuationModelDto peValuationModelDto){
+        Map<String, Double> epsMap  = peValuationModelDto.getEpsMap();
+        TreeMap<String, Double> map = new TreeMap<>(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                try {
+                    long d1 = DateUtil.convertToEpochMilli(o1);
+                    long d2 = DateUtil.convertToEpochMilli(o2);
+                    return Long.compare(d2, d1);
+                } catch (ParseException e) {
+                    logger.error("Unable to convert Dates to ecpochInMillis: ", e);
+                }
+                return 0;
+            }
+        });
+        epsMap = epsMap.entrySet().stream().filter(item->item.getValue()!=null).collect(Collectors.toMap(
+                                                                                                Map.Entry::getKey,
+                                                                                                Map.Entry::getValue));
+        map.putAll(epsMap);
+        logger.info("EPS Map After sorting: "+map);
+        Iterator<Map.Entry<String, Double>> it = map.entrySet().iterator();
+        Map.Entry<String,Double> currentYearEPS = null;
+        Map.Entry<String,Double> startYearEPS = null;
+        Map.Entry<String,Double> endYearEPS = null;
+        Map<String,Double> growthMap = new HashMap<>();
+        while(it.hasNext()) {
+            if (currentYearEPS == null) {
+                currentYearEPS = it.next();
+                endYearEPS = currentYearEPS;
+
+            } else {
+                Map.Entry<String, Double> prevYearEPS = it.next();
+                if (prevYearEPS.getValue() > 0) {
+                    double growth = (currentYearEPS.getValue() - prevYearEPS.getValue()) / prevYearEPS.getValue();
+                    growth = growth * 100;
+                    logger.info("[Average Growth] Start Year: " + prevYearEPS + " End Year: " + currentYearEPS + " Growth %: " + growth);
+                    growthMap.put(currentYearEPS.getKey(), growth);
+                }
+                currentYearEPS = prevYearEPS;
+                startYearEPS = prevYearEPS;
+            }
+        }
+        logger.info("EPS GrowthMap : "+growthMap);
+        double averageEPSGrowth = growthMap.entrySet().stream().mapToDouble(item->item.getValue()).average().getAsDouble();
+        int year = epsMap.size();
+        double cagrGrowth = FundamentalAnalysisUtil.cagr(endYearEPS.getValue(),startYearEPS.getValue(),year);
+        logger.info("End Year EPS: "+endYearEPS+"Star Year EPS: "+startYearEPS+" year: "+year+" CAGR Growth: "+cagrGrowth);
+        String growthApproach = peValuationModelDto.getGrowthApproach();
+        switch(growthApproach){
+            case "CAGR":
+                return cagrGrowth;
+            case "Average":
+                return averageEPSGrowth;
+        }
+        return cagrGrowth;
+    }
+
     private void calcPriceEstimation(FundamentalInfoDto fundamentalInfoDto, AnalyzedInfoDto analyzedInfoDto){
         List<YearlyReportDto> yearlyReportDtoList = fundamentalInfoDto.getYearlyReportDtoList();
-        yearlyReportDtoList.stream().forEach(report->logger.info(" Date: "+report.getDate()+" EPS Growth Rate: "+report.getEpsGrowthRate()));
-        double avgEPSGrowth = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).sum();
-        avgEPSGrowth = (double) avgEPSGrowth/(yearlyReportDtoList.size() -1);
+//        yearlyReportDtoList.stream().forEach(report->logger.info(" Date: "+report.getDate()+" EPS Growth Rate: "+report.getEpsGrowthRate()));
+//        double avgEPSGrowth = yearlyReportDtoList.stream().mapToDouble(mapper->mapper.getEpsGrowthRate()).sum();
+//        avgEPSGrowth = (double) avgEPSGrowth/(yearlyReportDtoList.size() -1);
+        double avgEPSGrowth = calcEPSGrowth(analyzedInfoDto.getPeValuationModelDto());
         logger.info("Average EPS Growth: "+avgEPSGrowth);
         double shortenAvgEPSGrowth = Double.parseDouble(StockUtil.convertDoubleToPrecision(avgEPSGrowth,2));
         analyzedInfoDto.getPeValuationModelDto().setEPSGrowthRate(shortenAvgEPSGrowth);

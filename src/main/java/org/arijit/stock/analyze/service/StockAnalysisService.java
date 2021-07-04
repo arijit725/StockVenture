@@ -234,7 +234,7 @@ public class StockAnalysisService {
             analyzedInfoDto.getPeValuationModelDto().setStockPriceList(peValuationModelDto.getStockPriceList());
             analyzedInfoDto.getPeValuationModelDto().setEpsMap(peValuationModelDto.getEpsMap());
             analyzedInfoDto.getPeValuationModelDto().setMarketGrowth(peValuationModelDto.getMarketGrowth());
-
+            analyzedInfoDto.getPeValuationModelDto().setGrowthApproach(peValuationModelDto.getGrowthApproach());
             try {
                 PEValuation.getInstance().evaluate(fundamentalInfoDto, analyzedInfoDto, 7);
             }catch (Exception e){

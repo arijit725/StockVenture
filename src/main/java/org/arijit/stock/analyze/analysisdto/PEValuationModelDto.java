@@ -22,6 +22,7 @@ public class PEValuationModelDto {
     private double currentSharePrice;
 
     private String marketGrowth;
+    private String growthApproach;
 
     private double avgPE7Years;
     private double avgPE4Years;
@@ -48,6 +49,14 @@ public class PEValuationModelDto {
 
     public boolean isEvluated() {
         return evluated;
+    }
+
+    public String getGrowthApproach() {
+        return growthApproach;
+    }
+
+    public void setGrowthApproach(String growthApproach) {
+        this.growthApproach = growthApproach;
     }
 
     public void setMarketGrowth(String marketGrowth) {
