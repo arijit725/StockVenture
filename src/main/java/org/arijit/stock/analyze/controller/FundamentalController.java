@@ -151,8 +151,8 @@ public class FundamentalController {
         return Mono.just(res);
     }
 
-    @PostMapping(value = "/storeDetails", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity> storeDetails(@RequestBody String ratioDetails, ServerWebExchange webExchange)throws IOException {
+    @PostMapping(value = "/storeDetails")
+    public Mono<ResponseEntity> storeDetails(ServerWebExchange webExchange)throws IOException {
         String stockID = webExchange.getRequest().getHeaders().get("x-stockid").get(0);
         logger.info("Accpeted storeDetails persist Request: stockID: "+stockID);
         ResponseEntity<String> res = null;
